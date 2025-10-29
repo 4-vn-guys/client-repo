@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { Open_Sans } from 'next/font/google';
-import './globals.css';
 import { ThemeProvider } from '@/components/providers/theme-provider';
+import { NextIntlClientProvider } from 'next-intl';
+import './globals.css';
 
 const openSans = Open_Sans({
   variable: '--font-open-sans',
@@ -29,14 +30,16 @@ export default function RootLayout({
       <body
         className={`${openSans.variable} ${openSansMono.variable} font-stretch-105% antialiased`}
       >
-        <ThemeProvider
-          attribute='class'
-          defaultTheme='system'
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+        <NextIntlClientProvider>
+          <ThemeProvider
+            attribute='class'
+            defaultTheme='system'
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

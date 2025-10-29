@@ -1,5 +1,3 @@
-'use client';
-
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -8,39 +6,16 @@ import {
   CardTitle,
   CardDescription,
 } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { IoTennisball } from 'react-icons/io5';
 import { SiRacket } from 'react-icons/si';
 import { FaBasketballBall, FaTableTennis } from 'react-icons/fa';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import Link from 'next/link';
 import { FaFutbol } from 'react-icons/fa6';
-import {
-  ChevronDownIcon,
-  LogIn,
-  MousePointerClick,
-  Search,
-} from 'lucide-react';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { useState } from 'react';
 import Image from 'next/image';
 import { TypographyH1, TypographyP } from '@/components/ui/typography';
-import { cn } from '@/lib/utils';
 import { SearchBar } from '@/components/local/home/search-bar';
+import { getTranslations } from 'next-intl/server';
 
 interface Sport {
   name: string;
@@ -81,52 +56,16 @@ const sports: Sport[] = [
   },
 ];
 
-export default function Home() {
+export default async function HomePage() {
+  const tCommon = await getTranslations('HomePage');
+
   return (
     <div className='min-h-screen bg-linear-to-br from-blue-50 to-green-50'>
-      {/* Navigation */}
-      <nav className='border-b bg-white shadow-sm'>
-        <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
-          <div className='flex h-16 items-center justify-between'>
-            <div className='flex items-center'>
-              <div className='text-primary text-2xl font-bold'>
-                CourtConnect
-              </div>
-            </div>
-            <div className='hidden space-x-8 md:flex'>
-              <Link
-                href='#venues'
-                className='text-muted-foreground hover:text-primary transition-colors'
-              >
-                Venues
-              </Link>
-              <Link
-                href='#how-it-works'
-                className='text-muted-foreground hover:text-primary transition-colors'
-              >
-                How It Works
-              </Link>
-              <Link
-                href='#about'
-                className='text-muted-foreground hover:text-primary transition-colors'
-              >
-                About
-              </Link>
-            </div>
-            <div className='flex space-x-4'>
-              <Button variant='outline' iconLeft={<LogIn />}>
-                Login
-              </Button>
-              <Button iconLeft={<MousePointerClick />}>Register</Button>
-            </div>
-          </div>
-        </div>
-      </nav>
-
       {/* Hero Section */}
       <section className='bg-primary text-primary-foreground relative py-20'>
         <Image
           className='absolute inset-0 h-full w-full object-cover object-center opacity-70'
+          loading='eager'
           src='/images/background-home.jpeg'
           alt='Sports Court'
           width={1920}
@@ -134,13 +73,12 @@ export default function Home() {
         />
         <div className='relative mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8'>
           <TypographyH1 className='text-shadow-accent-foreground text-shadow-lg'>
-            Book Your Perfect
+            {tCommon('slogan')}
             <br />
-            <span className='text-yellow-300'>Sports Court</span>
+            <span className='text-yellow-300'>{tCommon('subSlogan')}</span>
           </TypographyH1>
           <TypographyP className='text-shadow-accent-foreground mx-auto mb-8 max-w-3xl text-xl text-shadow-md md:text-2xl'>
-            Find and book football, badminton, and pickleball courts instantly.
-            Real-time availability, secure payments, play when you want.
+            {tCommon('infoText')}
           </TypographyP>
 
           {/* Sport Selection */}
@@ -162,10 +100,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Popular Venues Section */}
+      {/* Featured Venues Section */}
       <section
         className='mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8'
-        id='venues'
+        id='featured-venues'
       >
         <h2 className='mb-12 text-center text-3xl font-bold text-gray-800 md:text-4xl'>
           Popular Venues Near You

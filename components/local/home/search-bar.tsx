@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface Sport {
   name: string;
@@ -66,24 +67,28 @@ const sports: Sport[] = [
 ];
 
 export function SearchBar() {
+  const tCommon = useTranslations('Common');
+  const tSearchBar = useTranslations('HomePage.SearchBar');
+
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   return (
-    <Card className='shadow-accent-foreground mx-auto max-w-2xl space-y-4 rounded-2xl bg-white px-4 py-6 shadow-2xl'>
-      <CardContent className='space-y-2'>
-        <div className='grid grid-cols-12 justify-between gap-4 space-y-2 md:flex md:flex-row md:gap-2 md:space-y-0 md:space-x-2'>
-          <div className='relative order-1 col-span-5 flex-1 md:order-1'>
+    <Card className='shadow-accent-foreground mx-auto max-w-2xl space-y-4 rounded-2xl bg-white shadow-2xl'>
+      <CardContent className='space-y-2 px-4 py-0 md:px-6 md:py-2'>
+        <div className='grid grid-cols-12 justify-between gap-4 space-y-2 md:flex md:flex-row md:gap-2'>
+          {/* Sport */}
+          <div className='relative order-1 col-span-6 h-12 flex-1 md:order-1'>
             <Label
               htmlFor='sport-picker'
               className='absolute -top-5 left-0 rounded-lg p-1 text-xs text-gray-500'
             >
-              Sport
+              {tCommon('sportLabel')}
             </Label>
             <Select defaultValue='all'>
               <SelectTrigger
                 id='sport-picker'
-                className='bg-primary-foreground text-primary w-full border-0 px-4 py-6'
+                className='bg-primary-foreground text-primary h-full w-full border-0 px-4 py-6 shadow-xs'
               >
                 <SelectValue
                   className='text-primary font-normal'
@@ -91,7 +96,7 @@ export function SearchBar() {
                 />
               </SelectTrigger>
               <SelectContent align='start'>
-                <SelectItem value='all'>All Sports</SelectItem>
+                <SelectItem value='all'>{tCommon('allSports')}</SelectItem>
                 {sports.map(sport => (
                   <SelectItem key={sport.name} value={sport.name}>
                     {sport.icon}
@@ -101,37 +106,41 @@ export function SearchBar() {
               </SelectContent>
             </Select>
           </div>
-          <div className='bg-primary-foreground relative order-3 col-span-12 grow rounded-md border-0 md:order-2'>
+          {/* Location */}
+          <div className='bg-primary-foreground relative order-3 col-span-12 h-12 grow rounded-md border-0 md:order-2'>
             <Label
               htmlFor='location-search'
               className='absolute -top-5 left-0 rounded-lg p-1 text-xs text-gray-500'
             >
-              Location
+              {tCommon('locationLabel')}
             </Label>
             <Input
               id='location-search'
               type='text'
-              placeholder='Enter your location...'
-              className='text-primary border-0 px-4 py-6'
+              placeholder={tSearchBar('locationPlaceholder')}
+              className='text-primary h-full border-0 px-4 py-6 text-sm shadow-xs'
               aria-label='Search location'
             />
           </div>
-          <div className='relative order-2 col-span-7 flex h-fit flex-1 space-x-2 md:order-3'>
+          {/* Date & Time */}
+          <div className='relative order-2 col-span-6 flex h-12 flex-1 space-x-2 md:order-3'>
             <Label
               htmlFor='date-search'
               className='absolute -top-5 left-0 rounded-lg p-1 text-xs text-gray-500'
             >
-              Date
+              {tCommon('dateLabel')}
             </Label>
-            <div className='bg-primary-foreground flex w-full items-center justify-between gap-1 rounded-sm'>
+            <div className='bg-primary-foreground flex h-full w-full items-center justify-between gap-1 rounded-sm'>
               <Popover open={showDatePicker} onOpenChange={setShowDatePicker}>
                 <PopoverTrigger
                   className={cn(
-                    'grow border-0 bg-transparent px-4 text-left text-sm font-normal text-nowrap',
+                    'h-full grow rounded-sm border-0 bg-transparent px-4 text-left text-sm font-normal text-nowrap shadow-xs',
                     date ? 'text-primary' : 'text-gray-500'
                   )}
                 >
-                  {date ? date.toLocaleDateString() : 'Select date'}
+                  {date
+                    ? date.toLocaleDateString()
+                    : tSearchBar('datePlaceholder')}
                 </PopoverTrigger>
                 <PopoverContent
                   className='w-auto overflow-hidden p-0'
@@ -150,12 +159,15 @@ export function SearchBar() {
                   />
                 </PopoverContent>
               </Popover>
-              <Separator orientation='vertical' className='bg-primary/20 he' />
+              <Separator
+                orientation='vertical'
+                className='bg-primary/20 hidden md:block'
+              />
               <Input
                 type='time'
                 id='time-picker'
                 aria-label='Select time'
-                className='text-primary appearance-none border-0 bg-transparent px-4 py-6 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
+                className='text-primary hidden appearance-none border-0 bg-transparent px-4 py-6 md:block [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
               />
             </div>
           </div>
@@ -165,7 +177,7 @@ export function SearchBar() {
           iconLeft={<Search />}
           size='xl'
         >
-          Search
+          {tCommon('searchLabel')}
         </Button>
       </CardContent>
     </Card>

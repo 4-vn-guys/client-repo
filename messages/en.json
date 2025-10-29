@@ -1,0 +1,40 @@
+{
+  "Common": {
+    "loadingLabel": "Loading",
+    "searchLabel": "Search",
+    "locationLabel": "Location",
+    "dateLabel": "Date",
+    "languageLabel": "Language",
+
+    "sportLabel": "Sport",
+    "allSports": "All Sports",
+    "badminton": "Badminton",
+    "football": "Football",
+    "basketball": "Basketball",
+    "tennis": "Tennis",
+    "pickleball": "Pickleball",
+    "tableTennis": "Table tennis"
+    
+  },
+  "Navigation": {
+    "homeLabel": "Home",
+    "loginLabel": "Login",
+    "signupLabel": "Register",
+    "logoutLabel": "Logout",
+    "aboutLabel": "About us",
+    "featuredLabel": "Featured",
+    "findLabel": "Find court"
+  },
+  "HomePage": {
+    "slogan": "Book Your Perfect",
+    "subSlogan": "Sports Court",
+    "infoText": "Find and book football, badminton, and pickleball courts instantly. Real-time availability, secure payments, play when you want.",
+   "SearchBar": {
+    "locationPlaceholder": "Enter your location...",
+    "datePlaceholder": "Select date..."
+   }
+  },
+  "LoginPage": {
+    "title": "Login"
+  }
+}

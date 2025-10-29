@@ -1,0 +1,40 @@
+{
+  "Common": {
+    "loadingLabel": "Đang tải",
+    "searchLabel": "Tìm kiếm",
+    "locationLabel": "Địa điểm",
+    "dateLabel": "Thời gian",
+    "languageLabel": "Ngôn ngữ",
+
+    "sportLabel": "Môn thể thao",
+    "allSports": "Tất cả môn",
+    "badminton": "Cầu lông",
+    "football": "Bóng đá",
+    "basketball": "Bóng rổ",
+    "tennis": "Quần vợt",
+    "pickleball": "Pickleball",
+    "tableTennis": "Bóng bàn"
+  },
+  "Navigation": {
+    "homeLabel": "Trang Chủ",
+    "loginLabel": "Đăng Nhập",
+    "signupLabel": "Đăng Ký",
+    "logoutLabel": "Đăng Xuất",
+    "aboutLabel": "Về Chúng Tôi",
+    "featuredLabel": "Nổi Bật",
+    "findLabel": "Tìm Sân"
+  },
+  "HomePage": {
+    "slogan": "Đặt cho Bạn",
+    "subSlogan": "Sân Chơi Hoàn Hảo",
+    "infoText": "Tìm và đặt sân bóng đá, cầu lông và pickleball ngay lập tức. Kiểm tra thời gian trống theo thời gian thực, thanh toán an toàn, chơi bất cứ khi nào bạn muốn.",
+    
+    "SearchBar": {
+    "locationPlaceholder": "Nhập địa điểm...",
+    "datePlaceholder": "Chọn ngày..."
+   }
+  },
+  "LoginPage": {
+    "title": "Đăng nhập"
+  }
+}
