@@ -5,9 +5,13 @@ import { LanguageSwitcher } from './language-switcher';
 import { Button } from '@/components/ui/button';
 import { LogIn, MousePointerClick } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
 
-export const Navigation = () => {
+interface NavigationProps {
+  simpleHeader?: boolean;
+}
+
+export const Navigation = ({ simpleHeader = false }: NavigationProps) => {
   const tNavigation = useTranslations('Navigation');
 
   const links = useMemo(
@@ -27,25 +31,35 @@ export const Navigation = () => {
           <div className='flex items-center'>
             <div className='text-primary text-2xl font-bold'>CourtConnect</div>
           </div>
-          <div className='hidden space-x-8 md:flex'>
-            {links.map((link, index) => (
-              <Link
-                key={index}
-                href={link.href}
-                className='text-muted-foreground hover:text-primary transition-colors'
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
+          {!simpleHeader && (
+            <div className='hidden space-x-8 md:flex'>
+              {links.map((link, index) => (
+                <Link
+                  key={index}
+                  href={link.href}
+                  className='text-muted-foreground hover:text-primary transition-colors'
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          )}
           <div className='flex space-x-4'>
             <LanguageSwitcher />
-            <Button variant='outline' iconLeft={<LogIn />}>
-              {tNavigation('loginLabel')}
-            </Button>
-            <Button iconLeft={<MousePointerClick />}>
-              {tNavigation('signupLabel')}
-            </Button>
+            {!simpleHeader && (
+              <Fragment>
+                <Link href='/login'>
+                  <Button variant='outline' iconLeft={<LogIn />}>
+                    {tNavigation('loginLabel')}
+                  </Button>
+                </Link>
+                <Link href={'/register'}>
+                  <Button iconLeft={<MousePointerClick />}>
+                    {tNavigation('signupLabel')}
+                  </Button>
+                </Link>
+              </Fragment>
+            )}
           </div>
         </div>
       </div>

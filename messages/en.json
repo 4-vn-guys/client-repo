@@ -14,7 +14,6 @@
     "tennis": "Tennis",
     "pickleball": "Pickleball",
     "tableTennis": "Table tennis"
-    
   },
   "Navigation": {
     "homeLabel": "Home",
@@ -35,6 +34,117 @@
    }
   },
   "LoginPage": {
-    "title": "Login"
+    "title": "Welcome back",
+    "subtitle": "Login to your {platform} account",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "phoneLabel": "Phone Number",
+    "continueWithEmail": "Continue with Email",
+    "continueWithPhone": "Continue with Phone",
+    "continueWithGoogle": "Continue with Google",
+    "continueWithFacebook": "Continue with Facebook",
+    "orContinueWith": "or continue with",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign up",
+    "login": "Login",
+    "phonePlaceholder": "Enter your phone number",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password",
+    "phoneVerification": "Phone Verification",
+    "enterCode": "Enter the 6-digit code sent to",
+    "resendCode": "Resend code",
+    "verify": "Verify"
+  },
+  "RegisterPage": {
+    "title": "Join {platform} Today",
+    "subtitle": "Create your account to start booking sports courts and enjoy seamless reservations",
+    "fullName": "Full Name",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "confirmPasswordLabel": "Confirm Password",
+    "phoneLabel": "Phone Number",
+    "continueWithEmail": "Continue with Email",
+    "continueWithPhone": "Continue with Phone",
+    "continueWithGoogle": "Continue with Google",
+    "continueWithFacebook": "Continue with Facebook",
+    "orContinueWith": "or continue with",
+    "alreadyHaveAccount": "Already have an account?",
+    "signIn": "Sign in",
+    "register": "Create Account",
+    "firstNamePlaceholder": "Enter your first name",
+    "lastNamePlaceholder": "Enter your last name",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Create a password",
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "phonePlaceholder": "Enter your phone number",
+    "termsAndConditions": "I agree to the Terms and Conditions",
+    "privacyPolicy": "Privacy Policy"
+  },
+  "ForgotPasswordPage": {
+    "title": "Reset Your Password",
+    "subtitle": "Enter your email address and we'll send you a reset code",
+    "step1": "Enter Email",
+    "step2": "Reset Password",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "Enter your email address",
+    "sendResetCode": "Send Reset Code",
+    "resetCodeLabel": "Reset Code",
+    "resetCodePlaceholder": "Enter the 6-digit code",
+    "newPasswordLabel": "New Password",
+    "newPasswordPlaceholder": "Enter your new password",
+    "confirmPasswordLabel": "Confirm New Password",
+    "confirmPasswordPlaceholder": "Confirm your new password",
+    "resetPassword": "Reset Password",
+    "backToLogin": "Back to Login",
+    "sending": "Sending...",
+    "resetting": "Resetting...",
+    "codeSent": "Reset code sent! Check your email.",
+    "invalidCode": "Invalid reset code. Please try again.",
+    "passwordMismatch": "Passwords don't match.",
+    "resetSuccess": "Password reset successfully!",
+    "emailRequired": "Email is required",
+    "invalidEmail": "Please enter a valid email address",
+    "codeRequired": "Reset code is required",
+    "passwordRequired": "Password is required",
+    "confirmPasswordRequired": "Please confirm your password",
+    "resendResetCode": "Resend code"
+  },
+  
+  "Components": {
+    "ExtraAuthForm": {
+      "continueWithEmail": "Continue with Email",
+      "continueWithPhone": "Continue with Phone",
+      "continueWithGoogle": "Continue with Google",
+      "continueWithFacebook": "Continue with Facebook",
+      "orContinueWith": "or continue with"
+    },
+    "TermConditionText": {
+      "termsOfService": "Terms of Service",
+      "privacyPolicy": "Privacy Policy",
+      "beforeTermsAndConditions": "By clicking continue, you agree to our",
+      "termsAndConditions": "and"
+    }
+  },
+  "Validation": {
+    "loginSchema": {
+      "emailRequired": "Please enter your email",
+      "emailInvalid": "Please enter a valid email address",
+      "passwordRequired": "Please enter your password",
+      "passwordMinLength": "Password must be at least 8 characters",
+      "passwordMaxLength": "Password must be at most 32 characters",
+      "passwordInvalid": "Password must include at least one uppercase letter, one lowercase letter, and one number"
+    },
+    "registerSchema": {
+      "fullNameRequired": "Please enter your full name",
+      "fullNameMaxLength": "Full name must be at most 200 characters",
+      "confirmPasswordRequired": "Please confirm your password",
+      "confirmPasswordMismatch": "Passwords do not match" 
+    },
+    "forgotPasswordEmailSchema": {
+      "codeRequired": "Please enter the reset code",
+      "invalidCode": "Invalid reset code. Please try again.",
+      "passwordMismatch": "Passwords do not match."
+    }
   }
 }
