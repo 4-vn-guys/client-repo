@@ -40,12 +40,16 @@ export const Navigation = () => {
           </div>
           <div className='flex space-x-4'>
             <LanguageSwitcher />
-            <Button variant='outline' iconLeft={<LogIn />}>
-              {tNavigation('loginLabel')}
-            </Button>
-            <Button iconLeft={<MousePointerClick />}>
-              {tNavigation('signupLabel')}
-            </Button>
+            <Link href='/login'>
+              <Button variant='outline' iconLeft={<LogIn />}>
+                {tNavigation('loginLabel')}
+              </Button>
+            </Link>
+            <Link href={'/register'}>
+              <Button iconLeft={<MousePointerClick />}>
+                {tNavigation('signupLabel')}
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

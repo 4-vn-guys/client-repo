@@ -18,6 +18,23 @@ export const metadata: Metadata = {
   title: 'CourtConnect - Book Sports Courts Instantly',
   description:
     'Book football, badminton, and pickleball courts instantly. Find premium venues, check real-time availability, and secure your spot in minutes.',
+  assets: ['/images/background-home.jpeg'],
+  category: 'website',
+  creator: 'FunnyBois',
+  keywords: [
+    'sports',
+    'court',
+    'booking',
+    'instant',
+    'premium',
+    'venues',
+    'availability',
+    'secure',
+    'minutes',
+  ],
+  openGraph: {
+    images: ['/images/background-home.jpeg'],
+  },
 };
 
 export default function RootLayout({
@@ -26,7 +43,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en'>
+    <html lang='en' suppressHydrationWarning>
       <body
         className={`${openSans.variable} ${openSansMono.variable} font-stretch-105% antialiased`}
       >

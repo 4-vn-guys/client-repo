@@ -13,7 +13,12 @@
     "basketball": "Bóng rổ",
     "tennis": "Quần vợt",
     "pickleball": "Pickleball",
-    "tableTennis": "Bóng bàn"
+    "tableTennis": "Bóng bàn",
+
+    "termsOfService": "Điều khoản dịch vụ",
+    "privacyPolicy": "Chính sách bảo mật",
+    "beforeTermsAndConditions": "Bằng cách tiếp tục, bạn đồng ý với",
+    "termsAndConditions": "và"
   },
   "Navigation": {
     "homeLabel": "Trang Chủ",
@@ -35,6 +40,51 @@
    }
   },
   "LoginPage": {
-    "title": "Đăng nhập"
+    "title": "Chào mừng trở lại",
+    "subtitle": "Đăng nhập vào tài khoản {platform} của bạn",
+    "emailLabel": "Email",
+    "passwordLabel": "Mật khẩu",
+    "phoneLabel": "Số điện thoại",
+    "continueWithEmail": "Tiếp tục với Email",
+    "continueWithPhone": "Tiếp tục với Số điện thoại",
+    "continueWithGoogle": "Tiếp tục với Google",
+    "continueWithFacebook": "Tiếp tục với Facebook",
+    "orContinueWith": "hoặc tiếp tục với",
+    "forgotPassword": "Quên mật khẩu?",
+    "noAccount": "Chưa có tài khoản?",
+    "signUp": "Đăng ký",
+    "login": "Đăng nhập",
+    "phonePlaceholder": "Nhập số điện thoại của bạn",
+    "emailPlaceholder": "Nhập email của bạn",
+    "passwordPlaceholder": "Nhập mật khẩu của bạn",
+    "phoneVerification": "Xác minh Số điện thoại",
+    "enterCode": "Nhập mã 6 chữ số được gửi đến",
+    "resendCode": "Gửi lại mã",
+    "verify": "Xác minh"
+  },
+  "RegisterPage": {
+    "title": "Tham gia {platform} Ngay Hôm Nay",
+    "subtitle": "Tạo tài khoản của bạn để bắt đầu đặt sân thể thao và tận hưởng đặt chỗ liền mạch",
+    "fullName": "Họ tên",
+    "emailLabel": "Email",
+    "passwordLabel": "Mật khẩu",
+    "confirmPasswordLabel": "Xác nhận Mật khẩu",
+    "phoneLabel": "Số điện thoại",
+    "continueWithEmail": "Tiếp tục với Email",
+    "continueWithPhone": "Tiếp tục với Số điện thoại",
+    "continueWithGoogle": "Tiếp tục với Google",
+    "continueWithFacebook": "Tiếp tục với Facebook",
+    "orContinueWith": "hoặc tiếp tục với",
+    "alreadyHaveAccount": "Đã có tài khoản?",
+    "signIn": "Đăng nhập",
+    "register": "Tạo Tài khoản",
+    "firstNamePlaceholder": "Nhập tên của bạn",
+    "lastNamePlaceholder": "Nhập họ của bạn",
+    "emailPlaceholder": "Nhập email của bạn",
+    "passwordPlaceholder": "Tạo mật khẩu",
+    "confirmPasswordPlaceholder": "Xác nhận mật khẩu của bạn",
+    "phonePlaceholder": "Nhập số điện thoại của bạn",
+    "termsAndConditions": "Tôi đồng ý với Điều khoản và Điều kiện",
+    "privacyPolicy": "Chính sách Bảo mật"
   }
 }
