@@ -86,5 +86,49 @@
     "phonePlaceholder": "Nhập số điện thoại của bạn",
     "termsAndConditions": "Tôi đồng ý với Điều khoản và Điều kiện",
     "privacyPolicy": "Chính sách Bảo mật"
+  },
+  "ForgotPasswordPage": {
+    "title": "Đặt Lại Mật Khẩu",
+    "subtitle": "Nhập địa chỉ email của bạn và chúng tôi sẽ gửi mã đặt lại",
+    "step1": "Nhập Email",
+    "step2": "Đặt Lại Mật Khẩu",
+    "emailLabel": "Địa Chỉ Email",
+    "emailPlaceholder": "Nhập địa chỉ email của bạn",
+    "sendResetCode": "Gửi Mã Đặt Lại",
+    "resetCodeLabel": "Mã Đặt Lại",
+    "resetCodePlaceholder": "Nhập mã 6 chữ số",
+    "newPasswordLabel": "Mật Khẩu Mới",
+    "newPasswordPlaceholder": "Nhập mật khẩu mới của bạn",
+    "confirmPasswordLabel": "Xác Nhận Mật Khẩu Mới",
+    "confirmPasswordPlaceholder": "Xác nhận mật khẩu mới của bạn",
+    "resetPassword": "Đặt Lại Mật Khẩu",
+    "backToLogin": "Quay Lại Đăng Nhập",
+    "sending": "Đang gửi...",
+    "resetting": "Đang đặt lại...",
+    "codeSent": "Mã đặt lại đã được gửi! Kiểm tra email của bạn.",
+    "invalidCode": "Mã đặt lại không hợp lệ. Vui lòng thử lại.",
+    "passwordMismatch": "Mật khẩu không khớp.",
+    "resetSuccess": "Đặt lại mật khẩu thành công!",
+    "emailRequired": "Email là bắt buộc",
+    "invalidEmail": "Vui lòng nhập địa chỉ email hợp lệ",
+    "codeRequired": "Mã đặt lại là bắt buộc",
+    "passwordRequired": "Mật khẩu là bắt buộc",
+    "confirmPasswordRequired": "Vui lòng xác nhận mật khẩu của bạn",
+    "resendResetCode": "Gửi lại mã"
+  },
+  "Components": {
+    "ExtraAuthForm": {
+      "continueWithEmail": "Tiếp tục với Email",
+      "continueWithPhone": "Tiếp tục với Số điện thoại",
+      "continueWithGoogle": "Tiếp tục với Google",
+      "continueWithFacebook": "Tiếp tục với Facebook",
+      "orContinueWith": "hoặc tiếp tục với"
+    },
+    "TermConditionText": {
+      "termsOfService": "Điều khoản dịch vụ",
+      "privacyPolicy": "Chính sách bảo mật",
+      "beforeTermsAndConditions": "Bằng cách tiếp tục, bạn đồng ý với",
+      "termsAndConditions": "và"
+    }
   }
 }

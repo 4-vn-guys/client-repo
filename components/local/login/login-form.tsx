@@ -2,30 +2,30 @@
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldSeparator,
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import Link from 'next/link';
 import { TypographyH1, TypographyP } from '@/components/ui/typography';
-import { FaFacebook, FaGoogle, FaPhone } from 'react-icons/fa6';
 import { useState } from 'react';
 import { Eye, EyeOff, Home } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { redirect } from 'next/navigation';
+import { Form } from '@/components/ui/form';
+import { ExtraAuthForm } from '@/components/ui/extra-auth-form';
+import { TermConditionText } from '@/components/ui/term-condition-text';
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<'div'>) {
   const tLoginPage = useTranslations('LoginPage');
-  const tCommon = useTranslations('Common');
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -41,7 +41,7 @@ export function LoginForm({
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card className='overflow-hidden p-0'>
         <CardContent className='grid p-0 md:grid-cols-2'>
-          <form className='p-6 md:p-8'>
+          <Form>
             <FieldGroup>
               <Button
                 type='button'
@@ -75,7 +75,7 @@ export function LoginForm({
                     {tLoginPage('passwordLabel')}
                   </FieldLabel>
                   <Link
-                    href='#'
+                    href='/forgot-password'
                     className='ml-auto text-sm underline-offset-2 hover:underline'
                   >
                     {tLoginPage('forgotPassword')}
@@ -105,29 +105,7 @@ export function LoginForm({
               <Field>
                 <Button type='submit'>{tLoginPage('login')}</Button>
               </Field>
-              <FieldSeparator className='*:data-[slot=field-separator-content]:bg-card'>
-                {tLoginPage('orContinueWith')}
-              </FieldSeparator>
-              <Field className='grid grid-cols-3 gap-4'>
-                <Button variant='outline' type='button'>
-                  <FaPhone />
-                  <span className='sr-only'>
-                    {tLoginPage('continueWithPhone')}
-                  </span>
-                </Button>
-                <Button variant='outline' type='button'>
-                  <FaFacebook />
-                  <span className='sr-only'>
-                    {tLoginPage('continueWithFacebook')}
-                  </span>
-                </Button>
-                <Button variant='outline' type='button'>
-                  <FaGoogle />
-                  <span className='sr-only'>
-                    {tLoginPage('continueWithGoogle')}
-                  </span>
-                </Button>
-              </Field>
+              <ExtraAuthForm />
               <FieldDescription className='text-center'>
                 {tLoginPage('noAccount')}&nbsp;
                 <Link
@@ -138,7 +116,7 @@ export function LoginForm({
                 </Link>
               </FieldDescription>
             </FieldGroup>
-          </form>
+          </Form>
           <div className='bg-muted relative hidden md:block'>
             <Image
               src='/images/background-login-register.jpeg'
@@ -146,16 +124,12 @@ export function LoginForm({
               className='absolute inset-0 h-full w-full rotate-y-180 object-cover dark:brightness-[0.2] dark:grayscale'
               width={500}
               height={500}
+              loading='eager'
             />
           </div>
         </CardContent>
       </Card>
-      <FieldDescription className='px-6 text-center'>
-        {tCommon('beforeTermsAndConditions')}&nbsp;
-        <Link href='#'>{tCommon('termsOfService')}</Link>
-        &nbsp;{tCommon('termsAndConditions')}&nbsp;
-        <Link href='#'>{tCommon('privacyPolicy')}</Link>.
-      </FieldDescription>
+      <TermConditionText />
     </div>
   );
 }
