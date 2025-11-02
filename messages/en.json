@@ -125,5 +125,26 @@
       "beforeTermsAndConditions": "By clicking continue, you agree to our",
       "termsAndConditions": "and"
     }
+  },
+  "Validation": {
+    "loginSchema": {
+      "emailRequired": "Please enter your email",
+      "emailInvalid": "Please enter a valid email address",
+      "passwordRequired": "Please enter your password",
+      "passwordMinLength": "Password must be at least 8 characters",
+      "passwordMaxLength": "Password must be at most 32 characters",
+      "passwordInvalid": "Password must include at least one uppercase letter, one lowercase letter, and one number"
+    },
+    "registerSchema": {
+      "fullNameRequired": "Please enter your full name",
+      "fullNameMaxLength": "Full name must be at most 200 characters",
+      "confirmPasswordRequired": "Please confirm your password",
+      "confirmPasswordMismatch": "Passwords do not match" 
+    },
+    "forgotPasswordEmailSchema": {
+      "codeRequired": "Please enter the reset code",
+      "invalidCode": "Invalid reset code. Please try again.",
+      "passwordMismatch": "Passwords do not match."
+    }
   }
 }

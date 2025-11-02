@@ -13,6 +13,7 @@ import {
   FieldGroup,
   FieldLabel,
   FieldDescription,
+  FieldError,
 } from '@/components/ui/field';
 import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -26,6 +27,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useForm } from '@tanstack/react-form';
+import toast from 'react-hot-toast';
+import { useAuthSchemas } from '@/utils/validation-hooks/auth';
 
 type Step = 'email' | 'reset';
 
@@ -35,25 +39,75 @@ export const ForgotPasswordForm = () => {
   const tForgotPasswordPage = useTranslations('ForgotPasswordPage');
 
   const [isLoading, setIsLoading] = useState(false);
-  const [currentStep, setCurrentStep] = useState<Step>('reset');
+  const [currentStep, setCurrentStep] = useState<Step>('email');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [email, setEmail] = useState('');
-  const [resetCode, setResetCode] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [remainingTime, setRemainingTime] = useState(0);
+
+  const { forgotPasswordEmailSchema, forgotPasswordResetSchema } =
+    useAuthSchemas();
+
+  const emailForm = useForm({
+    defaultValues: {
+      email: '',
+    },
+    validators: {
+      onBlur: forgotPasswordEmailSchema,
+    },
+    onSubmit: async ({ value }) => {
+      setIsLoading(true);
+      try {
+        // TODO: Integrate forgot password email API
+        void value;
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        toast.success(tForgotPasswordPage('codeSent'));
+        setCurrentStep('reset');
+        setRemainingTime(RESEND_CODE_INTERVAL);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+  });
+
+  const resetForm = useForm({
+    defaultValues: {
+      resetCode: '',
+      newPassword: '',
+      confirmPassword: '',
+    },
+    validators: {
+      onBlur: forgotPasswordResetSchema,
+    },
+    onSubmit: async ({ value }) => {
+      setIsLoading(true);
+      try {
+        // TODO: Integrate password reset API
+        void value;
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        toast.success(tForgotPasswordPage('resetSuccess'));
+        emailForm.reset();
+        resetForm.reset();
+        setCurrentStep('email');
+        setRemainingTime(0);
+        setShowPassword(false);
+        setShowConfirmPassword(false);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+  });
 
   // countdown remaining time
   useEffect(() => {
-    const handler =
-      remainingTime > 0
-        ? setInterval(() => {
-            setRemainingTime(remainingTime - 1);
-          }, 1000)
-        : undefined;
+    if (remainingTime <= 0) {
+      return;
+    }
 
-    return () => clearInterval(handler);
+    const timer = window.setInterval(() => {
+      setRemainingTime(prev => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => window.clearInterval(timer);
   }, [remainingTime]);
 
   const toggleShowPassword = () => {
@@ -64,17 +118,14 @@ export const ForgotPasswordForm = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
 
-  const handleResendResetCode = async () => {
-    // handle API
+  const handleResendResetCode = () => {
+    if (remainingTime > 0) {
+      return;
+    }
+
+    // TODO: Integrate resend reset code API
+    toast.success(tForgotPasswordPage('codeSent'));
     setRemainingTime(RESEND_CODE_INTERVAL);
-  };
-
-  const handleEmailSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-  };
-
-  const handlePasswordReset = async (e: React.FormEvent) => {
-    e.preventDefault();
   };
 
   return (
@@ -88,22 +139,43 @@ export const ForgotPasswordForm = () => {
         </CardHeader>
         <CardContent>
           {currentStep === 'email' ? (
-            <Form onSubmit={handleEmailSubmit}>
+            <Form
+              onSubmit={e => {
+                e.preventDefault();
+                emailForm.handleSubmit();
+              }}
+            >
               <FieldGroup>
-                <Field>
-                  <FieldLabel htmlFor='email'>
-                    {tForgotPasswordPage('emailLabel')}
-                  </FieldLabel>
-                  <Input
-                    id='email'
-                    type='email'
-                    placeholder={tForgotPasswordPage('emailPlaceholder')}
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                    required
-                    disabled={isLoading}
-                  />
-                </Field>
+                <emailForm.Field name='email'>
+                  {field => {
+                    const isInvalid =
+                      field.state.meta.isTouched && !field.state.meta.isValid;
+
+                    return (
+                      <Field data-invalid={isInvalid}>
+                        <FieldLabel htmlFor={field.name}>
+                          {tForgotPasswordPage('emailLabel')}
+                        </FieldLabel>
+                        <Input
+                          id={field.name}
+                          name={field.name}
+                          type='email'
+                          placeholder={tForgotPasswordPage('emailPlaceholder')}
+                          value={field.state.value}
+                          onBlur={field.handleBlur}
+                          onChange={e => field.handleChange(e.target.value)}
+                          aria-invalid={isInvalid}
+                          autoComplete='off'
+                          required
+                          disabled={isLoading}
+                        />
+                        {isInvalid && (
+                          <FieldError errors={field.state.meta.errors} />
+                        )}
+                      </Field>
+                    );
+                  }}
+                </emailForm.Field>
                 <Field>
                   <Button type='submit' className='w-full' disabled={isLoading}>
                     {isLoading
@@ -115,105 +187,162 @@ export const ForgotPasswordForm = () => {
               </FieldGroup>
             </Form>
           ) : (
-            <Form onSubmit={handlePasswordReset}>
+            <Form
+              onSubmit={e => {
+                e.preventDefault();
+                resetForm.handleSubmit();
+              }}
+            >
               <FieldGroup>
-                <Field>
-                  <div className='flex items-center justify-between'>
-                    <FieldLabel htmlFor='resetCode'>
-                      {tForgotPasswordPage('resetCodeLabel')}
-                    </FieldLabel>
-                    <Tooltip delayDuration={300}>
-                      <TooltipTrigger asChild>
-                        <Button
-                          type='button'
-                          variant='ghost'
-                          size='icon'
-                          onClick={handleResendResetCode}
-                          disabled={remainingTime > 0}
-                        >
-                          {remainingTime > 0 ? (
-                            <span className='text-sm'>{remainingTime}s</span>
-                          ) : (
-                            <RotateCcw />
+                <resetForm.Field name='resetCode'>
+                  {field => {
+                    const isInvalid =
+                      field.state.meta.isTouched && !field.state.meta.isValid;
+
+                    return (
+                      <Field data-invalid={isInvalid}>
+                        <div className='flex items-center justify-between'>
+                          <FieldLabel htmlFor={field.name}>
+                            {tForgotPasswordPage('resetCodeLabel')}
+                          </FieldLabel>
+                          <Tooltip delayDuration={300}>
+                            <TooltipTrigger asChild>
+                              <Button
+                                type='button'
+                                variant='ghost'
+                                size='icon'
+                                onClick={handleResendResetCode}
+                                disabled={remainingTime > 0 || isLoading}
+                              >
+                                {remainingTime > 0 ? (
+                                  <span className='text-sm'>
+                                    {remainingTime}s
+                                  </span>
+                                ) : (
+                                  <RotateCcw />
+                                )}
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side='bottom'>
+                              {tForgotPasswordPage('resendResetCode')}
+                            </TooltipContent>
+                          </Tooltip>
+                        </div>
+                        <Input
+                          id={field.name}
+                          name={field.name}
+                          type='text'
+                          placeholder={tForgotPasswordPage(
+                            'resetCodePlaceholder'
                           )}
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent side='bottom'>
-                        {tForgotPasswordPage('resendResetCode')}
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-                  <Input
-                    id='resetCode'
-                    type='text'
-                    placeholder={tForgotPasswordPage('resetCodePlaceholder')}
-                    value={resetCode}
-                    onChange={e => setResetCode(e.target.value)}
-                    maxLength={6}
-                    required
-                    disabled={isLoading}
-                  />
-                </Field>
-                <Field>
-                  <FieldLabel htmlFor='newPassword'>
-                    {tForgotPasswordPage('newPasswordLabel')}
-                  </FieldLabel>
-                  <div className='relative'>
-                    <Input
-                      id='newPassword'
-                      type={showPassword ? 'text' : 'password'}
-                      placeholder={tForgotPasswordPage(
-                        'newPasswordPlaceholder'
-                      )}
-                      value={newPassword}
-                      onChange={e => setNewPassword(e.target.value)}
-                      className='pr-8'
-                      required
-                      disabled={isLoading}
-                    />
-                    <button
-                      className='absolute top-1/2 right-0 -translate-y-1/2 p-2'
-                      type='button'
-                      onClick={toggleShowPassword}
-                    >
-                      {showPassword ? (
-                        <Eye className='size-4' />
-                      ) : (
-                        <EyeOff className='size-4' />
-                      )}
-                    </button>
-                  </div>
-                </Field>
-                <Field>
-                  <FieldLabel htmlFor='confirmPassword'>
-                    {tForgotPasswordPage('confirmPasswordLabel')}
-                  </FieldLabel>
-                  <div className='relative'>
-                    <Input
-                      id='confirmPassword'
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      placeholder={tForgotPasswordPage(
-                        'confirmPasswordPlaceholder'
-                      )}
-                      value={confirmPassword}
-                      onChange={e => setConfirmPassword(e.target.value)}
-                      className='pr-8'
-                      required
-                      disabled={isLoading}
-                    />
-                    <button
-                      className='absolute top-1/2 right-0 -translate-y-1/2 p-2'
-                      type='button'
-                      onClick={toggleShowConfirmPassword}
-                    >
-                      {showConfirmPassword ? (
-                        <Eye className='size-4' />
-                      ) : (
-                        <EyeOff className='size-4' />
-                      )}
-                    </button>
-                  </div>
-                </Field>
+                          value={field.state.value}
+                          onBlur={field.handleBlur}
+                          onChange={e => field.handleChange(e.target.value)}
+                          aria-invalid={isInvalid}
+                          maxLength={6}
+                          required
+                          disabled={isLoading}
+                          autoComplete='one-time-code'
+                        />
+                        {isInvalid && (
+                          <FieldError errors={field.state.meta.errors} />
+                        )}
+                      </Field>
+                    );
+                  }}
+                </resetForm.Field>
+                <resetForm.Field name='newPassword'>
+                  {field => {
+                    const isInvalid =
+                      field.state.meta.isTouched && !field.state.meta.isValid;
+
+                    return (
+                      <Field data-invalid={isInvalid}>
+                        <FieldLabel htmlFor={field.name}>
+                          {tForgotPasswordPage('newPasswordLabel')}
+                        </FieldLabel>
+                        <div className='relative'>
+                          <Input
+                            id={field.name}
+                            name={field.name}
+                            type={showPassword ? 'text' : 'password'}
+                            placeholder={tForgotPasswordPage(
+                              'newPasswordPlaceholder'
+                            )}
+                            className='pr-8'
+                            value={field.state.value}
+                            onBlur={field.handleBlur}
+                            onChange={e => field.handleChange(e.target.value)}
+                            aria-invalid={isInvalid}
+                            autoComplete='new-password'
+                            required
+                            disabled={isLoading}
+                          />
+                          <button
+                            className='absolute top-1/2 right-0 -translate-y-1/2 p-2'
+                            type='button'
+                            onClick={toggleShowPassword}
+                          >
+                            {showPassword ? (
+                              <Eye className='size-4' />
+                            ) : (
+                              <EyeOff className='size-4' />
+                            )}
+                          </button>
+                        </div>
+                        {isInvalid && (
+                          <FieldError errors={field.state.meta.errors} />
+                        )}
+                      </Field>
+                    );
+                  }}
+                </resetForm.Field>
+                <resetForm.Field name='confirmPassword'>
+                  {field => {
+                    const isInvalid =
+                      field.state.meta.isTouched && !field.state.meta.isValid;
+
+                    return (
+                      <Field data-invalid={isInvalid}>
+                        <FieldLabel htmlFor={field.name}>
+                          {tForgotPasswordPage('confirmPasswordLabel')}
+                        </FieldLabel>
+                        <div className='relative'>
+                          <Input
+                            id={field.name}
+                            name={field.name}
+                            type={showConfirmPassword ? 'text' : 'password'}
+                            placeholder={tForgotPasswordPage(
+                              'confirmPasswordPlaceholder'
+                            )}
+                            className='pr-8'
+                            value={field.state.value}
+                            onBlur={field.handleBlur}
+                            onChange={e => field.handleChange(e.target.value)}
+                            aria-invalid={isInvalid}
+                            autoComplete='new-password'
+                            required
+                            disabled={isLoading}
+                          />
+                          <button
+                            className='absolute top-1/2 right-0 -translate-y-1/2 p-2'
+                            type='button'
+                            onClick={toggleShowConfirmPassword}
+                          >
+                            {showConfirmPassword ? (
+                              <Eye className='size-4' />
+                            ) : (
+                              <EyeOff className='size-4' />
+                            )}
+                          </button>
+                        </div>
+                        {isInvalid && (
+                          <FieldError errors={field.state.meta.errors} />
+                        )}
+                      </Field>
+                    );
+                  }}
+                </resetForm.Field>
                 <Field>
                   <Button type='submit' className='w-full' disabled={isLoading}>
                     {isLoading

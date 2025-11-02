@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Open_Sans } from 'next/font/google';
 import { ThemeProvider } from '@/components/providers/theme-provider';
 import { NextIntlClientProvider } from 'next-intl';
+import { Toaster } from 'react-hot-toast';
 import './globals.css';
 
 const openSans = Open_Sans({
@@ -54,6 +55,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <Toaster position='top-right' />
             {children}
           </ThemeProvider>
         </NextIntlClientProvider>
