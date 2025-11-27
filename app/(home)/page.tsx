@@ -1,20 +1,20 @@
-import { Button } from '@/components/ui/button';
+import { Button } from '@shared/ui/button';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardDescription,
-} from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+} from '@shared/ui/card';
+import { Badge } from '@shared/ui/badge';
+import { Separator } from '@shared/ui/separator';
 import { IoTennisball } from 'react-icons/io5';
 import { SiRacket } from 'react-icons/si';
 import { FaBasketballBall, FaTableTennis } from 'react-icons/fa';
 import { FaFutbol } from 'react-icons/fa6';
 import Image from 'next/image';
-import { TypographyH1, TypographyP } from '@/components/ui/typography';
-import { SearchBar } from '@/components/local/home/search-bar';
+import { TypographyH1, TypographyP } from '@shared/ui/typography';
+import { SearchBar } from '@/src/features/home/search-bar';
 import { getTranslations } from 'next-intl/server';
 
 interface Sport {

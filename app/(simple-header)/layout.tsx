@@ -1,4 +1,4 @@
-import { Navigation } from '@/components/local/navigation/navigation';
+import { Navigation } from '@/src/features/navigation/navigation';
 
 export default function SimpleHeaderLayout({
   children,
