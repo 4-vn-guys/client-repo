@@ -49,12 +49,16 @@ export const Navigation = ({ simpleHeader = false }: NavigationProps) => {
             {!simpleHeader && (
               <Fragment>
                 <Link href='/login'>
-                  <Button variant='outline' iconLeft={<LogIn />}>
+                  <Button
+                    variant='outline'
+                    icon={<LogIn />}
+                    iconPlacement='left'
+                  >
                     {tNavigation('loginLabel')}
                   </Button>
                 </Link>
                 <Link href={'/register'}>
-                  <Button iconLeft={<MousePointerClick />}>
+                  <Button icon={<MousePointerClick />} iconPlacement='left'>
                     {tNavigation('signupLabel')}
                   </Button>
                 </Link>

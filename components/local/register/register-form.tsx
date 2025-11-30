@@ -25,6 +25,7 @@ import { TermConditionText } from '@/components/ui/term-condition-text';
 import { useForm } from '@tanstack/react-form';
 import { useAuthSchemas } from '@/utils/validation-hooks/auth';
 import toast from 'react-hot-toast';
+import { HomeButton } from '@/components/global/home-button';
 
 export function RegisterForm({
   className,
@@ -62,10 +63,6 @@ export function RegisterForm({
     setShowConfirmPassword(!showConfirmPassword);
   };
 
-  const handleToHome = () => {
-    redirect('/');
-  };
-
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card className='overflow-hidden p-0'>
@@ -78,13 +75,7 @@ export function RegisterForm({
             }}
           >
             <FieldGroup>
-              <Button
-                type='button'
-                size='icon'
-                variant='secondary'
-                iconLeft={<Home />}
-                onClick={handleToHome}
-              />
+              <HomeButton />
               <div className='flex flex-col items-center gap-2 text-center'>
                 <TypographyH1 className='text-xl font-bold md:text-2xl'>
                   {tRegisterPage('title', { platform: 'BC' })}

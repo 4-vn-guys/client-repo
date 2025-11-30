@@ -174,7 +174,8 @@ export function SearchBar() {
         </div>
         <Button
           className='text-md w-full px-8 font-semibold'
-          iconLeft={<Search />}
+          icon={<Search />}
+          iconPlacement='left'
           size='xl'
         >
           {tCommon('searchLabel')}

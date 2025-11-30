@@ -33,11 +33,11 @@
     "slogan": "Đặt cho Bạn",
     "subSlogan": "Sân Chơi Hoàn Hảo",
     "infoText": "Tìm và đặt sân bóng đá, cầu lông và pickleball ngay lập tức. Kiểm tra thời gian trống theo thời gian thực, thanh toán an toàn, chơi bất cứ khi nào bạn muốn.",
-    
+
     "SearchBar": {
-    "locationPlaceholder": "Nhập địa điểm...",
-    "datePlaceholder": "Chọn ngày..."
-   }
+      "locationPlaceholder": "Nhập địa điểm...",
+      "datePlaceholder": "Chọn ngày..."
+    }
   },
   "LoginPage": {
     "title": "Chào mừng trở lại",
@@ -144,7 +144,7 @@
       "fullNameRequired": "Vui lòng nhập họ tên",
       "fullNameMaxLength": "Họ tên không được vượt quá 200 ký tự",
       "confirmPasswordRequired": "Vui lòng xác nhận mật khẩu",
-      "confirmPasswordMismatch": "Mật khẩu không khớp" 
+      "confirmPasswordMismatch": "Mật khẩu không khớp"
     },
     "forgotPasswordEmailSchema": {
       "codeRequired": "Vui lòng nhập mã đặt lại",

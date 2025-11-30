@@ -1,5 +1,5 @@
 /* eslint-disable react/no-children-prop */
-/* eslint-disable react/jsx-no-undef */
+
 'use client';
 
 import { cn } from '@/lib/utils';
@@ -17,14 +17,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { TypographyH1, TypographyP } from '@/components/ui/typography';
 import { useState } from 'react';
-import { Eye, EyeOff, Home } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { redirect } from 'next/navigation';
 import { ExtraAuthForm } from '@/components/ui/extra-auth-form';
 import { TermConditionText } from '@/components/ui/term-condition-text';
 import { useForm } from '@tanstack/react-form';
 import { useAuthSchemas } from '@/utils/validation-hooks/auth';
 import toast from 'react-hot-toast';
+import { HomeButton } from '@/components/global/home-button';
 
 export function LoginForm({
   className,
@@ -53,10 +53,6 @@ export function LoginForm({
     setShowPassword(!showPassword);
   };
 
-  const handleToHome = () => {
-    redirect('/');
-  };
-
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card className='overflow-hidden p-0'>
@@ -69,13 +65,7 @@ export function LoginForm({
             }}
           >
             <FieldGroup>
-              <Button
-                type='button'
-                size='icon'
-                variant='secondary'
-                iconLeft={<Home />}
-                onClick={handleToHome}
-              />
+              <HomeButton />
               <div className='flex flex-col items-center gap-2 text-center'>
                 <TypographyH1 className='text-xl font-bold md:text-2xl'>
                   {tLoginPage('title')}

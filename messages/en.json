@@ -28,10 +28,10 @@
     "slogan": "Book Your Perfect",
     "subSlogan": "Sports Court",
     "infoText": "Find and book football, badminton, and pickleball courts instantly. Real-time availability, secure payments, play when you want.",
-   "SearchBar": {
-    "locationPlaceholder": "Enter your location...",
-    "datePlaceholder": "Select date..."
-   }
+    "SearchBar": {
+      "locationPlaceholder": "Enter your location...",
+      "datePlaceholder": "Select date..."
+    }
   },
   "LoginPage": {
     "title": "Welcome back",
@@ -110,7 +110,7 @@
     "confirmPasswordRequired": "Please confirm your password",
     "resendResetCode": "Resend code"
   },
-  
+
   "Components": {
     "ExtraAuthForm": {
       "continueWithEmail": "Continue with Email",
@@ -139,7 +139,7 @@
       "fullNameRequired": "Please enter your full name",
       "fullNameMaxLength": "Full name must be at most 200 characters",
       "confirmPasswordRequired": "Please confirm your password",
-      "confirmPasswordMismatch": "Passwords do not match" 
+      "confirmPasswordMismatch": "Passwords do not match"
     },
     "forgotPasswordEmailSchema": {
       "codeRequired": "Please enter the reset code",

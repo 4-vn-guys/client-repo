@@ -86,8 +86,8 @@ export default async function HomePage() {
             {sports.map(sport => (
               <Button
                 key={sport.name}
-                variant='secondary'
-                className='shadow-accent-foreground h-auto rounded-full px-6 py-3 shadow-lg'
+                variant='ghost'
+                className='shadow-accent-foreground pointer-events-none h-auto rounded-full px-6 py-3 shadow-lg'
               >
                 <span className='text-2xl'>{sport.emoji}</span>
                 <span>{sport.name}</span>
