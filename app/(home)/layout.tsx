@@ -1,14 +1,9 @@
-import { Navigation } from '@/components/local/navigation/navigation';
+import { BaseLayout } from '@/src/app/layouts';
 
-export default function BaseLayout({
+export default function HomeLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <div className='min-h-screen'>
-      <Navigation />
-      <main>{children}</main>
-    </div>
-  );
+  return <BaseLayout>{children}</BaseLayout>;
 }
