@@ -1,14 +1,9 @@
-import { Navigation } from '@/components/local/navigation/navigation';
+import { SimpleHeaderLayout } from '@/src/app/layouts';
 
-export default function SimpleHeaderLayout({
+export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <div>
-      <Navigation simpleHeader={true} />
-      {children}
-    </div>
-  );
+  return <SimpleHeaderLayout>{children}</SimpleHeaderLayout>;
 }
