@@ -26,7 +26,7 @@ import { TermConditionText } from './term-condition-text';
 import { HomeButton } from './home-button';
 import { useForm } from '@tanstack/react-form';
 import { useAuthSchemas } from '@/src/entities/user';
-import toast from 'react-hot-toast';
+import { useAuth } from '../hooks/use-auth';
 
 export function LoginForm({
   className,
@@ -37,6 +37,7 @@ export function LoginForm({
   const [showPassword, setShowPassword] = useState(false);
 
   const { loginSchema } = useAuthSchemas();
+  const { login, isLoading } = useAuth();
 
   const form = useForm({
     defaultValues: {
@@ -46,8 +47,9 @@ export function LoginForm({
     validators: {
       onBlur: loginSchema,
     },
-    onSubmit: ({ value }) => {
-      toast.success(`Login with ${value.email} - ${value.password}`);
+    onSubmit: async ({ value }) => {
+      // Call the login API using useAuth hook
+      await login(value.email, value.password);
     },
   });
 
@@ -155,7 +157,9 @@ export function LoginForm({
               />
 
               <Field>
-                <Button type='submit'>{tLoginPage('login')}</Button>
+                <Button type='submit' disabled={isLoading}>
+                  {isLoading ? 'Logging in...' : tLoginPage('login')}
+                </Button>
               </Field>
               <ExtraAuthForm />
               <FieldDescription className='text-center'>
