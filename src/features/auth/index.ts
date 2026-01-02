@@ -5,3 +5,7 @@ export { ForgotPasswordForm } from './ui/forgot-password-form';
 export { ExtraAuthForm } from './ui/extra-auth-form';
 export { TermConditionText } from './ui/term-condition-text';
 export { HomeButton } from './ui/home-button';
+
+// Auth APIs and Hooks
+export { authApi } from "./apis";
+export { useAuth } from "./hooks/use-auth";

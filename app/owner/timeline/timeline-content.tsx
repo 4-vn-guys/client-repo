@@ -24,8 +24,8 @@ const mockBookings: Booking[] = [
         id: '1',
         courtId: '1',
         customerName: 'John Doe',
-        startTime: new Date(2025, 11, 9, 9, 0),
-        endTime: new Date(2025, 11, 9, 11, 0),
+        startTime: new Date(2025, 11, 9, 9, 30),
+        endTime: new Date(2025, 11, 9, 11, 10),
         duration: 2,
         price: 120,
         status: 'confirmed',
@@ -81,7 +81,7 @@ export function TimelinePageContent() {
     };
 
     return (
-        <div className='space-y-6 p-6'>
+        <div className='space-y-4 p-4 md:space-y-6 md:p-6'>
             <TimelineHeader
                 title='Timeline'
                 dateNavigation={

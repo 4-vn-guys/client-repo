@@ -10,12 +10,14 @@ interface SidebarNavItemProps {
   label: string;
   href: string;
   icon: LucideIcon;
+  onClick?: () => void;
 }
 
 export function SidebarNavItem({
   label,
   href,
   icon: Icon,
+  onClick,
 }: SidebarNavItemProps) {
   const pathname = usePathname();
   const isActive = pathname === href;
@@ -23,6 +25,7 @@ export function SidebarNavItem({
   return (
     <Link
       href={href}
+      onClick={onClick}
       className={cn(
         'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
         isActive

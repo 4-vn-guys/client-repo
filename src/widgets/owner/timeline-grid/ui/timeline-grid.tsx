@@ -16,16 +16,21 @@ export function TimelineGrid({ courts, bookings }: TimelineGridProps) {
   };
 
   return (
-    <div className='bg-card overflow-hidden rounded-lg border'>
-      <TimeHeader />
-      <div className='divide-y'>
-        {courts.map(court => (
-          <CourtRow
-            key={court.id}
-            court={court}
-            bookings={getBookingsForCourt(court.id)}
-          />
-        ))}
+    <div className='bg-card overflow-hidden rounded-lg border shadow-sm'>
+      {/* Scrollable container for timeline */}
+      <div className='overflow-x-auto'>
+        <div className='min-w-max'>
+          <TimeHeader />
+          <div className='divide-y'>
+            {courts.map(court => (
+              <CourtRow
+                key={court.id}
+                court={court}
+                bookings={getBookingsForCourt(court.id)}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
