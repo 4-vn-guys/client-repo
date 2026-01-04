@@ -9,10 +9,14 @@ import { persist, createJSONStorage } from "zustand/middleware";
 export interface User {
   id: string;
   email: string;
-  name: string;
-  username?: string;
-  role?: string;
-  phone?: string;
+  username: string;
+  role: string;
+  phoneNumber?: string | null;
+  provider?: string | null;
+  providerId?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  deletedAt?: string | null;
 }
 
 /**
@@ -20,7 +24,8 @@ export interface User {
  */
 interface AuthState {
   user: User | null;
-  token: string | null;
+  accessToken: string | null;
+  refreshToken: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
 }
@@ -29,7 +34,9 @@ interface AuthState {
  * Auth store actions
  */
 interface AuthActions {
-  setAuth: (user: User, token: string) => void;
+  setTokens: (accessToken: string, refreshToken: string) => void;
+  setUser: (user: User) => void;
+  setAuth: (user: User, accessToken: string, refreshToken: string) => void;
   clearAuth: () => void;
   setLoading: (loading: boolean) => void;
   updateUser: (user: Partial<User>) => void;
@@ -44,15 +51,29 @@ export const useAuthStore = create<AuthState & AuthActions>()(
     (set) => ({
       // Initial state
       user: null,
-      token: null,
+      accessToken: null,
+      refreshToken: null,
       isAuthenticated: false,
       isLoading: false,
 
       // Actions
-      setAuth: (user, token) =>
+      setTokens: (accessToken, refreshToken) =>
+        set({
+          accessToken,
+          refreshToken,
+        }),
+
+      setUser: (user) =>
         set({
           user,
-          token,
+          isAuthenticated: true,
+        }),
+
+      setAuth: (user, accessToken, refreshToken) =>
+        set({
+          user,
+          accessToken,
+          refreshToken,
           isAuthenticated: true,
           isLoading: false,
         }),
@@ -60,7 +81,8 @@ export const useAuthStore = create<AuthState & AuthActions>()(
       clearAuth: () =>
         set({
           user: null,
-          token: null,
+          accessToken: null,
+          refreshToken: null,
           isAuthenticated: false,
           isLoading: false,
         }),

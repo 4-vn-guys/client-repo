@@ -26,10 +26,10 @@ axiosInstance.interceptors.request.use(
     if (authStorage) {
       try {
         const { state } = JSON.parse(authStorage);
-        const token = state?.token;
+        const accessToken = state?.accessToken;
         
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
+        if (accessToken) {
+          config.headers.Authorization = `Bearer ${accessToken}`;
         }
       } catch (error) {
         console.error("Error parsing auth storage:", error);

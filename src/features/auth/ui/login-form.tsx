@@ -45,7 +45,7 @@ export function LoginForm({
       password: '',
     },
     validators: {
-      onBlur: loginSchema,
+      onChange: loginSchema,
     },
     onSubmit: async ({ value }) => {
       // Call the login API using useAuth hook
@@ -82,10 +82,12 @@ export function LoginForm({
               <form.Field
                 name='email'
                 children={field => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
+                  const shouldShowError =
+                    field.state.meta.isTouched && 
+                    field.state.value.length > 0 && 
+                    !field.state.meta.isValid;
                   return (
-                    <Field data-invalid={isInvalid}>
+                    <Field data-invalid={shouldShowError}>
                       <FieldLabel htmlFor={field.name}>
                         {tLoginPage('emailLabel')}
                       </FieldLabel>
@@ -95,11 +97,12 @@ export function LoginForm({
                         value={field.state.value}
                         onBlur={field.handleBlur}
                         onChange={e => field.handleChange(e.target.value)}
-                        aria-invalid={isInvalid}
+                        aria-invalid={shouldShowError}
+                        className={shouldShowError ? 'border-destructive' : ''}
                         placeholder='m@example.com'
                         autoComplete='off'
                       />
-                      {isInvalid && (
+                      {shouldShowError && (
                         <FieldError errors={field.state.meta.errors} />
                       )}
                     </Field>
@@ -109,8 +112,10 @@ export function LoginForm({
               <form.Field
                 name='password'
                 children={field => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
+                  const shouldShowError =
+                    field.state.meta.isTouched && 
+                    field.state.value.length > 0 && 
+                    !field.state.meta.isValid;
                   return (
                     <Field>
                       <div className='flex items-center'>
@@ -129,17 +134,18 @@ export function LoginForm({
                           id='password'
                           type={showPassword ? 'text' : 'password'}
                           placeholder='●●●●●●●●'
-                          className='pr-8'
+                          className={shouldShowError ? 'pr-8 border-destructive' : 'pr-8'}
                           value={field.state.value}
                           onBlur={field.handleBlur}
                           onChange={e => field.handleChange(e.target.value)}
-                          aria-invalid={isInvalid}
+                          aria-invalid={shouldShowError}
                           autoComplete='off'
                         />
                         <button
                           className='absolute top-1/2 right-0 -translate-y-1/2 p-2'
                           type='button'
                           onClick={toggleShowPassword}
+                          aria-label={showPassword ? 'Hide password' : 'Show password'}
                         >
                           {showPassword ? (
                             <Eye className='size-5' />
@@ -148,7 +154,7 @@ export function LoginForm({
                           )}
                         </button>
                       </div>
-                      {isInvalid && (
+                      {shouldShowError && (
                         <FieldError errors={field.state.meta.errors} />
                       )}
                     </Field>

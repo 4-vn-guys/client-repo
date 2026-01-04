@@ -5,7 +5,6 @@
     "locationLabel": "Địa điểm",
     "dateLabel": "Thời gian",
     "languageLabel": "Ngôn ngữ",
-
     "sportLabel": "Môn thể thao",
     "allSports": "Tất cả môn",
     "badminton": "Cầu lông",
@@ -14,7 +13,6 @@
     "tennis": "Quần vợt",
     "pickleball": "Pickleball",
     "tableTennis": "Bóng bàn",
-
     "termsOfService": "Điều khoản dịch vụ",
     "privacyPolicy": "Chính sách bảo mật",
     "beforeTermsAndConditions": "Bằng cách tiếp tục, bạn đồng ý với",
@@ -33,7 +31,6 @@
     "slogan": "Đặt cho Bạn",
     "subSlogan": "Sân Chơi Hoàn Hảo",
     "infoText": "Tìm và đặt sân bóng đá, cầu lông và pickleball ngay lập tức. Kiểm tra thời gian trống theo thời gian thực, thanh toán an toàn, chơi bất cứ khi nào bạn muốn.",
-
     "SearchBar": {
       "locationPlaceholder": "Nhập địa điểm...",
       "datePlaceholder": "Chọn ngày..."
@@ -65,11 +62,19 @@
   "RegisterPage": {
     "title": "Tham gia {platform} Ngay Hôm Nay",
     "subtitle": "Tạo tài khoản của bạn để bắt đầu đặt sân thể thao và tận hưởng đặt chỗ liền mạch",
+    "userName": "Tên người dùng",
+    "userNamePlaceholder": "Chọn tên người dùng độc nhất",
+    "userNameHint": "5-50 ký tự, không được chỉ có khoảng trắng",
     "fullName": "Họ tên",
-    "emailLabel": "Email",
+    "emailLabel": "Địa chỉ Email",
+    "emailPlaceholder": "email.cua.ban@vidu.com",
+    "emailOrPhoneHint": "Bạn phải cung cấp email hoặc số điện thoại",
     "passwordLabel": "Mật khẩu",
+    "passwordHint": "8-16 ký tự có chữ hoa, chữ thường, số và ký tự đặc biệt (@$!%*?&)",
     "confirmPasswordLabel": "Xác nhận Mật khẩu",
-    "phoneLabel": "Số điện thoại",
+    "phoneLabel": "Số điện thoại (Tùy chọn)",
+    "phonePlaceholder": "0912345678 hoặc +84912345678",
+    "phoneHint": "Định dạng Việt Nam: 0xxxxxxxxx hoặc +84xxxxxxxxx",
     "continueWithEmail": "Tiếp tục với Email",
     "continueWithPhone": "Tiếp tục với Số điện thoại",
     "continueWithGoogle": "Tiếp tục với Google",
@@ -78,12 +83,11 @@
     "alreadyHaveAccount": "Đã có tài khoản?",
     "signIn": "Đăng nhập",
     "register": "Tạo Tài khoản",
+    "creating": "Đang tạo tài khoản...",
     "firstNamePlaceholder": "Nhập tên của bạn",
     "lastNamePlaceholder": "Nhập họ của bạn",
-    "emailPlaceholder": "Nhập email của bạn",
     "passwordPlaceholder": "Tạo mật khẩu",
     "confirmPasswordPlaceholder": "Xác nhận mật khẩu của bạn",
-    "phonePlaceholder": "Nhập số điện thoại của bạn",
     "termsAndConditions": "Tôi đồng ý với Điều khoản và Điều kiện",
     "privacyPolicy": "Chính sách Bảo mật"
   },
@@ -137,14 +141,25 @@
       "emailInvalid": "Vui lòng nhập email hợp lệ",
       "passwordRequired": "Vui lòng nhập mật khẩu",
       "passwordMinLength": "Mật khẩu phải có ít nhất 8 ký tự",
-      "passwordMaxLength": "Mật khẩu phải có ít nhất 32 ký tự",
-      "passwordInvalid": "Mật khẩu phải có ít nhất một chữ cái viết hoa, một chữ cái viết thường và một số"
+      "passwordMaxLength": "Mật khẩu phải có tối đa 16 ký tự",
+      "passwordInvalid": "Mật khẩu phải có chữ hoa, chữ thường, số và ký tự đặc biệt (@$!%*?&)"
     },
     "registerSchema": {
-      "fullNameRequired": "Vui lòng nhập họ tên",
-      "fullNameMaxLength": "Họ tên không được vượt quá 200 ký tự",
+      "userNameRequired": "Tên người dùng là bắt buộc",
+      "userNameMinLength": "Tên người dùng phải có ít nhất 5 ký tự",
+      "userNameMaxLength": "Tên người dùng phải có tối đa 50 ký tự",
+      "userNameInvalid": "Tên người dùng không được chỉ có khoảng trắng",
+      "emailInvalid": "Vui lòng nhập email hợp lệ",
+      "phoneNumberInvalid": "Số điện thoại phải theo định dạng Việt Nam (0xxxxxxxxx hoặc +84xxxxxxxxx)",
+      "emailOrPhoneRequired": "Vui lòng cung cấp email hoặc số điện thoại",
+      "passwordRequired": "Mật khẩu là bắt buộc",
+      "passwordMinLength": "Mật khẩu phải có ít nhất 8 ký tự",
+      "passwordMaxLength": "Mật khẩu phải có tối đa 16 ký tự",
+      "passwordInvalid": "Mật khẩu phải có chữ hoa, chữ thường, số và ký tự đặc biệt (@$!%*?&)",
       "confirmPasswordRequired": "Vui lòng xác nhận mật khẩu",
-      "confirmPasswordMismatch": "Mật khẩu không khớp"
+      "confirmPasswordMismatch": "Mật khẩu không khớp",
+      "fullNameRequired": "Vui lòng nhập họ tên",
+      "fullNameMaxLength": "Họ tên không được vượt quá 200 ký tự"
     },
     "forgotPasswordEmailSchema": {
       "codeRequired": "Vui lòng nhập mã đặt lại",
