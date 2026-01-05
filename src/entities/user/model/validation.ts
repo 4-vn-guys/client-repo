@@ -18,7 +18,9 @@ export type ForgotPasswordResetSchema = z.infer<
   ReturnType<typeof useAuthSchemas>['forgotPasswordResetSchema']
 >;
 
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
+const phoneRegex = /^(0|\+84)[0-9]{9}$/;
+const userNameRegex = /^(?!\s*$).+/;
 
 function useAuthSchemas() {
   const tLoginSchema = useTranslations('Validation.loginSchema');
@@ -36,7 +38,7 @@ function useAuthSchemas() {
         password: z
           .string()
           .min(8, { message: tLoginSchema('passwordMinLength') })
-          .max(32, { message: tLoginSchema('passwordMaxLength') })
+          .max(16, { message: tLoginSchema('passwordMaxLength') })
           .regex(passwordRegex, {
             message: tLoginSchema('passwordInvalid'),
           })
@@ -48,21 +50,71 @@ function useAuthSchemas() {
   const registerSchema = useMemo(() => {
     return z
       .object({
-        fullName: z
+        userName: z
           .string()
-          .max(200, { message: tRegisterSchema('fullNameMaxLength') })
-          .nonempty({ message: tRegisterSchema('fullNameRequired') }),
-        email: loginSchema.shape.email,
-        password: loginSchema.shape.password,
+          .min(5, { message: tRegisterSchema('userNameMinLength') })
+          .max(50, { message: tRegisterSchema('userNameMaxLength') })
+          .regex(userNameRegex, {
+            message: tRegisterSchema('userNameInvalid'),
+          })
+          .nonempty({ message: tRegisterSchema('userNameRequired') }),
+        email: z
+          .string(),
+        phoneNumber: z
+          .string(),
+        password: z
+          .string()
+          .min(8, { message: tRegisterSchema('passwordMinLength') })
+          .max(16, { message: tRegisterSchema('passwordMaxLength') })
+          .regex(passwordRegex, {
+            message: tRegisterSchema('passwordInvalid'),
+          })
+          .nonempty({ message: tRegisterSchema('passwordRequired') }),
         confirmPassword: z
           .string()
           .nonempty({ message: tRegisterSchema('confirmPasswordRequired') }),
       })
+      .refine(
+        data => {
+          // At least one of email or phoneNumber must be provided
+          return (data.email && data.email.trim() !== '') || (data.phoneNumber && data.phoneNumber.trim() !== '');
+        },
+        {
+          message: tRegisterSchema('emailOrPhoneRequired'),
+          path: ['email'],
+        }
+      )
+      .refine(
+        data => {
+          // If email is provided, it must be valid
+          if (data.email && data.email.trim() !== '') {
+            return z.string().email().safeParse(data.email).success;
+          }
+          return true;
+        },
+        {
+          message: tRegisterSchema('emailInvalid'),
+          path: ['email'],
+        }
+      )
+      .refine(
+        data => {
+          // If phoneNumber is provided, it must be valid
+          if (data.phoneNumber && data.phoneNumber.trim() !== '') {
+            return phoneRegex.test(data.phoneNumber);
+          }
+          return true;
+        },
+        {
+          message: tRegisterSchema('phoneNumberInvalid'),
+          path: ['phoneNumber'],
+        }
+      )
       .refine(data => data.password === data.confirmPassword, {
         message: tRegisterSchema('confirmPasswordMismatch'),
         path: ['confirmPassword'],
       });
-  }, [tRegisterSchema, loginSchema]);
+  }, [tRegisterSchema]);
 
   const forgotPasswordEmailSchema = useMemo(
     () =>

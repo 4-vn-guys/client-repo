@@ -5,7 +5,6 @@
     "locationLabel": "Location",
     "dateLabel": "Date",
     "languageLabel": "Language",
-
     "sportLabel": "Sport",
     "allSports": "All Sports",
     "badminton": "Badminton",
@@ -59,11 +58,19 @@
   "RegisterPage": {
     "title": "Join {platform} Today",
     "subtitle": "Create your account to start booking sports courts and enjoy seamless reservations",
+    "userName": "Username",
+    "userNamePlaceholder": "Choose a unique username",
+    "userNameHint": "5-50 characters, cannot be only spaces",
     "fullName": "Full Name",
-    "emailLabel": "Email",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "your.email@example.com",
+    "emailOrPhoneHint": "You must provide either email or phone number",
     "passwordLabel": "Password",
+    "passwordHint": "8-16 characters with uppercase, lowercase, number, and special character (@$!%*?&)",
     "confirmPasswordLabel": "Confirm Password",
-    "phoneLabel": "Phone Number",
+    "phoneLabel": "Phone Number (Optional)",
+    "phonePlaceholder": "0912345678 or +84912345678",
+    "phoneHint": "Vietnamese format: 0xxxxxxxxx or +84xxxxxxxxx",
     "continueWithEmail": "Continue with Email",
     "continueWithPhone": "Continue with Phone",
     "continueWithGoogle": "Continue with Google",
@@ -72,12 +79,11 @@
     "alreadyHaveAccount": "Already have an account?",
     "signIn": "Sign in",
     "register": "Create Account",
+    "creating": "Creating Account...",
     "firstNamePlaceholder": "Enter your first name",
     "lastNamePlaceholder": "Enter your last name",
-    "emailPlaceholder": "Enter your email",
     "passwordPlaceholder": "Create a password",
     "confirmPasswordPlaceholder": "Confirm your password",
-    "phonePlaceholder": "Enter your phone number",
     "termsAndConditions": "I agree to the Terms and Conditions",
     "privacyPolicy": "Privacy Policy"
   },
@@ -110,7 +116,6 @@
     "confirmPasswordRequired": "Please confirm your password",
     "resendResetCode": "Resend code"
   },
-
   "Components": {
     "ExtraAuthForm": {
       "continueWithEmail": "Continue with Email",
@@ -132,19 +137,49 @@
       "emailInvalid": "Please enter a valid email address",
       "passwordRequired": "Please enter your password",
       "passwordMinLength": "Password must be at least 8 characters",
-      "passwordMaxLength": "Password must be at most 32 characters",
-      "passwordInvalid": "Password must include at least one uppercase letter, one lowercase letter, and one number"
+      "passwordMaxLength": "Password must be at most 16 characters",
+      "passwordInvalid": "Password must include uppercase, lowercase, number, and special character (@$!%*?&)"
     },
     "registerSchema": {
-      "fullNameRequired": "Please enter your full name",
-      "fullNameMaxLength": "Full name must be at most 200 characters",
+      "userNameRequired": "Username is required",
+      "userNameMinLength": "Username must be at least 5 characters",
+      "userNameMaxLength": "Username must be at most 50 characters",
+      "userNameInvalid": "Username cannot be only spaces",
+      "emailInvalid": "Please enter a valid email address",
+      "phoneNumberInvalid": "Phone must be Vietnamese format (0xxxxxxxxx or +84xxxxxxxxx)",
+      "emailOrPhoneRequired": "Please provide either email or phone number",
+      "passwordRequired": "Password is required",
+      "passwordMinLength": "Password must be at least 8 characters",
+      "passwordMaxLength": "Password must be at most 16 characters",
+      "passwordInvalid": "Password must include uppercase, lowercase, number, and special character (@$!%*?&)",
       "confirmPasswordRequired": "Please confirm your password",
-      "confirmPasswordMismatch": "Passwords do not match"
+      "confirmPasswordMismatch": "Passwords do not match",
+      "fullNameRequired": "Please enter your full name",
+      "fullNameMaxLength": "Full name must be at most 200 characters"
     },
     "forgotPasswordEmailSchema": {
       "codeRequired": "Please enter the reset code",
       "invalidCode": "Invalid reset code. Please try again.",
       "passwordMismatch": "Passwords do not match."
     }
+  },
+  "Errors": {
+    "invalidCredentials": "Invalid email or password",
+    "userNotFound": "User not found",
+    "userAlreadyExists": "User already exists",
+    "unauthorized": "You are not authorized to perform this action",
+    "tokenExpired": "Your session has expired. Please login again",
+    "invalidToken": "Invalid authentication token",
+    "validationError": "Request validation failed",
+    "invalidInput": "Invalid input provided",
+    "missingRequiredField": "Required field is missing",
+    "badRequest": "Bad request",
+    "notFound": "Resource not found",
+    "forbidden": "Access forbidden",
+    "internalError": "An error occurred. Please try again later",
+    "serviceUnavailable": "Service temporarily unavailable",
+    "insufficientPermissions": "You don't have permission to perform this action",
+    "resourceNotFound": "The requested resource was not found",
+    "operationFailed": "Operation failed. Please try again"
   }
 }

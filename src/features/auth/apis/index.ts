@@ -9,7 +9,7 @@ export const authApi = {
    * Login with email and password
    */
   login: async (email: string, password: string) => {
-    const response = await axiosInstance.post("/auth/login", {
+    const response = await axiosInstance.post("/auth/login/email", {
       email,
       password,
     });
@@ -20,10 +20,10 @@ export const authApi = {
    * Register new user
    */
   register: async (data: {
-    email: string;
+    userName: string;
+    email?: string;
+    phoneNumber?: string;
     password: string;
-    name?: string;
-    username?: string;
   }) => {
     const response = await axiosInstance.post("/auth/register", data);
     return response.data;
@@ -33,7 +33,7 @@ export const authApi = {
    * Get current user profile
    */
   getProfile: async () => {
-    const response = await axiosInstance.get("/auth/profile");
+    const response = await axiosInstance.get("/auth/me");
     return response.data;
   },
 

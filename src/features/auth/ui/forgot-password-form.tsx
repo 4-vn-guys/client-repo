@@ -48,7 +48,7 @@ export const ForgotPasswordForm = () => {
       email: '',
     },
     validators: {
-      onBlur: forgotPasswordEmailSchema,
+      onChange: forgotPasswordEmailSchema,
     },
     onSubmit: async ({ value }) => {
       setIsLoading(true);
@@ -72,7 +72,7 @@ export const ForgotPasswordForm = () => {
       confirmPassword: '',
     },
     validators: {
-      onBlur: forgotPasswordResetSchema,
+      onChange: forgotPasswordResetSchema,
     },
     onSubmit: async ({ value }) => {
       setIsLoading(true);
@@ -144,11 +144,13 @@ export const ForgotPasswordForm = () => {
               <FieldGroup>
                 <emailForm.Field name='email'>
                   {field => {
-                    const isInvalid =
-                      field.state.meta.isTouched && !field.state.meta.isValid;
+                    const shouldShowError =
+                      field.state.meta.isTouched && 
+                      field.state.value.length > 0 && 
+                      !field.state.meta.isValid;
 
                     return (
-                      <Field data-invalid={isInvalid}>
+                      <Field data-invalid={shouldShowError}>
                         <FieldLabel htmlFor={field.name}>
                           {tForgotPasswordPage('emailLabel')}
                         </FieldLabel>
@@ -160,11 +162,12 @@ export const ForgotPasswordForm = () => {
                           value={field.state.value}
                           onBlur={field.handleBlur}
                           onChange={e => field.handleChange(e.target.value)}
-                          aria-invalid={isInvalid}
+                          aria-invalid={shouldShowError}
+                          className={shouldShowError ? 'border-destructive' : ''}
                           autoComplete='off'
                           disabled={isLoading}
                         />
-                        {isInvalid && (
+                        {shouldShowError && (
                           <FieldError errors={field.state.meta.errors} />
                         )}
                       </Field>
@@ -191,11 +194,13 @@ export const ForgotPasswordForm = () => {
               <FieldGroup>
                 <resetForm.Field name='resetCode'>
                   {field => {
-                    const isInvalid =
-                      field.state.meta.isTouched && !field.state.meta.isValid;
+                    const shouldShowError =
+                      field.state.meta.isTouched && 
+                      field.state.value.length > 0 && 
+                      !field.state.meta.isValid;
 
                     return (
-                      <Field data-invalid={isInvalid}>
+                      <Field data-invalid={shouldShowError}>
                         <div className='flex items-center justify-between'>
                           <FieldLabel htmlFor={field.name}>
                             {tForgotPasswordPage('resetCodeLabel')}
@@ -233,12 +238,13 @@ export const ForgotPasswordForm = () => {
                           value={field.state.value}
                           onBlur={field.handleBlur}
                           onChange={e => field.handleChange(e.target.value)}
-                          aria-invalid={isInvalid}
+                          aria-invalid={shouldShowError}
+                          className={shouldShowError ? 'border-destructive' : ''}
                           maxLength={6}
                           disabled={isLoading}
                           autoComplete='one-time-code'
                         />
-                        {isInvalid && (
+                        {shouldShowError && (
                           <FieldError errors={field.state.meta.errors} />
                         )}
                       </Field>
@@ -247,11 +253,13 @@ export const ForgotPasswordForm = () => {
                 </resetForm.Field>
                 <resetForm.Field name='newPassword'>
                   {field => {
-                    const isInvalid =
-                      field.state.meta.isTouched && !field.state.meta.isValid;
+                    const shouldShowError =
+                      field.state.meta.isTouched && 
+                      field.state.value.length > 0 && 
+                      !field.state.meta.isValid;
 
                     return (
-                      <Field data-invalid={isInvalid}>
+                      <Field data-invalid={shouldShowError}>
                         <FieldLabel htmlFor={field.name}>
                           {tForgotPasswordPage('newPasswordLabel')}
                         </FieldLabel>
@@ -263,11 +271,11 @@ export const ForgotPasswordForm = () => {
                             placeholder={tForgotPasswordPage(
                               'newPasswordPlaceholder'
                             )}
-                            className='pr-8'
+                            className={shouldShowError ? 'pr-8 border-destructive' : 'pr-8'}
                             value={field.state.value}
                             onBlur={field.handleBlur}
                             onChange={e => field.handleChange(e.target.value)}
-                            aria-invalid={isInvalid}
+                            aria-invalid={shouldShowError}
                             autoComplete='new-password'
                             disabled={isLoading}
                           />
@@ -275,6 +283,7 @@ export const ForgotPasswordForm = () => {
                             className='absolute top-1/2 right-0 -translate-y-1/2 p-2'
                             type='button'
                             onClick={toggleShowPassword}
+                            aria-label={showPassword ? 'Hide password' : 'Show password'}
                           >
                             {showPassword ? (
                               <Eye className='size-4' />
@@ -283,7 +292,7 @@ export const ForgotPasswordForm = () => {
                             )}
                           </button>
                         </div>
-                        {isInvalid && (
+                        {shouldShowError && (
                           <FieldError errors={field.state.meta.errors} />
                         )}
                       </Field>
@@ -292,11 +301,13 @@ export const ForgotPasswordForm = () => {
                 </resetForm.Field>
                 <resetForm.Field name='confirmPassword'>
                   {field => {
-                    const isInvalid =
-                      field.state.meta.isTouched && !field.state.meta.isValid;
+                    const shouldShowError =
+                      field.state.meta.isTouched && 
+                      field.state.value.length > 0 && 
+                      !field.state.meta.isValid;
 
                     return (
-                      <Field data-invalid={isInvalid}>
+                      <Field data-invalid={shouldShowError}>
                         <FieldLabel htmlFor={field.name}>
                           {tForgotPasswordPage('confirmPasswordLabel')}
                         </FieldLabel>
@@ -308,11 +319,11 @@ export const ForgotPasswordForm = () => {
                             placeholder={tForgotPasswordPage(
                               'confirmPasswordPlaceholder'
                             )}
-                            className='pr-8'
+                            className={shouldShowError ? 'pr-8 border-destructive' : 'pr-8'}
                             value={field.state.value}
                             onBlur={field.handleBlur}
                             onChange={e => field.handleChange(e.target.value)}
-                            aria-invalid={isInvalid}
+                            aria-invalid={shouldShowError}
                             autoComplete='new-password'
                             disabled={isLoading}
                           />
@@ -320,6 +331,7 @@ export const ForgotPasswordForm = () => {
                             className='absolute top-1/2 right-0 -translate-y-1/2 p-2'
                             type='button'
                             onClick={toggleShowConfirmPassword}
+                            aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
                           >
                             {showConfirmPassword ? (
                               <Eye className='size-4' />
@@ -328,7 +340,7 @@ export const ForgotPasswordForm = () => {
                             )}
                           </button>
                         </div>
-                        {isInvalid && (
+                        {shouldShowError && (
                           <FieldError errors={field.state.meta.errors} />
                         )}
                       </Field>

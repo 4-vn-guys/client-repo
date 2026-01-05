@@ -27,6 +27,7 @@ import { HomeButton } from './home-button';
 import { useForm } from '@tanstack/react-form';
 import { useAuthSchemas } from '@/src/entities/user';
 import toast from 'react-hot-toast';
+import { useAuth } from '../hooks/use-auth';
 
 export function RegisterForm({
   className,
@@ -38,21 +39,44 @@ export function RegisterForm({
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const { registerSchema } = useAuthSchemas();
+  const { register, isLoading } = useAuth();
 
   const form = useForm({
     defaultValues: {
-      fullName: '',
+      userName: '',
       email: '',
+      phoneNumber: '',
       password: '',
       confirmPassword: '',
     },
     validators: {
-      onBlur: registerSchema,
+      onChange: registerSchema,
     },
-    onSubmit: ({ value }) => {
-      toast.success(
-        `Register with ${value.fullName} - ${value.email} - ${value.password}`
-      );
+    onSubmit: async ({ value }) => {
+      const registerData: {
+        userName: string;
+        email?: string;
+        phoneNumber?: string;
+        password: string;
+      } = {
+        userName: value.userName,
+        password: value.password,
+      };
+
+      if (value.email && value.email.trim() !== '') {
+        registerData.email = value.email;
+      }
+
+      if (value.phoneNumber && value.phoneNumber.trim() !== '') {
+        registerData.phoneNumber = value.phoneNumber;
+      }
+
+      const result = await register(registerData);
+
+      if (!result.success) {
+        // Error is already shown by the hook
+        return;
+      }
     },
   });
 
@@ -81,30 +105,33 @@ export function RegisterForm({
                 <TypographyH1 className='text-xl font-bold md:text-2xl'>
                   {tRegisterPage('title', { platform: 'BC' })}
                 </TypographyH1>
-                <TypographyP className='text-muted-foreground text-balance [&:not(:first-child)]:mt-0'>
+                <TypographyP className='text-muted-foreground text-balance not-first:mt-0'>
                   {tRegisterPage('subtitle')}
                 </TypographyP>
               </div>
               <form.Field
-                name='fullName'
+                name='userName'
                 children={field => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
+                  const shouldShowError =
+                    field.state.meta.isTouched && 
+                    field.state.value.length > 0 && 
+                    !field.state.meta.isValid;
                   return (
                     <Field>
                       <FieldLabel htmlFor={field.name}>
-                        {tRegisterPage('fullName')}
+                        {tRegisterPage('userName')} <span className="text-destructive">*</span>
                       </FieldLabel>
                       <Input
-                        id='fullname'
+                        id='username'
                         type='text'
-                        placeholder='John Doe'
+                        placeholder={tRegisterPage('userNamePlaceholder')}
                         value={field.state.value}
                         onBlur={field.handleBlur}
                         onChange={e => field.handleChange(e.target.value)}
-                        aria-invalid={isInvalid}
+                        aria-invalid={shouldShowError}
+                        className={shouldShowError ? 'border-destructive' : ''}
                       />
-                      {isInvalid && (
+                      {shouldShowError && (
                         <FieldError errors={field.state.meta.errors} />
                       )}
                     </Field>
@@ -115,8 +142,10 @@ export function RegisterForm({
               <form.Field
                 name='email'
                 children={field => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
+                  const shouldShowError =
+                    field.state.meta.isTouched && 
+                    field.state.value.length > 0 && 
+                    !field.state.meta.isValid;
                   return (
                     <Field>
                       <FieldLabel htmlFor={field.name}>
@@ -125,13 +154,44 @@ export function RegisterForm({
                       <Input
                         id='email'
                         type='email'
-                        placeholder='m@example.com'
+                        placeholder={tRegisterPage('emailPlaceholder')}
                         value={field.state.value}
                         onBlur={field.handleBlur}
                         onChange={e => field.handleChange(e.target.value)}
-                        aria-invalid={isInvalid}
+                        aria-invalid={shouldShowError}
+                        className={shouldShowError ? 'border-destructive' : ''}
                       />
-                      {isInvalid && (
+                      {shouldShowError && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
+                    </Field>
+                  );
+                }}
+              />
+
+              <form.Field
+                name='phoneNumber'
+                children={field => {
+                  const shouldShowError =
+                    field.state.meta.isTouched && 
+                    field.state.value.length > 0 && 
+                    !field.state.meta.isValid;
+                  return (
+                    <Field>
+                      <FieldLabel htmlFor={field.name}>
+                        {tRegisterPage('phoneLabel')}
+                      </FieldLabel>
+                      <Input
+                        id='phoneNumber'
+                        type='tel'
+                        placeholder={tRegisterPage('phonePlaceholder')}
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={e => field.handleChange(e.target.value)}
+                        aria-invalid={shouldShowError}
+                        className={shouldShowError ? 'border-destructive' : ''}
+                      />
+                      {shouldShowError && (
                         <FieldError errors={field.state.meta.errors} />
                       )}
                     </Field>
@@ -142,28 +202,31 @@ export function RegisterForm({
               <form.Field
                 name='password'
                 children={field => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
+                  const shouldShowError =
+                    field.state.meta.isTouched && 
+                    field.state.value.length > 0 && 
+                    !field.state.meta.isValid;
                   return (
                     <Field>
                       <FieldLabel htmlFor={field.name}>
-                        {tRegisterPage('passwordLabel')}
+                        {tRegisterPage('passwordLabel')} <span className="text-destructive">*</span>
                       </FieldLabel>
                       <div className='relative'>
                         <Input
                           id='password'
                           type={showPassword ? 'text' : 'password'}
                           placeholder='●●●●●●●●'
-                          className='pr-8'
+                          className={shouldShowError ? 'pr-8 border-destructive' : 'pr-8'}
                           value={field.state.value}
                           onBlur={field.handleBlur}
                           onChange={e => field.handleChange(e.target.value)}
-                          aria-invalid={isInvalid}
+                          aria-invalid={shouldShowError}
                         />
                         <button
                           className='absolute top-1/2 right-0 -translate-y-1/2 p-2'
                           type='button'
                           onClick={toggleShowPassword}
+                          aria-label={showPassword ? 'Hide password' : 'Show password'}
                         >
                           {showPassword ? (
                             <Eye className='size-5' />
@@ -172,7 +235,7 @@ export function RegisterForm({
                           )}
                         </button>
                       </div>
-                      {isInvalid && (
+                      {shouldShowError && (
                         <FieldError errors={field.state.meta.errors} />
                       )}
                     </Field>
@@ -183,8 +246,10 @@ export function RegisterForm({
               <form.Field
                 name='confirmPassword'
                 children={field => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
+                  const shouldShowError =
+                    field.state.meta.isTouched && 
+                    field.state.value.length > 0 && 
+                    !field.state.meta.isValid;
                   return (
                     <Field>
                       <FieldLabel htmlFor={field.name}>
@@ -195,16 +260,17 @@ export function RegisterForm({
                           id='confirmPassword'
                           type={showConfirmPassword ? 'text' : 'password'}
                           placeholder='●●●●●●●●'
-                          className='pr-8'
+                          className={shouldShowError ? 'pr-8 border-destructive' : 'pr-8'}
                           value={field.state.value}
                           onBlur={field.handleBlur}
                           onChange={e => field.handleChange(e.target.value)}
-                          aria-invalid={isInvalid}
+                          aria-invalid={shouldShowError}
                         />
                         <button
                           className='absolute top-1/2 right-0 -translate-y-1/2 p-2'
                           type='button'
                           onClick={toggleShowConfirmPassword}
+                          aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
                         >
                           {showConfirmPassword ? (
                             <Eye className='size-5' />
@@ -213,7 +279,7 @@ export function RegisterForm({
                           )}
                         </button>
                       </div>
-                      {isInvalid && (
+                      {shouldShowError && (
                         <FieldError errors={field.state.meta.errors} />
                       )}
                     </Field>
@@ -222,7 +288,9 @@ export function RegisterForm({
               />
 
               <Field>
-                <Button type='submit'>{tRegisterPage('register')}</Button>
+                <Button type='submit' disabled={isLoading}>
+                  {isLoading ? tRegisterPage('creating') : tRegisterPage('register')}
+                </Button>
               </Field>
               <ExtraAuthForm />
               <FieldDescription className='text-center'>
