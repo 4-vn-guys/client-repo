@@ -1,2 +1,2 @@
-// App Providers - Public API
-export { ThemeProvider } from './theme-provider';
+export * from "./theme-provider";
+export { default as StoreProvider } from "./StoreProvider";

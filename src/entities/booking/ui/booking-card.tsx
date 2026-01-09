@@ -31,7 +31,7 @@ export function BookingCard({
 }: BookingCardProps) {
   const colors = bookingStatusColors[status];
 
-  const StatusIcon = () => {
+  const StatusIcon = ({ status }: { status: BookingStatus }) => {
     if (status === 'confirmed') return <CheckCircle2 className='size-3.5' />;
     if (status === 'maintenance') return <Settings className='size-3.5' />;
     if (status === 'pending') return <Clock className='size-3.5' />;
@@ -55,7 +55,7 @@ export function BookingCard({
     <Tooltip delayDuration={200}>
       <TooltipTrigger asChild>
         <div
-          style={style}
+          style={style as any}
           className={cn(
             'absolute top-2 bottom-2 cursor-pointer overflow-hidden rounded-md border-2 px-2 py-1.5 transition-all',
             'hover:shadow-lg hover:scale-[1.02] hover:z-10',
@@ -77,7 +77,7 @@ export function BookingCard({
               )}
             </div>
             <span className={cn('shrink-0', colors.text)}>
-              <StatusIcon />
+              <StatusIcon status={status} />
             </span>
           </div>
         </div>
@@ -99,7 +99,7 @@ export function BookingCard({
               <span>${price}</span>
             </div>
             <div className="flex items-center gap-2">
-              <StatusIcon />
+              <StatusIcon status={status} />
               <span className="capitalize">{getStatusLabel(status)}</span>
             </div>
           </div>
