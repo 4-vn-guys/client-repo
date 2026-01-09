@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Open_Sans } from 'next/font/google';
-import { ThemeProvider } from '@/src/app/providers';
+import { ThemeProvider, StoreProvider } from '@/src/app/providers';
 import { NextIntlClientProvider } from 'next-intl';
 import { Toaster } from 'react-hot-toast';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -39,27 +39,34 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+import { getLocale, getMessages } from 'next-intl/server';
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang='en' suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <body
         className={`${openSans.variable} ${openSansMono.variable} font-stretch-105% antialiased`}
       >
-        <NextIntlClientProvider>
-          <ThemeProvider
-            attribute='class'
-            defaultTheme='system'
-            enableSystem
-            disableTransitionOnChange
-          >
-            <Toaster position='top-right' />
-            {children}
-            <SpeedInsights />
-          </ThemeProvider>
+        <NextIntlClientProvider messages={messages}>
+          <StoreProvider>
+            <ThemeProvider
+              attribute='class'
+              defaultTheme='system'
+              enableSystem
+              disableTransitionOnChange
+            >
+              <Toaster position='top-right' />
+              {children}
+              <SpeedInsights />
+            </ThemeProvider>
+          </StoreProvider>
         </NextIntlClientProvider>
       </body>
     </html>

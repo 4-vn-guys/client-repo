@@ -1,4 +1,4 @@
-import { axiosInstance } from "@/shared/lib";
+import { apiClient } from "@/shared/api/api-client";
 
 /**
  * Auth API service following FSD architecture
@@ -9,7 +9,7 @@ export const authApi = {
    * Login with email and password
    */
   login: async (email: string, password: string) => {
-    const response = await axiosInstance.post("/auth/login/email", {
+    const response = await apiClient.post("/auth/login/email", {
       email,
       password,
     });
@@ -25,35 +25,17 @@ export const authApi = {
     phoneNumber?: string;
     password: string;
   }) => {
-    const response = await axiosInstance.post("/auth/register", data);
+    const response = await apiClient.post("/auth/register", data);
     return response.data;
   },
 
-  /**
-   * Get current user profile
-   */
-  getProfile: async () => {
-    const response = await axiosInstance.get("/auth/me");
-    return response.data;
-  },
 
-  /**
-   * Update user profile
-   */
-  updateProfile: async (data: {
-    name?: string;
-    username?: string;
-    phone?: string;
-  }) => {
-    const response = await axiosInstance.put("/auth/profile", data);
-    return response.data;
-  },
 
   /**
    * Change password
    */
   changePassword: async (oldPassword: string, newPassword: string) => {
-    const response = await axiosInstance.post("/auth/change-password", {
+    const response = await apiClient.post("/auth/change-password", {
       oldPassword,
       newPassword,
     });
@@ -64,7 +46,7 @@ export const authApi = {
    * Request password reset
    */
   forgotPassword: async (email: string) => {
-    const response = await axiosInstance.post("/auth/forgot-password", {
+    const response = await apiClient.post("/auth/forgot-password", {
       email,
     });
     return response.data;
@@ -74,7 +56,7 @@ export const authApi = {
    * Reset password with token
    */
   resetPassword: async (token: string, newPassword: string) => {
-    const response = await axiosInstance.post("/auth/reset-password", {
+    const response = await apiClient.post("/auth/reset-password", {
       token,
       newPassword,
     });

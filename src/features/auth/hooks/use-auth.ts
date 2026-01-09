@@ -2,8 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { useAuthStore } from "@/shared/store";
+import { useAuthStore } from "@/shared/model/auth-store";
 import { authApi } from "../apis";
+import { userApi } from "@/entities/user/api/user-api";
 
 /**
  * Custom hook for authentication
@@ -29,10 +30,10 @@ export const useAuth = () => {
         setTokens(accessToken, refreshToken);
         
         // Fetch user profile
-        const profileResponse = await authApi.getProfile();
+        const profileResponse = await userApi.getProfile();
         
-        if (profileResponse?.data) {
-          const { id, username, email, role, phoneNumber, provider, providerId, createdAt, updatedAt, deletedAt } = profileResponse.data;
+        if (profileResponse) {
+          const { id, username, email, role, phoneNumber, provider, providerId, createdAt, updatedAt, deletedAt } = profileResponse;
           
           // Set complete auth state with user data and tokens
           setAuth(
@@ -49,11 +50,12 @@ export const useAuth = () => {
         toast.error("Invalid credentials");
         return { success: false, error: "Invalid credentials" };
       }
-    } catch (error: any) {
+    } catch (error) {
       // Handle nested error structure: { success: false, error: { message: "..." } }
+      const err = error as any;
       const message = 
-        error?.response?.data?.error?.message || 
-        error?.response?.data?.message || 
+        err?.response?.data?.error?.message || 
+        err?.response?.data?.message || 
         "Login failed";
       toast.error(message);
       return { success: false, error: message };
@@ -83,11 +85,12 @@ export const useAuth = () => {
         toast.error("Registration failed");
         return { success: false };
       }
-    } catch (error: any) {
+    } catch (error) {
       // Handle nested error structure: { success: false, error: { message: "..." } }
+      const err = error as any;
       const message = 
-        error?.response?.data?.error?.message || 
-        error?.response?.data?.message || 
+        err?.response?.data?.error?.message || 
+        err?.response?.data?.message || 
         "Registration failed";
       toast.error(message);
       return { success: false, error: message };
@@ -114,9 +117,9 @@ export const useAuth = () => {
    */
   const refreshProfile = async () => {
     try {
-      const response = await authApi.getProfile();
-      if (response?.data) {
-        const { id, username, email, role, phoneNumber, provider, providerId, createdAt, updatedAt, deletedAt } = response.data;
+      const response = await userApi.getProfile();
+      if (response) {
+        const { id, username, email, role, phoneNumber, provider, providerId, createdAt, updatedAt, deletedAt } = response;
         setAuth(
           { id, username, email, role, phoneNumber, provider, providerId, createdAt, updatedAt, deletedAt },
           accessToken || "",

@@ -50,6 +50,7 @@ export const ERROR_CODE_MAP: Record<string, string> = {
  * @param error - Axios error object
  * @returns Error message string
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const extractErrorMessage = (error: any): string => {
   // Try to extract from nested error structure
   const errorData = error?.response?.data as BackendError | undefined;
@@ -76,6 +77,7 @@ export const extractErrorMessage = (error: any): string => {
  * @param error - Axios error object
  * @returns Error code string
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const extractErrorCode = (error: any): string | null => {
   const errorData = error?.response?.data as BackendError | undefined;
   return errorData?.error?.code || null;
@@ -97,6 +99,7 @@ export const getErrorTranslationKey = (errorCode: string): string | null => {
  * @returns Formatted error message
  */
 export const formatError = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   error: any,
   t?: (key: string) => string
 ): string => {
@@ -125,6 +128,7 @@ export const formatError = (
  * @param error - Axios error object
  * @returns Error object with message and code
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const parseBackendError = (error: any) => {
   return {
     message: extractErrorMessage(error),
