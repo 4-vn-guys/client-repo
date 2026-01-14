@@ -5,7 +5,7 @@ import type { NextRequest } from "next/server";
  * Simple middleware for protecting routes
  * Checks if user has auth token in localStorage (client-side will handle this)
  */
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Protected routes that require authentication
