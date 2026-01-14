@@ -1,4 +1,4 @@
-import { TimelinePage } from '@/pages/owner/timeline';
+import { TimelinePage } from '@/src/pages/owner/timeline';
 
 export const metadata = {
     title: 'Timeline | Court Connect',
@@ -6,11 +6,12 @@ export const metadata = {
 };
 
 interface PageProps {
-    params: {
+    params: Promise<{
         venueId: string;
-    };
+    }>;
 }
 
-export default function TimelinePageWrapper({ params }: PageProps) {
+export default async function TimelinePageWrapper(props: PageProps) {
+    const params = await props.params;
     return <TimelinePage venueId={params.venueId} />;
 }

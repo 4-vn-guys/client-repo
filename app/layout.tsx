@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Open_Sans } from 'next/font/google';
 import { ThemeProvider } from '@/src/app/providers';
+import QueryProvider from '@/shared/providers/query-provider';
 import { NextIntlClientProvider } from 'next-intl';
 import { Toaster } from 'react-hot-toast';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -56,8 +57,10 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <Toaster position='top-right' />
-            {children}
+            <QueryProvider>
+              <Toaster position='top-right' />
+              {children}
+            </QueryProvider>
             <SpeedInsights />
           </ThemeProvider>
         </NextIntlClientProvider>

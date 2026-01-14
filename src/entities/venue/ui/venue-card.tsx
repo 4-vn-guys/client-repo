@@ -6,11 +6,15 @@ import { cn } from '@/shared/lib/utils';
 import Link from 'next/link';
 import { Button } from '@/shared/ui/button';
 
+import { memo } from 'react';
+
+// ... existing imports
+
 interface VenueCardProps {
     venue: Venue;
 }
 
-export function VenueCard({ venue }: VenueCardProps) {
+export const VenueCard = memo(function VenueCard({ venue }: VenueCardProps) {
     return (
         <Link href={`/owner/${venue.id}/timeline`}>
             <Card className="group h-full transition-all duration-300 hover:shadow-lg hover:scale-[1.02] cursor-pointer border-border/50 hover:border-primary/50 relative overflow-hidden">
@@ -52,4 +56,4 @@ export function VenueCard({ venue }: VenueCardProps) {
             </Card>
         </Link>
     );
-}
+});
