@@ -1,10 +1,11 @@
-import { TimelinePageContent } from './timeline-content';
+import { TimelinePage } from '@/pages/owner/timeline';
 
 export const metadata = {
     title: 'Timeline | Court Connect',
     description: 'View and manage court bookings',
 };
 
-export default function TimelinePage() {
-    return <TimelinePageContent />;
+export default function TimelinePageWrapper() {
+    return <TimelinePage />;
 }
+

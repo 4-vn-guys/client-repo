@@ -1,7 +1,6 @@
-export default function SettingsPage() {
-    return (
-        <div>
-            <h1>Settings</h1>
-        </div>
-    );
+import { SettingsPage } from '@/pages/owner/settings';
+
+export default function SettingsPageWrapper() {
+    return <SettingsPage />;
 }
+

@@ -1,7 +1,6 @@
-export default function ReportsPage() {
-    return (
-        <div>
-            <h1>Reports</h1>
-        </div>
-    );
+import { ReportsPage } from '@/pages/owner/reports';
+
+export default function ReportsPageWrapper() {
+    return <ReportsPage />;
 }
+
