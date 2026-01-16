@@ -2,32 +2,31 @@
 
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { VenueHeader } from './venue-header';
-import { VenuesList } from './venues-list';
-import { Venue } from '@/entities/venue';
-import { fetchVenues } from '@/shared/lib/mock-venues';
+import { BranchHeader } from './venue-header';
+import { BranchesList } from './venues-list';
+import { Branch, fetchBranches } from '@/entities/venue';
 
-export function VenuesPage() {
+export function BranchesPage() {
     const [searchQuery, setSearchQuery] = useState('');
 
-    const { data: venues = [], isLoading } = useQuery({
-        queryKey: ['venues'],
-        queryFn: fetchVenues,
+    const { data: branches = [], isLoading } = useQuery({
+        queryKey: ['branches'],
+        queryFn: fetchBranches,
     });
 
-    const handleAddVenue = () => {
-        // Navigate to create venue page or open modal
-        console.log('Navigate to create venue');
+    const handleAddBranch = () => {
+        // Navigate to create branch page or open modal
+        console.log('Navigate to create branch');
     };
 
     return (
         <div className="container mx-auto max-w-7xl pt-6 space-y-8 min-h-screen">
-            <VenueHeader
-                venueCount={venues.length}
-                onAddVenue={handleAddVenue}
+            <BranchHeader
+                branchCount={branches.length}
+                onAddBranch={handleAddBranch}
             />
-            <VenuesList
-                venues={venues}
+            <BranchesList
+                branches={branches}
                 isLoading={isLoading}
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}

@@ -1,4 +1,4 @@
-import { SimpleHeaderLayout } from '@/src/app/layouts';
+import { SimpleHeaderLayout } from '@/shared/layouts';
 
 export default function AuthLayout({
   children,

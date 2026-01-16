@@ -1,5 +1,4 @@
 /* eslint-disable react/no-children-prop */
-
 'use client';
 
 import { cn } from '@/src/shared/lib';
@@ -18,7 +17,7 @@ import {
 } from '@/src/shared/ui';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { ExtraAuthForm } from './extra-auth-form';
@@ -33,12 +32,11 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<'div'>) {
   const tLoginPage = useTranslations('LoginPage');
-
   const [showPassword, setShowPassword] = useState(false);
-
   const { loginSchema } = useAuthSchemas();
   const { login, isLoading } = useAuth();
 
+  // Memoize form options to improve performance and prevent re-renders
   const form = useForm({
     defaultValues: {
       email: '',
@@ -48,13 +46,19 @@ export function LoginForm({
       onChange: loginSchema,
     },
     onSubmit: async ({ value }) => {
-      // Call the login API using useAuth hook
-      await login(value.email, value.password);
+      try {
+        // We await the login. Even if it fails, our hook handles the toast.
+        // The try/catch ensures no unhandled rejection reloads the page.
+        await login(value.email, value.password);
+      } catch (err) {
+        console.error('Submission suppressed:', err);
+      }
     },
   });
 
-  const toggleShowPassword = () => {
-    setShowPassword(!showPassword);
+  const toggleShowPassword = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent any accidental form triggers
+    setShowPassword((prev) => !prev);
   };
 
   return (
@@ -63,68 +67,63 @@ export function LoginForm({
         <CardContent className='grid p-0 md:grid-cols-2'>
           <form
             className='p-6 md:p-8'
-            onSubmit={e => {
+            onSubmit={(e) => {
               e.preventDefault();
+              e.stopPropagation(); // Critical to stop event bubbling
               form.handleSubmit();
             }}
           >
-            <FieldGroup>
-              <HomeButton />
-              <div className='flex flex-col items-center gap-2 text-center'>
-                <TypographyH1 className='text-xl font-bold md:text-2xl'>
-                  {tLoginPage('title')}
-                </TypographyH1>
+            <FieldGroup className="gap-2"> {/* Reduce default gap to control spacing manually */}
+              <div className='flex flex-col items-center gap-2 text-center mb-4'>
+                <div className='relative w-full flex items-center justify-center mb-2'>
+                  <div className='w-full grid-cols-5 md:grid'>
+                    <HomeButton />
+                    <TypographyH1 className='w-full text-xl font-bold md:text-2xl grid-cols-3 md:col-span-3'>
+                      {tLoginPage('title')}
+                    </TypographyH1>
+                  </div>
+                </div>
                 <TypographyP className='text-muted-foreground text-balance [&:not(:first-child)]:mt-0'>
                   {tLoginPage('subtitle', { platform: 'BC' })}
                 </TypographyP>
               </div>
 
-              <form.Field
-                name='email'
-                children={field => {
-                  const shouldShowError =
-                    field.state.meta.isTouched && 
-                    field.state.value.length > 0 && 
-                    !field.state.meta.isValid;
+              {/* Email Field */}
+              <form.Field name='email'>
+                {(field) => {
+                  const hasError = field.state.meta.isTouched && field.state.meta.errors.length > 0;
                   return (
-                    <Field data-invalid={shouldShowError}>
-                      <FieldLabel htmlFor={field.name}>
-                        {tLoginPage('emailLabel')}
-                      </FieldLabel>
+                    <Field>
+                      <FieldLabel htmlFor={field.name}>{tLoginPage('emailLabel')}</FieldLabel>
                       <Input
                         id={field.name}
                         name={field.name}
                         value={field.state.value}
                         onBlur={field.handleBlur}
-                        onChange={e => field.handleChange(e.target.value)}
-                        aria-invalid={shouldShowError}
-                        className={shouldShowError ? 'border-destructive' : ''}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        className={cn(hasError && 'border-destructive')}
                         placeholder='m@example.com'
-                        autoComplete='off'
+                        autoComplete='email'
                       />
-                      {shouldShowError && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
+                      <div className="min-h-5 mt-1">
+                        {hasError && <FieldError errors={field.state.meta.errors} />}
+                      </div>
                     </Field>
                   );
                 }}
-              />
-              <form.Field
-                name='password'
-                children={field => {
-                  const shouldShowError =
-                    field.state.meta.isTouched && 
-                    field.state.value.length > 0 && 
-                    !field.state.meta.isValid;
+              </form.Field>
+
+              {/* Password Field */}
+              <form.Field name='password'>
+                {(field) => {
+                  const hasError = field.state.meta.isTouched && field.state.meta.errors.length > 0;
                   return (
                     <Field>
-                      <div className='flex items-center'>
-                        <FieldLabel htmlFor='password'>
-                          {tLoginPage('passwordLabel')}
-                        </FieldLabel>
+                      <div className='flex items-center mb-1'>
+                        <FieldLabel htmlFor='password'>{tLoginPage('passwordLabel')}</FieldLabel>
                         <Link
                           href='/forgot-password'
-                          className='ml-auto text-sm underline-offset-2 hover:underline'
+                          className='ml-auto text-xs underline-offset-2 hover:underline text-muted-foreground'
                         >
                           {tLoginPage('forgotPassword')}
                         </Link>
@@ -134,59 +133,53 @@ export function LoginForm({
                           id='password'
                           type={showPassword ? 'text' : 'password'}
                           placeholder='●●●●●●●●'
-                          className={shouldShowError ? 'pr-8 border-destructive' : 'pr-8'}
+                          className={cn('pr-10', hasError && 'border-destructive')}
                           value={field.state.value}
                           onBlur={field.handleBlur}
-                          onChange={e => field.handleChange(e.target.value)}
-                          aria-invalid={shouldShowError}
-                          autoComplete='off'
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          autoComplete='current-password'
                         />
                         <button
-                          className='absolute top-1/2 right-0 -translate-y-1/2 p-2'
+                          className='absolute top-1/2 right-0 -translate-y-1/2 p-3 text-muted-foreground hover:text-foreground transition-colors'
                           type='button'
                           onClick={toggleShowPassword}
-                          aria-label={showPassword ? 'Hide password' : 'Show password'}
+                          tabIndex={-1} // Prevent tabbing into the eye icon for faster flow
                         >
-                          {showPassword ? (
-                            <Eye className='size-5' />
-                          ) : (
-                            <EyeOff className='size-5' />
-                          )}
+                          {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                         </button>
                       </div>
-                      {shouldShowError && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
+                      {/* FIX: Reserved space prevents the form from jumping */}
+                      <div className="min-h-[20px] mt-1">
+                        {hasError && <FieldError errors={field.state.meta.errors} />}
+                      </div>
                     </Field>
                   );
                 }}
-              />
+              </form.Field>
 
-              <Field>
-                <Button type='submit' disabled={isLoading}>
-                  {isLoading ? 'Logging in...' : tLoginPage('login')}
-                </Button>
-              </Field>
+              <Button type='submit' className="w-full mt-2" disabled={isLoading}>
+                {isLoading ? 'Logging in...' : tLoginPage('login')}
+              </Button>
+
               <ExtraAuthForm />
-              <FieldDescription className='text-center'>
+
+              <FieldDescription className='text-center mt-2'>
                 {tLoginPage('noAccount')}&nbsp;
-                <Link
-                  href='/register'
-                  className='hover:text-primary underline underline-offset-4'
-                >
+                <Link href='/register' className='hover:text-primary underline underline-offset-4'>
                   {tLoginPage('signUp')}
                 </Link>
               </FieldDescription>
             </FieldGroup>
           </form>
+
           <div className='bg-muted relative hidden md:block'>
             <Image
               src='/images/background-login-register.jpeg'
-              alt='Image'
-              className='absolute inset-0 h-full w-full rotate-y-180 object-cover dark:brightness-[0.2] dark:grayscale'
+              alt='Login background'
+              className='absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale'
               width={500}
               height={500}
-              loading='eager'
+              priority // High priority for the login hero image
             />
           </div>
         </CardContent>

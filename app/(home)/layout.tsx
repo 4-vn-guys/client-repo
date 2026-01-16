@@ -1,4 +1,4 @@
-import { BaseLayout } from '@/src/app/layouts';
+import { BaseLayout } from '@/shared/layouts';
 
 export default function HomeLayout({
   children,

@@ -55,6 +55,10 @@ axiosInstance.interceptors.response.use(
       switch (error.response.status) {
         case 401:
           // Unauthorized - clear auth and redirect to login
+          // check current path to avoid infinite loop
+          if (typeof window !== "undefined" && window.location.pathname === "/login") {
+            break;
+          }
           localStorage.removeItem("auth-storage");
           if (typeof window !== "undefined") {
             window.location.href = "/login";

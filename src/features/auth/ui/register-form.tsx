@@ -26,7 +26,6 @@ import { TermConditionText } from './term-condition-text';
 import { HomeButton } from './home-button';
 import { useForm } from '@tanstack/react-form';
 import { useAuthSchemas } from '@/src/entities/user';
-import toast from 'react-hot-toast';
 import { useAuth } from '../hooks/use-auth';
 
 export function RegisterForm({
@@ -113,8 +112,8 @@ export function RegisterForm({
                 name='userName'
                 children={field => {
                   const shouldShowError =
-                    field.state.meta.isTouched && 
-                    field.state.value.length > 0 && 
+                    field.state.meta.isTouched &&
+                    field.state.value.length > 0 &&
                     !field.state.meta.isValid;
                   return (
                     <Field>
@@ -143,8 +142,8 @@ export function RegisterForm({
                 name='email'
                 children={field => {
                   const shouldShowError =
-                    field.state.meta.isTouched && 
-                    field.state.value.length > 0 && 
+                    field.state.meta.isTouched &&
+                    field.state.value.length > 0 &&
                     !field.state.meta.isValid;
                   return (
                     <Field>
@@ -173,8 +172,8 @@ export function RegisterForm({
                 name='phoneNumber'
                 children={field => {
                   const shouldShowError =
-                    field.state.meta.isTouched && 
-                    field.state.value.length > 0 && 
+                    field.state.meta.isTouched &&
+                    field.state.value.length > 0 &&
                     !field.state.meta.isValid;
                   return (
                     <Field>
@@ -203,8 +202,8 @@ export function RegisterForm({
                 name='password'
                 children={field => {
                   const shouldShowError =
-                    field.state.meta.isTouched && 
-                    field.state.value.length > 0 && 
+                    field.state.meta.isTouched &&
+                    field.state.value.length > 0 &&
                     !field.state.meta.isValid;
                   return (
                     <Field>
@@ -247,8 +246,8 @@ export function RegisterForm({
                 name='confirmPassword'
                 children={field => {
                   const shouldShowError =
-                    field.state.meta.isTouched && 
-                    field.state.value.length > 0 && 
+                    field.state.meta.isTouched &&
+                    field.state.value.length > 0 &&
                     !field.state.meta.isValid;
                   return (
                     <Field>

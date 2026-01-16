@@ -1,8 +1,11 @@
-export interface Venue {
+export interface Branch {
   id: string;
   name: string;
   address: string;
-  operatingHours: string;
+  openTime: string;
+  closeTime: string;
   isActive: boolean;
   policy: string;
+  hotline?: string;
+  avatar?: string;
 }

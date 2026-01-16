@@ -1,1 +1,1 @@
-export { VenuesPage } from './ui/page';
+export { BranchesPage } from './ui/page';

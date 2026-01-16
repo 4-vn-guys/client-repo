@@ -1,17 +1,17 @@
 import { Search, MapPin } from 'lucide-react';
 import { Input } from '@/shared/ui/input';
-import { VenueCard, Venue } from '@/entities/venue';
+import { BranchCard, Branch } from '@/entities/venue';
 import { Button } from '@/shared/ui/button';
 import { Skeleton } from '@/shared/ui/skeleton'; // Assuming Skeleton is available or will use a div placeholder if not
 
-interface VenuesListProps {
-    venues: Venue[];
+interface BranchesListProps {
+    branches: Branch[];
     isLoading: boolean;
     searchQuery: string;
     onSearchChange: (value: string) => void;
 }
 
-export function VenuesList({ venues, isLoading, searchQuery, onSearchChange }: VenuesListProps) {
+export function BranchesList({ branches, isLoading, searchQuery, onSearchChange }: BranchesListProps) {
     if (isLoading) {
         return (
             <div className="space-y-6">
@@ -27,24 +27,24 @@ export function VenuesList({ venues, isLoading, searchQuery, onSearchChange }: V
         );
     }
 
-    if (venues.length === 0 && !searchQuery) {
+    if (branches.length === 0 && !searchQuery) {
         return (
             <div className="flex flex-col items-center justify-center p-12 lg:p-24 border-2 border-dashed border-border/50 rounded-xl bg-muted/10 text-center animate-in fade-in zoom-in duration-500">
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
                     <MapPin className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">No venues yet</h3>
+                <h3 className="text-xl font-semibold mb-2">No branches yet</h3>
                 <p className="text-muted-foreground max-w-sm mb-6">
-                    Get started by creating your first venue to manage courts and bookings.
+                    Get started by creating your first branch to manage courts and bookings.
                 </p>
-                <Button>Create Venue</Button>
+                <Button>Create Branch</Button>
             </div>
         );
     }
 
-    const filteredVenues = venues.filter(venue =>
-        venue.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        venue.address.toLowerCase().includes(searchQuery.toLowerCase())
+    const filteredBranches = branches.filter(branch =>
+        branch.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        branch.address.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return (
@@ -59,16 +59,16 @@ export function VenuesList({ venues, isLoading, searchQuery, onSearchChange }: V
                 />
             </div>
 
-            {filteredVenues.length === 0 ? (
+            {filteredBranches.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
                     <Search className="w-12 h-12 mb-4 opacity-20" />
-                    <p>No venues found matching "{searchQuery}"</p>
+                    <p>No branches found matching "{searchQuery}"</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 pb-20">
-                    {filteredVenues.map((venue) => (
-                        <div key={venue.id} className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-backwards" style={{ animationDelay: `${parseInt(venue.id) * 50}ms` }}>
-                            <VenueCard venue={venue} />
+                    {filteredBranches.map((branch) => (
+                        <div key={branch.id} className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-backwards" style={{ animationDelay: `${parseInt(branch.id) * 50}ms` }}>
+                            <BranchCard branch={branch} />
                         </div>
                     ))}
                 </div>

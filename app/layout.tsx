@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Open_Sans } from 'next/font/google';
-import { ThemeProvider } from '@/src/app/providers';
+import { ThemeProvider } from '@/shared/providers';
 import QueryProvider from '@/shared/providers/query-provider';
 import { NextIntlClientProvider } from 'next-intl';
 import { Toaster } from 'react-hot-toast';

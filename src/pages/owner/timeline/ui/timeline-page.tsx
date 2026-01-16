@@ -13,7 +13,7 @@ import Link from 'next/link';
 import type { Court } from '@/entities/court';
 import type { Booking } from '@/entities/booking';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { fetchVenueById } from '@/shared/lib/mock-venues';
+import { fetchBranchById } from '@/entities/venue';
 
 // Mock data - in production this would come from API
 const mockCourts: Court[] = [
@@ -46,8 +46,8 @@ export function TimelinePageContent({ venueId }: TimelinePageProps) {
     const [selectedDate, setSelectedDate] = useState(new Date(2025, 11, 9));
 
     const { data: venue, isLoading, isError } = useQuery({
-        queryKey: ['venue', venueId],
-        queryFn: () => fetchVenueById(venueId),
+        queryKey: ['branch', venueId],
+        queryFn: () => fetchBranchById(venueId),
     });
 
     const handleNewBooking = useCallback(() => {

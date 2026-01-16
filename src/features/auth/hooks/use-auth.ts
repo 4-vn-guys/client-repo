@@ -42,7 +42,7 @@ export const useAuth = () => {
           );
           
           toast.success("Login successful!");
-          router.push("/owner/timeline");
+          router.push("/owner/branches");
           return { success: true };
         }
       } else {
