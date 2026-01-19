@@ -1,6 +1,6 @@
-import { BranchesPage } from '@/pages/owner/venues';
+import { VenuesPage } from '@/widgets/owner/venues-page';
 
 export default function BranchesPageWrapper() {
-    return <BranchesPage />;
+    return <VenuesPage />;
 }
 

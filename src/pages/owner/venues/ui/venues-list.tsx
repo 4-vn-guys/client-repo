@@ -1,8 +1,9 @@
 import { Search, MapPin } from 'lucide-react';
+import { memo } from 'react';
 import { Input } from '@/shared/ui/input';
 import { BranchCard, Branch } from '@/entities/venue';
 import { Button } from '@/shared/ui/button';
-import { Skeleton } from '@/shared/ui/skeleton'; // Assuming Skeleton is available or will use a div placeholder if not
+import { Skeleton } from '@/shared/ui/skeleton';
 
 interface BranchesListProps {
     branches: Branch[];
@@ -11,7 +12,12 @@ interface BranchesListProps {
     onSearchChange: (value: string) => void;
 }
 
-export function BranchesList({ branches, isLoading, searchQuery, onSearchChange }: BranchesListProps) {
+export const BranchesList = memo(function BranchesList({
+    branches,
+    isLoading,
+    searchQuery,
+    onSearchChange
+}: BranchesListProps) {
     if (isLoading) {
         return (
             <div className="space-y-6">
@@ -66,8 +72,12 @@ export function BranchesList({ branches, isLoading, searchQuery, onSearchChange 
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 pb-20">
-                    {filteredBranches.map((branch) => (
-                        <div key={branch.id} className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-backwards" style={{ animationDelay: `${parseInt(branch.id) * 50}ms` }}>
+                    {filteredBranches.map((branch, index) => (
+                        <div
+                            key={branch.id}
+                            className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-backwards"
+                            style={{ animationDelay: `${index * 50}ms` }}
+                        >
                             <BranchCard branch={branch} />
                         </div>
                     ))}
@@ -75,4 +85,4 @@ export function BranchesList({ branches, isLoading, searchQuery, onSearchChange 
             )}
         </div>
     );
-}
+});
