@@ -38,7 +38,7 @@ export const fetchBranches = async (): Promise<Branch[]> => {
 export const fetchBranchById = async (id: string): Promise<Branch> => {
   try {
     const response = await axiosInstance.get<{ success: boolean; data: Branch }>(
-      `/api/v1/branches/${id}`
+      `/branches/${id}`
     );
     
     if (response.data.success) {

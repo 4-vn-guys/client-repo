@@ -17,7 +17,7 @@ interface BookingCardProps {
   status: BookingStatus;
   style?: React.CSSProperties;
   className?: string;
-  startTime?: Date;
+  startTime?: Date | string;
 }
 
 export function BookingCard({
@@ -38,9 +38,10 @@ export function BookingCard({
     return null;
   };
 
-  const formatTime = (date?: Date) => {
+  const formatTime = (date?: Date | string) => {
     if (!date) return '';
-    return date.toLocaleTimeString('en-US', {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    return dateObj.toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
       hour12: false
