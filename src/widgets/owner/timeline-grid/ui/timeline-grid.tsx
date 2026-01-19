@@ -1,5 +1,6 @@
 'use client';
 
+import { memo, useMemo, useCallback } from 'react';
 import type { Court } from '@/entities/court';
 import type { Booking } from '@/entities/booking';
 import { TimeHeader } from './time-header';
@@ -10,10 +11,24 @@ interface TimelineGridProps {
   bookings: Booking[];
 }
 
-export function TimelineGrid({ courts, bookings }: TimelineGridProps) {
-  const getBookingsForCourt = (courtId: string) => {
-    return bookings.filter(b => b.courtId === courtId);
-  };
+export const TimelineGrid = memo(function TimelineGrid({ courts, bookings }: TimelineGridProps) {
+  // Memoize bookings by court ID for efficient filtering
+  const bookingsByCourtId = useMemo(() => {
+    const map = new Map<string, Booking[]>();
+
+    bookings.forEach(booking => {
+      const courtBookings = map.get(booking.courtId) || [];
+      courtBookings.push(booking);
+      map.set(booking.courtId, courtBookings);
+    });
+
+    return map;
+  }, [bookings]);
+
+  // Stabilize the getter function to prevent re-renders
+  const getBookingsForCourt = useCallback((courtId: string): Booking[] => {
+    return bookingsByCourtId.get(courtId) || [];
+  }, [bookingsByCourtId]);
 
   return (
     <div className='bg-card overflow-hidden rounded-lg border shadow-sm'>
@@ -23,7 +38,7 @@ export function TimelineGrid({ courts, bookings }: TimelineGridProps) {
           <TimeHeader />
           <div className='divide-y'>
             {courts.map(court => (
-              <CourtRow
+              <MemoizedCourtRow
                 key={court.id}
                 court={court}
                 bookings={getBookingsForCourt(court.id)}
@@ -34,4 +49,7 @@ export function TimelineGrid({ courts, bookings }: TimelineGridProps) {
       </div>
     </div>
   );
-}
+});
+
+// Memoized CourtRow to prevent re-renders when props haven't changed
+const MemoizedCourtRow = memo(CourtRow);

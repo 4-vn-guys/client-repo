@@ -1,8 +1,10 @@
+import { memo, useMemo } from 'react';
 import { generateTimeSlots, formatTimeLabel, TIMELINE_CONFIG } from '../lib/timeline-utils';
 import { cn } from '@/shared/lib/utils';
 
-export function TimeHeader() {
-  const timeSlots = generateTimeSlots();
+export const TimeHeader = memo(function TimeHeader() {
+  // Memoize time slots since they never change
+  const timeSlots = useMemo(() => generateTimeSlots(), []);
 
   return (
     <div className='bg-muted/30 sticky top-0 z-10 flex border-b'>
@@ -11,30 +13,15 @@ export function TimeHeader() {
 
       {/* Time slots */}
       <div className='flex flex-1'>
-        {timeSlots.map((time, index) => {
+        {timeSlots.map((time) => {
           const formattedTime = formatTimeLabel(time);
-          // Show only hour marks on mobile (every other slot since we have 30-min intervals)
-          const isHourMark = time.endsWith(':00');
-          const showOnMobile = isHourMark && index % 4 === 0; // Show every 2 hours on mobile
 
           return (
             <div
               key={time}
-              className={cn(
-                'text-muted-foreground relative shrink-0 border-r px-2 py-4 text-center transition-colors',
-                'hover:bg-muted/50',
-                isHourMark ? 'border-border' : 'border-border/30',
-                !showOnMobile && 'hidden md:block'
-              )}
-              style={{
-                minWidth: TIMELINE_CONFIG.slotWidth,
-                width: TIMELINE_CONFIG.slotWidth
-              }}
+              className='text-muted-foreground relative shrink-0 border-r border-border text-center transition-colors hover:bg-muted/50 px-2 py-3 md:py-4 w-[60px] md:w-[80px]'
             >
-              <span className={cn(
-                'text-xs md:text-sm',
-                isHourMark ? 'font-semibold' : 'font-normal text-muted-foreground/70'
-              )}>
+              <span className='text-[10px] font-semibold md:text-sm'>
                 {formattedTime}
               </span>
             </div>
@@ -43,4 +30,4 @@ export function TimeHeader() {
       </div>
     </div>
   );
-}
+});

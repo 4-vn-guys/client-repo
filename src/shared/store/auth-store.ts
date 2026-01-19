@@ -2,50 +2,8 @@
 
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { AuthState, AuthActions } from "../types/api";
 
-/**
- * User type from your backend
- */
-export interface User {
-  id: string;
-  email: string;
-  username: string;
-  role: string;
-  phoneNumber?: string | null;
-  provider?: string | null;
-  providerId?: string | null;
-  createdAt?: string;
-  updatedAt?: string;
-  deletedAt?: string | null;
-}
-
-/**
- * Auth store state
- */
-interface AuthState {
-  user: User | null;
-  accessToken: string | null;
-  refreshToken: string | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-}
-
-/**
- * Auth store actions
- */
-interface AuthActions {
-  setTokens: (accessToken: string, refreshToken: string) => void;
-  setUser: (user: User) => void;
-  setAuth: (user: User, accessToken: string, refreshToken: string) => void;
-  clearAuth: () => void;
-  setLoading: (loading: boolean) => void;
-  updateUser: (user: Partial<User>) => void;
-}
-
-/**
- * Auth store using zustand with persistence
- * Stores auth state in localStorage
- */
 export const useAuthStore = create<AuthState & AuthActions>()(
   persist(
     (set) => ({
