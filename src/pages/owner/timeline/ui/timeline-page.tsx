@@ -24,7 +24,6 @@ interface TimelinePageProps {
  * @param venueId - The ID of the venue to display
  */
 export function TimelinePageContent({ venueId }: TimelinePageProps) {
-    // Use custom hook to manage all timeline data and state
     const {
         selectedDate,
         setSelectedDate,
@@ -36,17 +35,10 @@ export function TimelinePageContent({ venueId }: TimelinePageProps) {
         handleNewBooking,
     } = useTimelineData(venueId);
 
-    // Loading state
-    if (isLoading) {
-        return <TimelineLoadingSkeleton />;
-    }
-
-    // Error state
     if (isError || !venue) {
         return <TimelineErrorState />;
     }
 
-    // Success state - render timeline
     return (
         <div className='space-y-4 p-4 md:space-y-6 md:p-6 animate-in fade-in duration-500'>
             <VenueHeader venue={venue} />
@@ -58,11 +50,15 @@ export function TimelinePageContent({ venueId }: TimelinePageProps) {
                 }
                 actions={<NewBookingButton onClick={handleNewBooking} />}
             />
+            {isLoading ? (
+                <TimelineLoadingSkeleton />
+            ) : (
+                <MemoizedTimelineGrid
+                    courts={courtsWithBookings || []}
+                    bookings={allBookings}
+                />
+            )}
 
-            <MemoizedTimelineGrid
-                courts={courtsWithBookings || []}
-                bookings={allBookings}
-            />
         </div>
     );
 }
