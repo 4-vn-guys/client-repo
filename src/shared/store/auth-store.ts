@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
-import { AuthState, AuthActions } from "../types/api";
+import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { AuthState, AuthActions } from '../types/api';
 
 export const useAuthStore = create<AuthState & AuthActions>()(
   persist(
-    (set) => ({
+    set => ({
       // Initial state
       user: null,
       accessToken: null,
@@ -21,7 +21,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
           refreshToken,
         }),
 
-      setUser: (user) =>
+      setUser: user =>
         set({
           user,
           isAuthenticated: true,
@@ -45,18 +45,18 @@ export const useAuthStore = create<AuthState & AuthActions>()(
           isLoading: false,
         }),
 
-      setLoading: (loading) =>
+      setLoading: loading =>
         set({
           isLoading: loading,
         }),
 
-      updateUser: (userData) =>
-        set((state) => ({
+      updateUser: userData =>
+        set(state => ({
           user: state.user ? { ...state.user, ...userData } : null,
         })),
     }),
     {
-      name: "auth-storage", // localStorage key
+      name: 'auth-storage', // localStorage key
       storage: createJSONStorage(() => localStorage),
     }
   )

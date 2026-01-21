@@ -1,6 +1,5 @@
 import { memo, useMemo } from 'react';
-import { generateTimeSlots, formatTimeLabel, TIMELINE_CONFIG } from '../lib/timeline-utils';
-import { cn } from '@/shared/lib/utils';
+import { generateTimeSlots, formatTimeLabel } from '../lib/timeline-utils';
 
 export const TimeHeader = memo(function TimeHeader() {
   // Memoize time slots since they never change
@@ -13,13 +12,13 @@ export const TimeHeader = memo(function TimeHeader() {
 
       {/* Time slots */}
       <div className='flex flex-1'>
-        {timeSlots.map((time) => {
+        {timeSlots.map(time => {
           const formattedTime = formatTimeLabel(time);
 
           return (
             <div
               key={time}
-              className='text-muted-foreground relative shrink-0 border-r border-border text-center transition-colors hover:bg-muted/50 px-2 py-3 md:py-4 w-[60px] md:w-[80px]'
+              className='text-muted-foreground border-border hover:bg-muted/50 relative w-[60px] shrink-0 border-r px-2 py-3 text-center transition-colors md:w-[80px] md:py-4'
             >
               <span className='text-[10px] font-semibold md:text-sm'>
                 {formattedTime}

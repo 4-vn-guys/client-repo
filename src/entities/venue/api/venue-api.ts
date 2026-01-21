@@ -17,16 +17,15 @@ interface BranchApiResponse {
  */
 export const fetchBranches = async (): Promise<Branch[]> => {
   try {
-    const response = await axiosInstance.get<BranchApiResponse>(
-      '/branches/owner'
-    );
-    
+    const response =
+      await axiosInstance.get<BranchApiResponse>('/branches/owner');
+
     if (response.data.success) {
       return response.data.data;
     }
-    
+
     throw new Error(response.data.message || 'Failed to fetch branches');
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error fetching branches:', error);
     throw error;
   }
@@ -37,16 +36,17 @@ export const fetchBranches = async (): Promise<Branch[]> => {
  */
 export const fetchBranchById = async (id: string): Promise<Branch> => {
   try {
-    const response = await axiosInstance.get<{ success: boolean; data: Branch }>(
-      `/branches/${id}`
-    );
-    
+    const response = await axiosInstance.get<{
+      success: boolean;
+      data: Branch;
+    }>(`/branches/${id}`);
+
     if (response.data.success) {
       return response.data.data;
     }
-    
+
     throw new Error('Failed to fetch branch');
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error fetching branch:', error);
     throw error;
   }

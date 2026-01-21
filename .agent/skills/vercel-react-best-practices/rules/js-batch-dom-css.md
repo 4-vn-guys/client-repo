@@ -7,16 +7,18 @@ tags: javascript, dom, css, performance, reflow
 
 ## Batch DOM CSS Changes
 
-Avoid interleaving style writes with layout reads. When you read a layout property (like `offsetWidth`, `getBoundingClientRect()`, or `getComputedStyle()`) between style changes, the browser is forced to trigger a synchronous reflow.
+Avoid interleaving style writes with layout reads. When you read a layout property (like
+`offsetWidth`, `getBoundingClientRect()`, or `getComputedStyle()`) between style changes, the
+browser is forced to trigger a synchronous reflow.
 
 **Incorrect (interleaved reads and writes force reflows):**
 
 ```typescript
 function updateElementStyles(element: HTMLElement) {
-  element.style.width = '100px'
-  const width = element.offsetWidth  // Forces reflow
-  element.style.height = '200px'
-  const height = element.offsetHeight  // Forces another reflow
+  element.style.width = '100px';
+  const width = element.offsetWidth; // Forces reflow
+  element.style.height = '200px';
+  const height = element.offsetHeight; // Forces another reflow
 }
 ```
 
@@ -25,13 +27,13 @@ function updateElementStyles(element: HTMLElement) {
 ```typescript
 function updateElementStyles(element: HTMLElement) {
   // Batch all writes together
-  element.style.width = '100px'
-  element.style.height = '200px'
-  element.style.backgroundColor = 'blue'
-  element.style.border = '1px solid black'
-  
+  element.style.width = '100px';
+  element.style.height = '200px';
+  element.style.backgroundColor = 'blue';
+  element.style.border = '1px solid black';
+
   // Read after all writes are done (single reflow)
-  const { width, height } = element.getBoundingClientRect()
+  const { width, height } = element.getBoundingClientRect();
 }
 ```
 
@@ -48,10 +50,11 @@ function updateElementStyles(element: HTMLElement) {
 
 ```typescript
 function updateElementStyles(element: HTMLElement) {
-  element.classList.add('highlighted-box')
+  element.classList.add('highlighted-box');
 
-  const { width, height } = element.getBoundingClientRect()
+  const { width, height } = element.getBoundingClientRect();
 }
 ```
 
-Prefer CSS classes over inline styles when possible. CSS files are cached by the browser, and classes provide better separation of concerns and are easier to maintain.
+Prefer CSS classes over inline styles when possible. CSS files are cached by the browser, and
+classes provide better separation of concerns and are easier to maintain.

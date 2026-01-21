@@ -24,21 +24,21 @@ export const ERROR_CODE_MAP: Record<string, string> = {
   UNAUTHORIZED: 'Errors.unauthorized',
   TOKEN_EXPIRED: 'Errors.tokenExpired',
   INVALID_TOKEN: 'Errors.invalidToken',
-  
+
   // Validation errors
   VALIDATION_ERROR: 'Errors.validationError',
   INVALID_INPUT: 'Errors.invalidInput',
   MISSING_REQUIRED_FIELD: 'Errors.missingRequiredField',
-  
+
   // Request errors
   BAD_REQUEST: 'Errors.badRequest',
   NOT_FOUND: 'Errors.notFound',
   FORBIDDEN: 'Errors.forbidden',
-  
+
   // Server errors
   INTERNAL_ERROR: 'Errors.internalError',
   SERVICE_UNAVAILABLE: 'Errors.serviceUnavailable',
-  
+
   // Business logic errors
   INSUFFICIENT_PERMISSIONS: 'Errors.insufficientPermissions',
   RESOURCE_NOT_FOUND: 'Errors.resourceNotFound',
@@ -50,21 +50,27 @@ export const ERROR_CODE_MAP: Record<string, string> = {
  * @param error - Axios error object
  * @returns Error message string
  */
-export const extractErrorMessage = (error: any): string => {
-  // Try to extract from nested error structure
-  const errorData = error?.response?.data as BackendError | undefined;
-  
-  if (errorData?.error?.message) {
-    return errorData.error.message;
-  }
-  
-  // Fallback to direct message
-  if (error?.response?.data?.message) {
-    return error.response.data.message;
+export const extractErrorMessage = (error: unknown): string => {
+  // Type guard: check if error is an object with response property
+  if (error && typeof error === 'object' && 'response' in error) {
+    const response = (error as { response: unknown }).response;
+    if (response && typeof response === 'object' && 'data' in response) {
+      const data = (response as { data: unknown }).data as BackendError | undefined;
+      
+      // Try to extract from nested error structure
+      if (data?.error?.message) {
+        return data.error.message;
+      }
+      
+      // Fallback to direct message
+      if (data && typeof data === 'object' && 'message' in data && typeof data.message === 'string') {
+        return data.message;
+      }
+    }
   }
   
   // Fallback to error message
-  if (error?.message) {
+  if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string') {
     return error.message;
   }
   
@@ -76,9 +82,15 @@ export const extractErrorMessage = (error: any): string => {
  * @param error - Axios error object
  * @returns Error code string
  */
-export const extractErrorCode = (error: any): string | null => {
-  const errorData = error?.response?.data as BackendError | undefined;
-  return errorData?.error?.code || null;
+export const extractErrorCode = (error: unknown): string | null => {
+  if (error && typeof error === 'object' && 'response' in error) {
+    const response = (error as { response: unknown }).response;
+    if (response && typeof response === 'object' && 'data' in response) {
+      const data = (response as { data: unknown }).data as BackendError | undefined;
+      return data?.error?.code || null;
+    }
+  }
+  return null;
 };
 
 /**
@@ -97,12 +109,12 @@ export const getErrorTranslationKey = (errorCode: string): string | null => {
  * @returns Formatted error message
  */
 export const formatError = (
-  error: any,
+  error: unknown,
   t?: (key: string) => string
 ): string => {
   const errorCode = extractErrorCode(error);
   const errorMessage = extractErrorMessage(error);
-  
+
   // If translation function provided and error code has translation
   if (t && errorCode) {
     const translationKey = getErrorTranslationKey(errorCode);
@@ -115,7 +127,7 @@ export const formatError = (
       }
     }
   }
-  
+
   // Return original message
   return errorMessage;
 };
@@ -125,10 +137,18 @@ export const formatError = (
  * @param error - Axios error object
  * @returns Error object with message and code
  */
-export const parseBackendError = (error: any) => {
+export const parseBackendError = (error: unknown) => {
+  let statusCode = 500;
+  if (error && typeof error === 'object' && 'response' in error) {
+    const response = (error as { response: unknown }).response;
+    if (response && typeof response === 'object' && 'status' in response && typeof response.status === 'number') {
+      statusCode = response.status;
+    }
+  }
+  
   return {
     message: extractErrorMessage(error),
     code: extractErrorCode(error),
-    statusCode: error?.response?.status || 500,
+    statusCode,
   };
 };

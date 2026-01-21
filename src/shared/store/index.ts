@@ -1,2 +1,2 @@
-export { useAuthStore } from "./auth-store";
-export type { User } from "../types/api";
+export { useAuthStore } from './auth-store';
+export type { User } from '../types/api';

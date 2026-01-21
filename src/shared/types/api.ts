@@ -1,7 +1,8 @@
 /**
  * API Response Types
+ * Generic response wrappers for API calls
  */
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   message?: string;
@@ -23,6 +24,7 @@ export interface User {
   updatedAt?: string;
   deletedAt?: string | null;
 }
+
 /**
  * Auth Types
  */
@@ -56,7 +58,6 @@ export interface AuthActions {
   setLoading: (loading: boolean) => void;
   updateUser: (user: Partial<User>) => void;
 }
-
 
 export interface AuthState {
   user: User | null;

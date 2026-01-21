@@ -118,7 +118,8 @@ export function RegisterForm({
                   return (
                     <Field>
                       <FieldLabel htmlFor={field.name}>
-                        {tRegisterPage('userName')} <span className="text-destructive">*</span>
+                        {tRegisterPage('userName')}{' '}
+                        <span className='text-destructive'>*</span>
                       </FieldLabel>
                       <Input
                         id='username'
@@ -208,14 +209,17 @@ export function RegisterForm({
                   return (
                     <Field>
                       <FieldLabel htmlFor={field.name}>
-                        {tRegisterPage('passwordLabel')} <span className="text-destructive">*</span>
+                        {tRegisterPage('passwordLabel')}{' '}
+                        <span className='text-destructive'>*</span>
                       </FieldLabel>
                       <div className='relative'>
                         <Input
                           id='password'
                           type={showPassword ? 'text' : 'password'}
                           placeholder='●●●●●●●●'
-                          className={shouldShowError ? 'pr-8 border-destructive' : 'pr-8'}
+                          className={
+                            shouldShowError ? 'border-destructive pr-8' : 'pr-8'
+                          }
                           value={field.state.value}
                           onBlur={field.handleBlur}
                           onChange={e => field.handleChange(e.target.value)}
@@ -225,7 +229,9 @@ export function RegisterForm({
                           className='absolute top-1/2 right-0 -translate-y-1/2 p-2'
                           type='button'
                           onClick={toggleShowPassword}
-                          aria-label={showPassword ? 'Hide password' : 'Show password'}
+                          aria-label={
+                            showPassword ? 'Hide password' : 'Show password'
+                          }
                         >
                           {showPassword ? (
                             <Eye className='size-5' />
@@ -259,7 +265,9 @@ export function RegisterForm({
                           id='confirmPassword'
                           type={showConfirmPassword ? 'text' : 'password'}
                           placeholder='●●●●●●●●'
-                          className={shouldShowError ? 'pr-8 border-destructive' : 'pr-8'}
+                          className={
+                            shouldShowError ? 'border-destructive pr-8' : 'pr-8'
+                          }
                           value={field.state.value}
                           onBlur={field.handleBlur}
                           onChange={e => field.handleChange(e.target.value)}
@@ -269,7 +277,11 @@ export function RegisterForm({
                           className='absolute top-1/2 right-0 -translate-y-1/2 p-2'
                           type='button'
                           onClick={toggleShowConfirmPassword}
-                          aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+                          aria-label={
+                            showConfirmPassword
+                              ? 'Hide confirm password'
+                              : 'Show confirm password'
+                          }
                         >
                           {showConfirmPassword ? (
                             <Eye className='size-5' />
@@ -288,7 +300,9 @@ export function RegisterForm({
 
               <Field>
                 <Button type='submit' disabled={isLoading}>
-                  {isLoading ? tRegisterPage('creating') : tRegisterPage('register')}
+                  {isLoading
+                    ? tRegisterPage('creating')
+                    : tRegisterPage('register')}
                 </Button>
               </Field>
               <ExtraAuthForm />

@@ -7,5 +7,5 @@ export { TermConditionText } from './ui/term-condition-text';
 export { HomeButton } from './ui/home-button';
 
 // Auth APIs and Hooks
-export { authApi } from "./apis";
-export { useAuth } from "./hooks/use-auth";
+export { authApi } from './apis';
+export { useAuth } from './hooks/use-auth';

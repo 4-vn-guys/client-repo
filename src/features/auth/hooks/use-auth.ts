@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
-import { useAuthStore } from "@/shared/store";
-import { authApi } from "../apis";
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
+import { useAuthStore } from '@/shared/store';
+import { authApi } from '../apis';
 
 /**
  * Custom hook for authentication
@@ -11,7 +11,17 @@ import { authApi } from "../apis";
  */
 export const useAuth = () => {
   const router = useRouter();
-  const { user, accessToken, refreshToken, isAuthenticated, isLoading, setAuth, setTokens, clearAuth, setLoading } = useAuthStore();
+  const {
+    user,
+    accessToken,
+    refreshToken,
+    isAuthenticated,
+    isLoading,
+    setAuth,
+    setTokens,
+    clearAuth,
+    setLoading,
+  } = useAuthStore();
 
   /**
    * Login with credentials
@@ -24,36 +34,58 @@ export const useAuth = () => {
       if (response?.data) {
         // Extract tokens from login response
         const { accessToken, refreshToken } = response.data;
-        
+
         // Store tokens first
         setTokens(accessToken, refreshToken);
-        
+
         // Fetch user profile
         const profileResponse = await authApi.getProfile();
-        
+
         if (profileResponse?.data) {
-          const { id, username, email, role, phoneNumber, provider, providerId, createdAt, updatedAt, deletedAt } = profileResponse.data;
-          
+          const {
+            id,
+            username,
+            email,
+            role,
+            phoneNumber,
+            provider,
+            providerId,
+            createdAt,
+            updatedAt,
+            deletedAt,
+          } = profileResponse.data;
+
           // Set complete auth state with user data and tokens
           setAuth(
-            { id, username, email, role, phoneNumber, provider, providerId, createdAt, updatedAt, deletedAt },
+            {
+              id,
+              username,
+              email,
+              role,
+              phoneNumber,
+              provider,
+              providerId,
+              createdAt,
+              updatedAt,
+              deletedAt,
+            },
             accessToken,
             refreshToken
           );
-          
-          toast.success("Login successful!");
-          router.push("/owner/branches");
+
+          toast.success('Login successful!');
+          router.push('/owner/branches');
           return { success: true };
         }
       } else {
-        toast.error("Invalid credentials");
-        return { success: false, error: "Invalid credentials" };
+        toast.error('Invalid credentials');
+        return { success: false, error: 'Invalid credentials' };
       }
-    } catch (error: any) {
+    } catch (error) {
       // Handle nested error structure: { success: false, error: { message: "..." } }
       const message = 
-        error?.response?.data?.error?.message || 
-        error?.response?.data?.message || 
+        (error && typeof error === 'object' && 'response' in error && error.response && typeof error.response === 'object' && 'data' in error.response && error.response.data && typeof error.response.data === 'object' && 'error' in error.response.data && error.response.data.error && typeof error.response.data.error === 'object' && 'message' in error.response.data.error && typeof error.response.data.error.message === 'string' ? error.response.data.error.message : null) ||
+        (error && typeof error === 'object' && 'response' in error && error.response && typeof error.response === 'object' && 'data' in error.response && error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data && typeof error.response.data.message === 'string' ? error.response.data.message : null) ||
         "Login failed";
       toast.error(message);
       return { success: false, error: message };
@@ -76,19 +108,19 @@ export const useAuth = () => {
       const response = await authApi.register(data);
 
       if (response?.data) {
-        toast.success("Registration successful! Please login.");
-        router.push("/login");
+        toast.success('Registration successful! Please login.');
+        router.push('/login');
         return { success: true };
       } else {
-        toast.error("Registration failed");
+        toast.error('Registration failed');
         return { success: false };
       }
-    } catch (error: any) {
+    } catch (error) {
       // Handle nested error structure: { success: false, error: { message: "..." } }
-      const message = 
-        error?.response?.data?.error?.message || 
-        error?.response?.data?.message || 
-        "Registration failed";
+      const message =
+        error?.response?.data?.error?.message ||
+        error?.response?.data?.message ||
+        'Registration failed';
       toast.error(message);
       return { success: false, error: message };
     } finally {
@@ -102,10 +134,10 @@ export const useAuth = () => {
   const logout = async () => {
     try {
       clearAuth();
-      toast.success("Logged out successfully");
-      router.push("/login");
-    } catch (error) {
-      toast.error("Failed to logout");
+      toast.success('Logged out successfully');
+      router.push('/login');
+    } catch {
+      toast.error('Failed to logout');
     }
   };
 
@@ -116,15 +148,37 @@ export const useAuth = () => {
     try {
       const response = await authApi.getProfile();
       if (response?.data) {
-        const { id, username, email, role, phoneNumber, provider, providerId, createdAt, updatedAt, deletedAt } = response.data;
+        const {
+          id,
+          username,
+          email,
+          role,
+          phoneNumber,
+          provider,
+          providerId,
+          createdAt,
+          updatedAt,
+          deletedAt,
+        } = response.data;
         setAuth(
-          { id, username, email, role, phoneNumber, provider, providerId, createdAt, updatedAt, deletedAt },
-          accessToken || "",
-          refreshToken || ""
+          {
+            id,
+            username,
+            email,
+            role,
+            phoneNumber,
+            provider,
+            providerId,
+            createdAt,
+            updatedAt,
+            deletedAt,
+          },
+          accessToken || '',
+          refreshToken || ''
         );
       }
     } catch (error) {
-      console.error("Failed to refresh profile:", error);
+      console.error('Failed to refresh profile:', error);
     }
   };
 
