@@ -1,7 +1,7 @@
 import { axiosInstance } from '@/shared/lib/axios';
 import type { Court } from '@/entities/court';
 import { formatDateToYYYYMMDD } from '@/shared/lib/utils';
-import { BookingsByBranchResponse } from '../model/type';
+import { BookingsByBranchResponse } from '../model/types';
 import type { CreateBookingDto, UpdateBookingDto } from '../model/dto';
 
 /**
