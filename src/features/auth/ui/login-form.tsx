@@ -1,4 +1,3 @@
-/* eslint-disable react/no-children-prop */
 'use client';
 
 import { cn } from '@/src/shared/lib';
@@ -17,7 +16,7 @@ import {
 } from '@/src/shared/ui';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { ExtraAuthForm } from './extra-auth-form';
@@ -58,7 +57,7 @@ export function LoginForm({
 
   const toggleShowPassword = (e: React.MouseEvent) => {
     e.preventDefault(); // Prevent any accidental form triggers
-    setShowPassword((prev) => !prev);
+    setShowPassword(prev => !prev);
   };
 
   return (
@@ -67,18 +66,20 @@ export function LoginForm({
         <CardContent className='grid p-0 md:grid-cols-2'>
           <form
             className='p-6 md:p-8'
-            onSubmit={(e) => {
+            onSubmit={e => {
               e.preventDefault();
               e.stopPropagation(); // Critical to stop event bubbling
               form.handleSubmit();
             }}
           >
-            <FieldGroup className="gap-2"> {/* Reduce default gap to control spacing manually */}
-              <div className='flex flex-col items-center gap-2 text-center mb-4'>
-                <div className='relative w-full flex items-center justify-center mb-2'>
+            <FieldGroup className='gap-2'>
+              {' '}
+              {/* Reduce default gap to control spacing manually */}
+              <div className='mb-4 flex flex-col items-center gap-2 text-center'>
+                <div className='relative mb-2 flex w-full items-center justify-center'>
                   <div className='w-full grid-cols-5 md:grid'>
                     <HomeButton />
-                    <TypographyH1 className='w-full text-xl font-bold md:text-2xl grid-cols-3 md:col-span-3'>
+                    <TypographyH1 className='w-full grid-cols-3 text-xl font-bold md:col-span-3 md:text-2xl'>
                       {tLoginPage('title')}
                     </TypographyH1>
                   </div>
@@ -87,43 +88,51 @@ export function LoginForm({
                   {tLoginPage('subtitle', { platform: 'BC' })}
                 </TypographyP>
               </div>
-
               {/* Email Field */}
               <form.Field name='email'>
-                {(field) => {
-                  const hasError = field.state.meta.isTouched && field.state.meta.errors.length > 0;
+                {field => {
+                  const hasError =
+                    field.state.meta.isTouched &&
+                    field.state.meta.errors.length > 0;
                   return (
                     <Field>
-                      <FieldLabel htmlFor={field.name}>{tLoginPage('emailLabel')}</FieldLabel>
+                      <FieldLabel htmlFor={field.name}>
+                        {tLoginPage('emailLabel')}
+                      </FieldLabel>
                       <Input
                         id={field.name}
                         name={field.name}
                         value={field.state.value}
                         onBlur={field.handleBlur}
-                        onChange={(e) => field.handleChange(e.target.value)}
+                        onChange={e => field.handleChange(e.target.value)}
                         className={cn(hasError && 'border-destructive')}
                         placeholder='m@example.com'
                         autoComplete='email'
                       />
-                      <div className="min-h-5 mt-1">
-                        {hasError && <FieldError errors={field.state.meta.errors} />}
+                      <div className='mt-1 min-h-5'>
+                        {hasError && (
+                          <FieldError errors={field.state.meta.errors} />
+                        )}
                       </div>
                     </Field>
                   );
                 }}
               </form.Field>
-
               {/* Password Field */}
               <form.Field name='password'>
-                {(field) => {
-                  const hasError = field.state.meta.isTouched && field.state.meta.errors.length > 0;
+                {field => {
+                  const hasError =
+                    field.state.meta.isTouched &&
+                    field.state.meta.errors.length > 0;
                   return (
                     <Field>
-                      <div className='flex items-center mb-1'>
-                        <FieldLabel htmlFor='password'>{tLoginPage('passwordLabel')}</FieldLabel>
+                      <div className='mb-1 flex items-center'>
+                        <FieldLabel htmlFor='password'>
+                          {tLoginPage('passwordLabel')}
+                        </FieldLabel>
                         <Link
                           href='/forgot-password'
-                          className='ml-auto text-xs underline-offset-2 hover:underline text-muted-foreground'
+                          className='text-muted-foreground ml-auto text-xs underline-offset-2 hover:underline'
                         >
                           {tLoginPage('forgotPassword')}
                         </Link>
@@ -133,39 +142,52 @@ export function LoginForm({
                           id='password'
                           type={showPassword ? 'text' : 'password'}
                           placeholder='●●●●●●●●'
-                          className={cn('pr-10', hasError && 'border-destructive')}
+                          className={cn(
+                            'pr-10',
+                            hasError && 'border-destructive'
+                          )}
                           value={field.state.value}
                           onBlur={field.handleBlur}
-                          onChange={(e) => field.handleChange(e.target.value)}
+                          onChange={e => field.handleChange(e.target.value)}
                           autoComplete='current-password'
                         />
                         <button
-                          className='absolute top-1/2 right-0 -translate-y-1/2 p-3 text-muted-foreground hover:text-foreground transition-colors'
+                          className='text-muted-foreground hover:text-foreground absolute top-1/2 right-0 -translate-y-1/2 p-3 transition-colors'
                           type='button'
                           onClick={toggleShowPassword}
                           tabIndex={-1} // Prevent tabbing into the eye icon for faster flow
                         >
-                          {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                          {showPassword ? (
+                            <Eye size={18} />
+                          ) : (
+                            <EyeOff size={18} />
+                          )}
                         </button>
                       </div>
                       {/* FIX: Reserved space prevents the form from jumping */}
-                      <div className="min-h-[20px] mt-1">
-                        {hasError && <FieldError errors={field.state.meta.errors} />}
+                      <div className='mt-1 min-h-[20px]'>
+                        {hasError && (
+                          <FieldError errors={field.state.meta.errors} />
+                        )}
                       </div>
                     </Field>
                   );
                 }}
               </form.Field>
-
-              <Button type='submit' className="w-full mt-2" disabled={isLoading}>
+              <Button
+                type='submit'
+                className='mt-2 w-full'
+                disabled={isLoading}
+              >
                 {isLoading ? 'Logging in...' : tLoginPage('login')}
               </Button>
-
               <ExtraAuthForm />
-
-              <FieldDescription className='text-center mt-2'>
+              <FieldDescription className='mt-2 text-center'>
                 {tLoginPage('noAccount')}&nbsp;
-                <Link href='/register' className='hover:text-primary underline underline-offset-4'>
+                <Link
+                  href='/register'
+                  className='hover:text-primary underline underline-offset-4'
+                >
                   {tLoginPage('signUp')}
                 </Link>
               </FieldDescription>

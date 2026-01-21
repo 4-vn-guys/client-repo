@@ -9,9 +9,16 @@ import { CourtRow } from './court-row';
 interface TimelineGridProps {
   courts: Court[];
   bookings: Booking[];
+  onCellClick?: (courtId: string, slotIndex: number) => void;
+  onBookingClick?: (booking: Booking) => void;
 }
 
-export const TimelineGrid = memo(function TimelineGrid({ courts, bookings }: TimelineGridProps) {
+export const TimelineGrid = memo(function TimelineGrid({
+  courts,
+  bookings,
+  onCellClick,
+  onBookingClick,
+}: TimelineGridProps) {
   // Memoize bookings by court ID for efficient filtering
   const bookingsByCourtId = useMemo(() => {
     const map = new Map<string, Booking[]>();
@@ -26,9 +33,12 @@ export const TimelineGrid = memo(function TimelineGrid({ courts, bookings }: Tim
   }, [bookings]);
 
   // Stabilize the getter function to prevent re-renders
-  const getBookingsForCourt = useCallback((courtId: string): Booking[] => {
-    return bookingsByCourtId.get(courtId) || [];
-  }, [bookingsByCourtId]);
+  const getBookingsForCourt = useCallback(
+    (courtId: string): Booking[] => {
+      return bookingsByCourtId.get(courtId) || [];
+    },
+    [bookingsByCourtId]
+  );
 
   return (
     <div className='bg-card overflow-hidden rounded-lg border shadow-sm'>
@@ -42,6 +52,8 @@ export const TimelineGrid = memo(function TimelineGrid({ courts, bookings }: Tim
                 key={court.id}
                 court={court}
                 bookings={getBookingsForCourt(court.id)}
+                onCellClick={onCellClick}
+                onBookingClick={onBookingClick}
               />
             ))}
           </div>

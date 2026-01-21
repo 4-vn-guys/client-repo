@@ -18,7 +18,8 @@ export type ForgotPasswordResetSchema = z.infer<
   ReturnType<typeof useAuthSchemas>['forgotPasswordResetSchema']
 >;
 
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
+const passwordRegex =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
 const phoneRegex = /^(0|\+84)[0-9]{9}$/;
 const userNameRegex = /^(?!\s*$).+/;
 
@@ -58,10 +59,8 @@ function useAuthSchemas() {
             message: tRegisterSchema('userNameInvalid'),
           })
           .nonempty({ message: tRegisterSchema('userNameRequired') }),
-        email: z
-          .string(),
-        phoneNumber: z
-          .string(),
+        email: z.string(),
+        phoneNumber: z.string(),
         password: z
           .string()
           .min(8, { message: tRegisterSchema('passwordMinLength') })
@@ -77,7 +76,10 @@ function useAuthSchemas() {
       .refine(
         data => {
           // At least one of email or phoneNumber must be provided
-          return (data.email && data.email.trim() !== '') || (data.phoneNumber && data.phoneNumber.trim() !== '');
+          return (
+            (data.email && data.email.trim() !== '') ||
+            (data.phoneNumber && data.phoneNumber.trim() !== '')
+          );
         },
         {
           message: tRegisterSchema('emailOrPhoneRequired'),

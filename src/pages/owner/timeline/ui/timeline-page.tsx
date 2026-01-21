@@ -5,6 +5,7 @@ import { TimelineHeader } from '@/widgets/owner/header';
 import { TimelineGrid } from '@/widgets/owner/';
 import { DateNavigation } from '@/features/owner/filter-by-day';
 import { NewBookingButton } from '@/features/owner/create-booking';
+import { BookingDialog } from '@/features/owner/booking-form';
 import { useTimelineData } from '../model';
 import { VenueHeader } from './venue-header';
 import { TimelineLoadingSkeleton } from './timeline-loading-skeleton';
@@ -14,51 +15,70 @@ import { TimelineErrorState } from './timeline-error-state';
 const MemoizedTimelineGrid = memo(TimelineGrid);
 
 interface TimelinePageProps {
-    venueId: string;
+  venueId: string;
 }
 
 /**
  * Timeline page content component
  * Main component for displaying venue booking timeline
- * 
+ *
  * @param venueId - The ID of the venue to display
  */
 export function TimelinePageContent({ venueId }: TimelinePageProps) {
-    const {
-        selectedDate,
-        setSelectedDate,
-        venue,
-        courtsWithBookings,
-        allBookings,
-        isLoading,
-        isError,
-        handleNewBooking,
-    } = useTimelineData(venueId);
+  const {
+    selectedDate,
+    setSelectedDate,
+    venue,
+    courtsWithBookings,
+    allBookings,
+    isLoading,
+    isError,
+    handleNewBooking,
+    handleCellClick,
+    handleBookingClick,
+    handleBookingSubmit,
+    bookingDialogOpen,
+    setBookingDialogOpen,
+    bookingDialogData,
+    isSubmitting,
+  } = useTimelineData(venueId);
 
-    if (isError || !venue) {
-        return <TimelineErrorState />;
-    }
+  if (isError || !venue) {
+    return <TimelineErrorState />;
+  }
 
-    return (
-        <div className='space-y-4 p-4 md:space-y-6 md:p-6 animate-in fade-in duration-500'>
-            <VenueHeader venue={venue} />
+  return (
+    <div className='animate-in fade-in space-y-4 p-4 duration-500 md:space-y-6 md:p-6'>
+      <VenueHeader venue={venue} />
 
-            <TimelineHeader
-                title='Schedule'
-                dateNavigation={
-                    <DateNavigation date={selectedDate} onDateChange={setSelectedDate} />
-                }
-                actions={<NewBookingButton onClick={handleNewBooking} />}
-            />
-            {isLoading ? (
-                <TimelineLoadingSkeleton />
-            ) : (
-                <MemoizedTimelineGrid
-                    courts={courtsWithBookings || []}
-                    bookings={allBookings}
-                />
-            )}
+      <TimelineHeader
+        title='Schedule'
+        dateNavigation={
+          <DateNavigation date={selectedDate} onDateChange={setSelectedDate} />
+        }
+        actions={<NewBookingButton onClick={handleNewBooking} />}
+      />
+      {isLoading ? (
+        <TimelineLoadingSkeleton />
+      ) : (
+        <MemoizedTimelineGrid
+          courts={courtsWithBookings || []}
+          bookings={allBookings}
+          onCellClick={handleCellClick}
+          onBookingClick={handleBookingClick}
+        />
+      )}
 
-        </div>
-    );
+      {/* Booking Dialog */}
+      <BookingDialog
+        open={bookingDialogOpen}
+        onOpenChange={setBookingDialogOpen}
+        courts={courtsWithBookings || []}
+        selectedDate={selectedDate}
+        initialData={bookingDialogData}
+        onSubmit={handleBookingSubmit}
+        isLoading={isSubmitting}
+      />
+    </div>
+  );
 }

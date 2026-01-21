@@ -145,8 +145,8 @@ export const ForgotPasswordForm = () => {
                 <emailForm.Field name='email'>
                   {field => {
                     const shouldShowError =
-                      field.state.meta.isTouched && 
-                      field.state.value.length > 0 && 
+                      field.state.meta.isTouched &&
+                      field.state.value.length > 0 &&
                       !field.state.meta.isValid;
 
                     return (
@@ -163,7 +163,9 @@ export const ForgotPasswordForm = () => {
                           onBlur={field.handleBlur}
                           onChange={e => field.handleChange(e.target.value)}
                           aria-invalid={shouldShowError}
-                          className={shouldShowError ? 'border-destructive' : ''}
+                          className={
+                            shouldShowError ? 'border-destructive' : ''
+                          }
                           autoComplete='off'
                           disabled={isLoading}
                         />
@@ -195,8 +197,8 @@ export const ForgotPasswordForm = () => {
                 <resetForm.Field name='resetCode'>
                   {field => {
                     const shouldShowError =
-                      field.state.meta.isTouched && 
-                      field.state.value.length > 0 && 
+                      field.state.meta.isTouched &&
+                      field.state.value.length > 0 &&
                       !field.state.meta.isValid;
 
                     return (
@@ -239,7 +241,9 @@ export const ForgotPasswordForm = () => {
                           onBlur={field.handleBlur}
                           onChange={e => field.handleChange(e.target.value)}
                           aria-invalid={shouldShowError}
-                          className={shouldShowError ? 'border-destructive' : ''}
+                          className={
+                            shouldShowError ? 'border-destructive' : ''
+                          }
                           maxLength={6}
                           disabled={isLoading}
                           autoComplete='one-time-code'
@@ -254,8 +258,8 @@ export const ForgotPasswordForm = () => {
                 <resetForm.Field name='newPassword'>
                   {field => {
                     const shouldShowError =
-                      field.state.meta.isTouched && 
-                      field.state.value.length > 0 && 
+                      field.state.meta.isTouched &&
+                      field.state.value.length > 0 &&
                       !field.state.meta.isValid;
 
                     return (
@@ -271,7 +275,11 @@ export const ForgotPasswordForm = () => {
                             placeholder={tForgotPasswordPage(
                               'newPasswordPlaceholder'
                             )}
-                            className={shouldShowError ? 'pr-8 border-destructive' : 'pr-8'}
+                            className={
+                              shouldShowError
+                                ? 'border-destructive pr-8'
+                                : 'pr-8'
+                            }
                             value={field.state.value}
                             onBlur={field.handleBlur}
                             onChange={e => field.handleChange(e.target.value)}
@@ -283,7 +291,9 @@ export const ForgotPasswordForm = () => {
                             className='absolute top-1/2 right-0 -translate-y-1/2 p-2'
                             type='button'
                             onClick={toggleShowPassword}
-                            aria-label={showPassword ? 'Hide password' : 'Show password'}
+                            aria-label={
+                              showPassword ? 'Hide password' : 'Show password'
+                            }
                           >
                             {showPassword ? (
                               <Eye className='size-4' />
@@ -302,8 +312,8 @@ export const ForgotPasswordForm = () => {
                 <resetForm.Field name='confirmPassword'>
                   {field => {
                     const shouldShowError =
-                      field.state.meta.isTouched && 
-                      field.state.value.length > 0 && 
+                      field.state.meta.isTouched &&
+                      field.state.value.length > 0 &&
                       !field.state.meta.isValid;
 
                     return (
@@ -319,7 +329,11 @@ export const ForgotPasswordForm = () => {
                             placeholder={tForgotPasswordPage(
                               'confirmPasswordPlaceholder'
                             )}
-                            className={shouldShowError ? 'pr-8 border-destructive' : 'pr-8'}
+                            className={
+                              shouldShowError
+                                ? 'border-destructive pr-8'
+                                : 'pr-8'
+                            }
                             value={field.state.value}
                             onBlur={field.handleBlur}
                             onChange={e => field.handleChange(e.target.value)}
@@ -331,7 +345,11 @@ export const ForgotPasswordForm = () => {
                             className='absolute top-1/2 right-0 -translate-y-1/2 p-2'
                             type='button'
                             onClick={toggleShowConfirmPassword}
-                            aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+                            aria-label={
+                              showConfirmPassword
+                                ? 'Hide confirm password'
+                                : 'Show confirm password'
+                            }
                           >
                             {showConfirmPassword ? (
                               <Eye className='size-4' />

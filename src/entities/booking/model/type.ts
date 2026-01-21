@@ -51,7 +51,6 @@ export interface Booking {
   price?: number;
 }
 
-
 export interface BookingsByBranchResponse {
   success: boolean;
   data: Court[];

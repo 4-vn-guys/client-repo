@@ -14,7 +14,7 @@ import { useAuthStore } from '@/src/shared/store';
 export function OwnerSidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useAuthStore();
-  
+
   return (
     <>
       {/* Mobile menu button */}
@@ -82,7 +82,10 @@ export function OwnerSidebar() {
             ))}
           </div>
           <Separator className='my-3' />
-          <SidebarUser name={user?.username || ""} venueName={user?.role || ""} />
+          <SidebarUser
+            name={user?.username || ''}
+            venueName={user?.role || ''}
+          />
         </div>
       </aside>
     </>

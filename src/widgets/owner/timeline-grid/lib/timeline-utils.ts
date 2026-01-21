@@ -31,11 +31,11 @@ export function calculateBookingPosition(
   const startMinutes = date.getMinutes();
 
   // Calculate offset from start hour in hourly intervals
-  const totalMinutesFromStart = 
+  const totalMinutesFromStart =
     (startHour - TIMELINE_CONFIG.startHour) * 60 + startMinutes;
   const intervalCount = totalMinutesFromStart / TIMELINE_CONFIG.intervalMinutes;
   const left = intervalCount * slotWidth;
-  
+
   // Duration is in hours, convert to hourly intervals
   const durationIntervals = (duration * 60) / TIMELINE_CONFIG.intervalMinutes;
   const width = durationIntervals * slotWidth;
