@@ -18,7 +18,8 @@ import toast from 'react-hot-toast';
  * Encapsulates all data fetching logic following FSD principles
  */
 export function useTimelineData(venueId: string) {
-  const [selectedDate, setSelectedDate] = useState(new Date(2025, 11, 9));
+  const now = new Date();
+  const [selectedDate, setSelectedDate] = useState(new Date(now.getFullYear(), now.getMonth(), now.getDate()));
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
   const [bookingDialogData, setBookingDialogData] = useState<
     | {
