@@ -42,5 +42,7 @@ next-env.d.ts
 
 # docs
 docs/
+/.agent/
+/.gemini/
 .agent/
 .gemini/
