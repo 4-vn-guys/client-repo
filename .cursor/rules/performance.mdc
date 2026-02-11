@@ -1,0 +1,28 @@
+---
+description: Performance and Core Web Vitals best practices
+globs: src/**/*.tsx, src/**/*.ts, app/**/*.tsx
+alwaysApply: false
+---
+
+# Performance
+
+### Core Web Vitals targets
+- **LCP**: < 2.5s (use Next.js `Image`, `priority` for above-fold)
+- **INP**: < 200ms (avoid heavy sync work in handlers; use `startTransition`, debounce)
+- **CLS**: < 0.1 (set image dimensions, reserve space, `font-display: swap`)
+
+### When adding UI or data
+- **Large/heavy components**: Use `dynamic()` with a loading fallback (e.g. `<Skeleton />`).
+- **Images**: Use `next/image` with `width`/`height` (or `fill`); use `priority` for LCP images.
+- **Lists or expensive renders**: Wrap in `React.memo` when props are stable.
+- **Server/async data**: Prefer React Query with a sensible `staleTime` to avoid over-fetching.
+
+### Measuring performance
+- Use `useWebVitals()` from `@/shared/lib/performance` for LCP, INP, CLS, etc.
+- Use `PerformanceMetrics.mark()` / `measure()` for custom timings.
+- Run `pnpm run analyze` to inspect bundle size and duplicates.
+
+### Quick fixes
+- **High LCP**: Optimize images, preload critical assets, improve TTFB.
+- **Poor INP**: Memoize components, debounce handlers, code-split heavy modules.
+- **High CLS**: Always set image dimensions; reserve space for dynamic content; avoid inserting content above existing content.

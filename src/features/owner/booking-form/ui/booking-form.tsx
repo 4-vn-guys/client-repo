@@ -6,6 +6,7 @@ import type { Court } from '@/entities/court';
 import {
   useBookingFormSchema,
   type CreateBookingDto,
+  type UpdateBookingDto,
 } from '@/entities/booking';
 import { CourtSelector } from './court-selector';
 import { EnhancedTimeInputs } from './enhanced-time-inputs';
@@ -26,9 +27,12 @@ interface BookingFormProps {
     startMinute?: string;
     endHour?: number;
     endMinute?: string;
+    status?: 'pending' | 'confirmed' | 'cancelled' | 'maintenance';
+    statusPayment?: 'unpaid' | 'paid' | 'refunded';
+    totalPrice?: number;
   };
   isEditMode?: boolean;
-  onSubmit: (data: CreateBookingDto) => Promise<void>;
+  onSubmit: (data: CreateBookingDto | UpdateBookingDto) => Promise<void>;
   isLoading: boolean;
 }
 
@@ -47,8 +51,10 @@ export function BookingForm({
       courtId: initialData?.courtId || '',
       bookingTitle: initialData?.bookingTitle || '',
       customerName: initialData?.customerName || '',
-      type: 'walk-in' as const,
-      status: 'unpaid' as const,
+      type: 'walk-in' as 'walk-in' | 'reservation',
+      status: (initialData?.status || 'pending') as 'pending' | 'confirmed' | 'cancelled' | 'maintenance',
+      statusPayment: (initialData?.statusPayment || 'unpaid') as 'unpaid' | 'paid' | 'refunded',
+      totalPrice: initialData?.totalPrice || 0,
       startHour: initialData?.startHour?.toString().padStart(2, '0') || '14',
       startMinute: initialData?.startMinute || '00',
       endHour: initialData?.endHour?.toString().padStart(2, '0') || '16',
@@ -80,15 +86,30 @@ export function BookingForm({
           0
         );
 
-        const dto: CreateBookingDto = {
-          courtId: value.courtId,
-          bookingTitle: value.bookingTitle,
-          startTime: startDateTime.toISOString(),
-          endTime: endDateTime.toISOString(),
-          note: value.note || undefined,
-        };
-
-        await onSubmit(dto);
+        // Different DTO based on edit mode
+        if (isEditMode) {
+          // Update booking - can include status, payment, and price fields
+          const updateDto: UpdateBookingDto = {
+            bookingTitle: value.bookingTitle,
+            startTime: startDateTime.toISOString(),
+            endTime: endDateTime.toISOString(),
+            totalPrice: value.totalPrice,
+            note: value.note || undefined,
+            status: value.status,
+            statusPayment: value.statusPayment,
+          };
+          await onSubmit(updateDto);
+        } else {
+          // Create booking - only core fields
+          const createDto: CreateBookingDto = {
+            courtId: value.courtId,
+            bookingTitle: value.bookingTitle,
+            startTime: startDateTime.toISOString(),
+            endTime: endDateTime.toISOString(),
+            note: value.note || undefined,
+          };
+          await onSubmit(createDto);
+        }
       } catch (err) {
         console.error('Form submission error:', err);
       }
@@ -136,51 +157,72 @@ export function BookingForm({
         }}
       </form.Field>
 
-      {/* Type and Status */}
+      {/* Status Fields */}
       <div className='grid grid-cols-2 gap-4'>
-        <form.Field name='type'>
+        <form.Field name='status'>
           {field => (
             <Field>
-              <FieldLabel htmlFor={field.name}>Type</FieldLabel>
+              <FieldLabel htmlFor={field.name}>Booking Status</FieldLabel>
               <select
                 id={field.name}
                 value={field.state.value}
                 onChange={e =>
                   field.handleChange(
-                    e.target.value as 'walk-in' | 'reservation'
+                    e.target.value as 'pending' | 'confirmed' | 'cancelled' | 'maintenance'
                   )
                 }
                 className='w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-violet-500 focus:outline-none'
               >
-                <option value='walk-in'>Walk-in</option>
-                <option value='reservation'>Reservation</option>
+                <option value='pending'>Pending</option>
+                <option value='confirmed'>Confirmed</option>
+                <option value='cancelled'>Cancelled</option>
+                <option value='maintenance'>Maintenance</option>
               </select>
             </Field>
           )}
         </form.Field>
 
-        <form.Field name='status'>
+        <form.Field name='statusPayment'>
           {field => (
             <Field>
-              <FieldLabel htmlFor={field.name}>Status</FieldLabel>
+              <FieldLabel htmlFor={field.name}>Payment Status</FieldLabel>
               <select
                 id={field.name}
                 value={field.state.value}
                 onChange={e =>
                   field.handleChange(
-                    e.target.value as 'unpaid' | 'paid' | 'pending'
+                    e.target.value as 'unpaid' | 'paid' | 'refunded'
                   )
                 }
                 className='w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-violet-500 focus:outline-none'
               >
-                <option value='unpaid'>Unpaid (Red)</option>
-                <option value='paid'>Paid (Green)</option>
-                <option value='pending'>Pending (Yellow)</option>
+                <option value='unpaid'>Unpaid</option>
+                <option value='paid'>Paid</option>
+                <option value='refunded'>Refunded</option>
               </select>
             </Field>
           )}
         </form.Field>
       </div>
+
+      {/* Total Price */}
+      <form.Field name='totalPrice'>
+        {field => (
+          <Field>
+            <FieldLabel htmlFor={field.name}>Total Price</FieldLabel>
+            <Input
+              id={field.name}
+              name={field.name}
+              type='number'
+              min='0'
+              step='0.01'
+              value={field.state.value}
+              onChange={e => field.handleChange(parseFloat(e.target.value) || 0)}
+              placeholder='Enter total price...'
+            />
+          </Field>
+        )}
+      </form.Field>
 
       {/* Court & Time Section */}
       <div className='space-y-4 border-t pt-6'>
@@ -265,13 +307,13 @@ export function BookingForm({
                           }}
                           startTimeError={
                             startHourField.state.meta.isTouched &&
-                            startHourField.state.meta.errors.length > 0
+                              startHourField.state.meta.errors.length > 0
                               ? String(startHourField.state.meta.errors[0])
                               : undefined
                           }
                           endTimeError={
                             endHourField.state.meta.isTouched &&
-                            endHourField.state.meta.errors.length > 0
+                              endHourField.state.meta.errors.length > 0
                               ? String(endHourField.state.meta.errors[0])
                               : undefined
                           }
@@ -306,7 +348,7 @@ export function BookingForm({
                 isEditMode={isEditMode}
                 noteError={
                   noteField.state.meta.isTouched &&
-                  noteField.state.meta.errors.length > 0
+                    noteField.state.meta.errors.length > 0
                     ? String(noteField.state.meta.errors[0])
                     : undefined
                 }

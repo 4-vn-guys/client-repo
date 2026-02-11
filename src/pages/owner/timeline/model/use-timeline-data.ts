@@ -32,6 +32,9 @@ export function useTimelineData(venueId: string) {
         startMinute?: string;
         endHour?: number;
         endMinute?: string;
+        status?: 'pending' | 'confirmed' | 'cancelled' | 'maintenance';
+        statusPayment?: 'unpaid' | 'paid' | 'refunded';
+        totalPrice?: number;
       }
     | undefined
   >();
@@ -135,6 +138,9 @@ export function useTimelineData(venueId: string) {
       startMinute: startDate.getMinutes().toString().padStart(2, '0'),
       endHour: endDate.getHours(),
       endMinute: endDate.getMinutes().toString().padStart(2, '0'),
+      status: booking.status,
+      statusPayment: booking.statusPayment as 'unpaid' | 'paid' | 'refunded',
+      totalPrice: booking.totalPrice,
     });
     setBookingDialogOpen(true);
   }, []);

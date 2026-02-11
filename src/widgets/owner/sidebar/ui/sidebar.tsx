@@ -6,7 +6,7 @@ import { Menu, X } from 'lucide-react';
 
 import { ownerNavItems, ownerBottomNavItems } from '../config';
 import { SidebarNavItem } from './sidebar-nav-item';
-import { SidebarUser } from './sidebar-user';
+import { UserProfileButton } from '@/features/user-profile';
 import { Separator } from '@/shared/ui/separator';
 import { cn } from '@/shared/lib/utils';
 import { useAuthStore } from '@/src/shared/store';
@@ -82,9 +82,10 @@ export function OwnerSidebar() {
             ))}
           </div>
           <Separator className='my-3' />
-          <SidebarUser
-            name={user?.username || ''}
-            venueName={user?.role || ''}
+          <UserProfileButton
+            name={user?.username || 'User'}
+            role={user?.role || 'Owner'}
+            email={user?.email}
           />
         </div>
       </aside>

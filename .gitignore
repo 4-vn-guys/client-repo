@@ -46,3 +46,4 @@ docs/
 /.gemini/
 .agent/
 .gemini/
+.shared/

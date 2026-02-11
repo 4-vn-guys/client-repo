@@ -1,5 +1,6 @@
 /**
- * Create Booking DTO - matches API requirements
+ * Create Booking DTO - matches API create endpoint
+ * API only requires: courtId, bookingTitle, startTime, endTime, note (optional)
  */
 export interface CreateBookingDto {
   courtId: string;
@@ -10,10 +11,17 @@ export interface CreateBookingDto {
 }
 
 /**
- * Update Booking DTO
+ * Update Booking DTO - matches API update endpoint
+ * All fields are optional for PATCH updates
  */
-export interface UpdateBookingDto extends Partial<CreateBookingDto> {
-  status?: string;
+export interface UpdateBookingDto {
+  bookingTitle?: string;
+  startTime?: string;
+  endTime?: string;
+  totalPrice?: number;
+  note?: string;
+  status?: 'pending' | 'confirmed' | 'cancelled' | 'maintenance';
+  statusPayment?: 'unpaid' | 'paid' | 'refunded';
 }
 
 /**

@@ -1,0 +1,38 @@
+---
+description: Feature-Sliced Design layer hierarchy and import rules
+globs: src/**/*.ts, src/**/*.tsx, app/**/*.tsx
+alwaysApply: false
+---
+
+# FSD Architecture
+
+This project uses **Feature-Sliced Design**. Imports must follow unidirectional flow:
+
+**Allowed:** `app` → `widgets` → `features` → `entities` → `shared`  
+**Any layer** may import from `shared`.
+
+### Correct imports
+- `app/` or route files → `@/widgets/*`, `@/pages/*` (pages only from app when composing routes)
+- `widgets/` → `@/features/*`, `@/entities/*`, `@/shared/*`
+- `features/` → `@/entities/*`, `@/shared/*`
+- `entities/` → `@/shared/*`
+
+### Incorrect imports
+- `app/` → `@/features/*` or `@/entities/*` directly (skip layers)
+- `entities/` → `@/features/*`
+- `shared/` → `@/entities/*` or any upper layer
+
+### Public API
+Each slice exposes a single API via `index.ts`. Import from the slice root, not internal paths.
+
+```typescript
+// ✅ GOOD
+import { Button } from '@/shared/ui/button';
+import { VenuesPage } from '@/widgets/owner/venues-page';
+
+// ❌ BAD – internal path
+import { Button } from '@/shared/ui/button/button-component';
+```
+
+### Slice structure
+Use: `ui/`, `model/`, `api/`, `lib/` as needed, plus `index.ts`. Co-locate by slice; keep one responsibility per slice.

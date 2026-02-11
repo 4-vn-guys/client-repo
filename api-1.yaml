@@ -1,0 +1,1575 @@
+openapi: 3.0.3
+info:
+  title: My API
+  description: Elysia API Documentation
+  version: 1.0.0
+tags:
+  - name: Auth
+    description: Authentication APIs
+  - name: User
+    description: User APIs
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas: {}
+paths:
+  /:
+    get:
+      operationId: getIndex
+      responses:
+        "200": {}
+  /api/v1/health/:
+    get:
+      operationId: getApiV1Health
+      responses:
+        "200": {}
+  /api/v1/users/{id}:
+    get:
+      parameters:
+        - schema:
+            type: string
+            uuid: true
+          in: path
+          name: id
+          required: true
+      operationId: getApiV1UsersById
+      tags:
+        - User
+      summary: Get user by id
+      security:
+        - bearerAuth: []
+      responses:
+        "200": {}
+    delete:
+      parameters:
+        - schema:
+            type: string
+            uuid: true
+          in: path
+          name: id
+          required: true
+      operationId: deleteApiV1UsersById
+      tags:
+        - User
+      summary: Delete user by ID
+      security:
+        - bearerAuth: []
+      responses:
+        "200": {}
+  /api/v1/users/:
+    get:
+      parameters:
+        - schema:
+            minimum: 1
+            default: 1
+            anyOf:
+              - format: integer
+                default: 0
+                type: string
+              - minimum: 1
+                default: 1
+                type: integer
+          in: query
+          name: page
+          required: false
+        - schema:
+            minimum: 5
+            default: 100
+            anyOf:
+              - format: integer
+                default: 0
+                type: string
+              - minimum: 5
+                default: 100
+                type: integer
+          in: query
+          name: perPage
+          required: false
+        - schema:
+            type: string
+            minLength: 1
+            maxLength: 250
+          in: query
+          name: search
+          required: false
+      operationId: getApiV1Users
+      tags:
+        - User
+      summary: Get list user
+      security:
+        - bearerAuth: []
+      responses:
+        "200": {}
+    post:
+      parameters: []
+      operationId: postApiV1Users
+      tags:
+        - User
+      summary: Create owner user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - userName
+              properties:
+                email:
+                  format: email
+                  error: Invalid email format
+                  type: string
+                password:
+                  minLength: 8
+                  maxLength: 16
+                  pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
+                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                    letters, a number, and a special character
+                  type: string
+                userName:
+                  maxLength: 50
+                  type: string
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - userName
+              properties:
+                email:
+                  format: email
+                  error: Invalid email format
+                  type: string
+                password:
+                  minLength: 8
+                  maxLength: 16
+                  pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
+                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                    letters, a number, and a special character
+                  type: string
+                userName:
+                  maxLength: 50
+                  type: string
+          text/plain:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - userName
+              properties:
+                email:
+                  format: email
+                  error: Invalid email format
+                  type: string
+                password:
+                  minLength: 8
+                  maxLength: 16
+                  pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
+                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                    letters, a number, and a special character
+                  type: string
+                userName:
+                  maxLength: 50
+                  type: string
+      responses:
+        "200": {}
+  /api/v1/auth/login/email:
+    post:
+      parameters: []
+      operationId: postApiV1AuthLoginEmail
+      tags:
+        - Auth
+      summary: Login with email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  format: email
+                  error: Invalid email format
+                  type: string
+                password:
+                  minLength: 8
+                  maxLength: 16
+                  pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
+                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                    letters, a number, and a special character
+                  type: string
+              additionalProperties: false
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  format: email
+                  error: Invalid email format
+                  type: string
+                password:
+                  minLength: 8
+                  maxLength: 16
+                  pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
+                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                    letters, a number, and a special character
+                  type: string
+              additionalProperties: false
+          text/plain:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  format: email
+                  error: Invalid email format
+                  type: string
+                password:
+                  minLength: 8
+                  maxLength: 16
+                  pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
+                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                    letters, a number, and a special character
+                  type: string
+              additionalProperties: false
+      responses:
+        "200": {}
+  /api/v1/auth/login/phone-number:
+    post:
+      parameters: []
+      operationId: postApiV1AuthLoginPhone-number
+      tags:
+        - Auth
+      summary: Login with phone number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - phoneNumber
+                - password
+              properties:
+                phoneNumber:
+                  pattern: ^(0|\+84)[0-9]{9}$
+                  error: Phone number must start with '0' or '+84' followed by 9 digits
+                  type: string
+                password:
+                  minLength: 8
+                  maxLength: 16
+                  pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
+                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                    letters, a number, and a special character
+                  type: string
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - phoneNumber
+                - password
+              properties:
+                phoneNumber:
+                  pattern: ^(0|\+84)[0-9]{9}$
+                  error: Phone number must start with '0' or '+84' followed by 9 digits
+                  type: string
+                password:
+                  minLength: 8
+                  maxLength: 16
+                  pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
+                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                    letters, a number, and a special character
+                  type: string
+          text/plain:
+            schema:
+              type: object
+              required:
+                - phoneNumber
+                - password
+              properties:
+                phoneNumber:
+                  pattern: ^(0|\+84)[0-9]{9}$
+                  error: Phone number must start with '0' or '+84' followed by 9 digits
+                  type: string
+                password:
+                  minLength: 8
+                  maxLength: 16
+                  pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
+                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                    letters, a number, and a special character
+                  type: string
+      responses:
+        "200": {}
+  /api/v1/auth/refresh-token:
+    post:
+      parameters: []
+      operationId: postApiV1AuthRefresh-token
+      tags:
+        - Auth
+      summary: Refresh access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refreshToken
+              properties:
+                refreshToken:
+                  maxLength: 255
+                  type: string
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - refreshToken
+              properties:
+                refreshToken:
+                  maxLength: 255
+                  type: string
+          text/plain:
+            schema:
+              type: object
+              required:
+                - refreshToken
+              properties:
+                refreshToken:
+                  maxLength: 255
+                  type: string
+      responses:
+        "200": {}
+  /api/v1/auth/register:
+    post:
+      parameters: []
+      operationId: postApiV1AuthRegister
+      tags:
+        - Auth
+      summary: Register with email or phone number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - password
+                - userName
+              properties:
+                email:
+                  format: email
+                  error: Invalid email format
+                  type: string
+                phoneNumber:
+                  pattern: ^(0|\+84)[0-9]{9}$
+                  error: Phone number must start with '0' or '+84' followed by 9 digits
+                  type: string
+                password:
+                  minLength: 8
+                  maxLength: 16
+                  pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
+                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                    letters, a number, and a special character
+                  type: string
+                userName:
+                  minLength: 5
+                  maxLength: 50
+                  pattern: ^(?!\s*$).+
+                  error: Username must be between 5 and 50 characters and cannot be empty
+                  type: string
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - password
+                - userName
+              properties:
+                email:
+                  format: email
+                  error: Invalid email format
+                  type: string
+                phoneNumber:
+                  pattern: ^(0|\+84)[0-9]{9}$
+                  error: Phone number must start with '0' or '+84' followed by 9 digits
+                  type: string
+                password:
+                  minLength: 8
+                  maxLength: 16
+                  pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
+                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                    letters, a number, and a special character
+                  type: string
+                userName:
+                  minLength: 5
+                  maxLength: 50
+                  pattern: ^(?!\s*$).+
+                  error: Username must be between 5 and 50 characters and cannot be empty
+                  type: string
+          text/plain:
+            schema:
+              type: object
+              required:
+                - password
+                - userName
+              properties:
+                email:
+                  format: email
+                  error: Invalid email format
+                  type: string
+                phoneNumber:
+                  pattern: ^(0|\+84)[0-9]{9}$
+                  error: Phone number must start with '0' or '+84' followed by 9 digits
+                  type: string
+                password:
+                  minLength: 8
+                  maxLength: 16
+                  pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
+                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                    letters, a number, and a special character
+                  type: string
+                userName:
+                  minLength: 5
+                  maxLength: 50
+                  pattern: ^(?!\s*$).+
+                  error: Username must be between 5 and 50 characters and cannot be empty
+                  type: string
+      responses:
+        "200": {}
+  /api/v1/auth/me:
+    get:
+      operationId: getApiV1AuthMe
+      tags:
+        - Auth
+      summary: Get user profile
+      security:
+        - bearerAuth: []
+      responses:
+        "200": {}
+    patch:
+      parameters: []
+      operationId: patchApiV1AuthMe
+      tags:
+        - Auth
+      summary: Update profile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userName:
+                  minLength: 5
+                  maxLength: 50
+                  pattern: ^(?!\s*$).+
+                  error: Username must be between 5 and 50 characters and cannot be empty
+                  type: string
+                phoneNumber:
+                  pattern: ^(0|\+84)[0-9]{9}$
+                  error: Phone number must start with '0' or '+84' followed by 9 digits
+                  type: string
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                userName:
+                  minLength: 5
+                  maxLength: 50
+                  pattern: ^(?!\s*$).+
+                  error: Username must be between 5 and 50 characters and cannot be empty
+                  type: string
+                phoneNumber:
+                  pattern: ^(0|\+84)[0-9]{9}$
+                  error: Phone number must start with '0' or '+84' followed by 9 digits
+                  type: string
+          text/plain:
+            schema:
+              type: object
+              properties:
+                userName:
+                  minLength: 5
+                  maxLength: 50
+                  pattern: ^(?!\s*$).+
+                  error: Username must be between 5 and 50 characters and cannot be empty
+                  type: string
+                phoneNumber:
+                  pattern: ^(0|\+84)[0-9]{9}$
+                  error: Phone number must start with '0' or '+84' followed by 9 digits
+                  type: string
+      responses:
+        "200": {}
+  /api/v1/auth/change-password:
+    put:
+      parameters: []
+      operationId: putApiV1AuthChange-password
+      tags:
+        - Auth
+      summary: Change password
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - oldPassword
+                - newPassword
+                - refreshToken
+              properties:
+                oldPassword:
+                  minLength: 8
+                  maxLength: 16
+                  pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
+                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                    letters, a number, and a special character
+                  type: string
+                newPassword:
+                  minLength: 8
+                  maxLength: 16
+                  pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
+                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                    letters, a number, and a special character
+                  type: string
+                refreshToken:
+                  type: string
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - oldPassword
+                - newPassword
+                - refreshToken
+              properties:
+                oldPassword:
+                  minLength: 8
+                  maxLength: 16
+                  pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
+                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                    letters, a number, and a special character
+                  type: string
+                newPassword:
+                  minLength: 8
+                  maxLength: 16
+                  pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
+                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                    letters, a number, and a special character
+                  type: string
+                refreshToken:
+                  type: string
+          text/plain:
+            schema:
+              type: object
+              required:
+                - oldPassword
+                - newPassword
+                - refreshToken
+              properties:
+                oldPassword:
+                  minLength: 8
+                  maxLength: 16
+                  pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
+                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                    letters, a number, and a special character
+                  type: string
+                newPassword:
+                  minLength: 8
+                  maxLength: 16
+                  pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
+                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                    letters, a number, and a special character
+                  type: string
+                refreshToken:
+                  type: string
+      responses:
+        "200": {}
+  /api/v1/branches/:
+    get:
+      parameters:
+        - schema:
+            minimum: 1
+            anyOf:
+              - format: integer
+                default: 0
+                type: string
+              - minimum: 1
+                type: integer
+          in: query
+          name: page
+          required: false
+        - schema:
+            minimum: 5
+            anyOf:
+              - format: integer
+                default: 0
+                type: string
+              - minimum: 5
+                type: integer
+          in: query
+          name: perPage
+          required: false
+        - schema:
+            type: string
+            minLength: 1
+            maxLength: 250
+          in: query
+          name: search
+          required: false
+      operationId: getApiV1Branches
+      tags:
+        - Branch
+      summary: Get list of branches with pagination
+      security:
+        - bearerAuth: []
+      responses:
+        "200": {}
+    post:
+      parameters: []
+      operationId: postApiV1Branches
+      tags:
+        - Branch
+      summary: Create a new branch
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - address
+                - latitude
+                - longitude
+                - openTime
+                - closeTime
+              properties:
+                name:
+                  minLength: 1
+                  maxLength: 250
+                  error: Branch name must be between 1 and 250 characters
+                  type: string
+                policy:
+                  maxLength: 1000
+                  error: Policy must not exceed 1000 characters
+                  type: string
+                hotline:
+                  minLength: 1
+                  maxLength: 20
+                  error: Hotline must be between 1 and 20 characters
+                  type: string
+                address:
+                  minLength: 1
+                  maxLength: 250
+                  error: Address must be between 1 and 250 characters
+                  type: string
+                latitude:
+                  minimum: -90
+                  maximum: 90
+                  error: Latitude must be between -90 and 90
+                  type: number
+                longitude:
+                  minimum: -180
+                  maximum: 180
+                  error: Longitude must be between -180 and 180
+                  type: number
+                openTime:
+                  pattern: ^([01]?[0-9]|2[0-3]):[0-5][0-9]$
+                  error: Time must be in HH:mm format (e.g., 09:00, 18:30)
+                  type: string
+                closeTime:
+                  pattern: ^([01]?[0-9]|2[0-3]):[0-5][0-9]$
+                  error: Time must be in HH:mm format (e.g., 09:00, 18:30)
+                  type: string
+                mapImageId:
+                  format: uuid
+                  error: Must be a valid UUID
+                  type: string
+                images:
+                  error: Must be an array of valid UUIDs
+                  type: array
+                  items:
+                    format: uuid
+                    type: string
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - name
+                - address
+                - latitude
+                - longitude
+                - openTime
+                - closeTime
+              properties:
+                name:
+                  minLength: 1
+                  maxLength: 250
+                  error: Branch name must be between 1 and 250 characters
+                  type: string
+                policy:
+                  maxLength: 1000
+                  error: Policy must not exceed 1000 characters
+                  type: string
+                hotline:
+                  minLength: 1
+                  maxLength: 20
+                  error: Hotline must be between 1 and 20 characters
+                  type: string
+                address:
+                  minLength: 1
+                  maxLength: 250
+                  error: Address must be between 1 and 250 characters
+                  type: string
+                latitude:
+                  minimum: -90
+                  maximum: 90
+                  error: Latitude must be between -90 and 90
+                  type: number
+                longitude:
+                  minimum: -180
+                  maximum: 180
+                  error: Longitude must be between -180 and 180
+                  type: number
+                openTime:
+                  pattern: ^([01]?[0-9]|2[0-3]):[0-5][0-9]$
+                  error: Time must be in HH:mm format (e.g., 09:00, 18:30)
+                  type: string
+                closeTime:
+                  pattern: ^([01]?[0-9]|2[0-3]):[0-5][0-9]$
+                  error: Time must be in HH:mm format (e.g., 09:00, 18:30)
+                  type: string
+                mapImageId:
+                  format: uuid
+                  error: Must be a valid UUID
+                  type: string
+                images:
+                  error: Must be an array of valid UUIDs
+                  type: array
+                  items:
+                    format: uuid
+                    type: string
+          text/plain:
+            schema:
+              type: object
+              required:
+                - name
+                - address
+                - latitude
+                - longitude
+                - openTime
+                - closeTime
+              properties:
+                name:
+                  minLength: 1
+                  maxLength: 250
+                  error: Branch name must be between 1 and 250 characters
+                  type: string
+                policy:
+                  maxLength: 1000
+                  error: Policy must not exceed 1000 characters
+                  type: string
+                hotline:
+                  minLength: 1
+                  maxLength: 20
+                  error: Hotline must be between 1 and 20 characters
+                  type: string
+                address:
+                  minLength: 1
+                  maxLength: 250
+                  error: Address must be between 1 and 250 characters
+                  type: string
+                latitude:
+                  minimum: -90
+                  maximum: 90
+                  error: Latitude must be between -90 and 90
+                  type: number
+                longitude:
+                  minimum: -180
+                  maximum: 180
+                  error: Longitude must be between -180 and 180
+                  type: number
+                openTime:
+                  pattern: ^([01]?[0-9]|2[0-3]):[0-5][0-9]$
+                  error: Time must be in HH:mm format (e.g., 09:00, 18:30)
+                  type: string
+                closeTime:
+                  pattern: ^([01]?[0-9]|2[0-3]):[0-5][0-9]$
+                  error: Time must be in HH:mm format (e.g., 09:00, 18:30)
+                  type: string
+                mapImageId:
+                  format: uuid
+                  error: Must be a valid UUID
+                  type: string
+                images:
+                  error: Must be an array of valid UUIDs
+                  type: array
+                  items:
+                    format: uuid
+                    type: string
+      responses:
+        "200": {}
+  /api/v1/branches/{id}:
+    get:
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            error: Must be a valid UUID
+          in: path
+          name: id
+          required: true
+      operationId: getApiV1BranchesById
+      tags:
+        - Branch
+      summary: Get branch by ID
+      security:
+        - bearerAuth: []
+      responses:
+        "200": {}
+    patch:
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            error: Must be a valid UUID
+          in: path
+          name: id
+          required: true
+      operationId: patchApiV1BranchesById
+      tags:
+        - Branch
+      summary: Update a branch by ID
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  minLength: 1
+                  maxLength: 250
+                  error: Branch name must be between 1 and 250 characters
+                  type: string
+                policy:
+                  maxLength: 1000
+                  error: Policy must not exceed 1000 characters
+                  type: string
+                hotline:
+                  minLength: 1
+                  maxLength: 20
+                  error: Hotline must be between 1 and 20 characters
+                  type: string
+                address:
+                  minLength: 1
+                  maxLength: 250
+                  error: Address must be between 1 and 250 characters
+                  type: string
+                postalCode:
+                  minLength: 1
+                  maxLength: 250
+                  error: Postal code must be between 1 and 250 characters
+                  type: string
+                latitude:
+                  minimum: -90
+                  maximum: 90
+                  error: Latitude must be between -90 and 90
+                  type: number
+                longitude:
+                  minimum: -180
+                  maximum: 180
+                  error: Longitude must be between -180 and 180
+                  type: number
+                openTime:
+                  pattern: ^([01]?[0-9]|2[0-3]):[0-5][0-9]$
+                  error: Time must be in HH:mm format (e.g., 09:00, 18:30)
+                  type: string
+                closeTime:
+                  pattern: ^([01]?[0-9]|2[0-3]):[0-5][0-9]$
+                  error: Time must be in HH:mm format (e.g., 09:00, 18:30)
+                  type: string
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  minLength: 1
+                  maxLength: 250
+                  error: Branch name must be between 1 and 250 characters
+                  type: string
+                policy:
+                  maxLength: 1000
+                  error: Policy must not exceed 1000 characters
+                  type: string
+                hotline:
+                  minLength: 1
+                  maxLength: 20
+                  error: Hotline must be between 1 and 20 characters
+                  type: string
+                address:
+                  minLength: 1
+                  maxLength: 250
+                  error: Address must be between 1 and 250 characters
+                  type: string
+                postalCode:
+                  minLength: 1
+                  maxLength: 250
+                  error: Postal code must be between 1 and 250 characters
+                  type: string
+                latitude:
+                  minimum: -90
+                  maximum: 90
+                  error: Latitude must be between -90 and 90
+                  type: number
+                longitude:
+                  minimum: -180
+                  maximum: 180
+                  error: Longitude must be between -180 and 180
+                  type: number
+                openTime:
+                  pattern: ^([01]?[0-9]|2[0-3]):[0-5][0-9]$
+                  error: Time must be in HH:mm format (e.g., 09:00, 18:30)
+                  type: string
+                closeTime:
+                  pattern: ^([01]?[0-9]|2[0-3]):[0-5][0-9]$
+                  error: Time must be in HH:mm format (e.g., 09:00, 18:30)
+                  type: string
+          text/plain:
+            schema:
+              type: object
+              properties:
+                name:
+                  minLength: 1
+                  maxLength: 250
+                  error: Branch name must be between 1 and 250 characters
+                  type: string
+                policy:
+                  maxLength: 1000
+                  error: Policy must not exceed 1000 characters
+                  type: string
+                hotline:
+                  minLength: 1
+                  maxLength: 20
+                  error: Hotline must be between 1 and 20 characters
+                  type: string
+                address:
+                  minLength: 1
+                  maxLength: 250
+                  error: Address must be between 1 and 250 characters
+                  type: string
+                postalCode:
+                  minLength: 1
+                  maxLength: 250
+                  error: Postal code must be between 1 and 250 characters
+                  type: string
+                latitude:
+                  minimum: -90
+                  maximum: 90
+                  error: Latitude must be between -90 and 90
+                  type: number
+                longitude:
+                  minimum: -180
+                  maximum: 180
+                  error: Longitude must be between -180 and 180
+                  type: number
+                openTime:
+                  pattern: ^([01]?[0-9]|2[0-3]):[0-5][0-9]$
+                  error: Time must be in HH:mm format (e.g., 09:00, 18:30)
+                  type: string
+                closeTime:
+                  pattern: ^([01]?[0-9]|2[0-3]):[0-5][0-9]$
+                  error: Time must be in HH:mm format (e.g., 09:00, 18:30)
+                  type: string
+      responses:
+        "200": {}
+    delete:
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            error: Must be a valid UUID
+          in: path
+          name: id
+          required: true
+      operationId: deleteApiV1BranchesById
+      tags:
+        - Branch
+      summary: Delete a branch by ID
+      security:
+        - bearerAuth: []
+      responses:
+        "200": {}
+  /api/v1/branches/owner:
+    get:
+      parameters:
+        - schema:
+            minimum: 1
+            anyOf:
+              - format: integer
+                default: 0
+                type: string
+              - minimum: 1
+                type: integer
+          in: query
+          name: page
+          required: false
+        - schema:
+            minimum: 5
+            anyOf:
+              - format: integer
+                default: 0
+                type: string
+              - minimum: 5
+                type: integer
+          in: query
+          name: perPage
+          required: false
+      operationId: getApiV1BranchesOwner
+      tags:
+        - Branch
+      summary: Get list of branches by owner ID with pagination
+      security:
+        - bearerAuth: []
+      responses:
+        "200": {}
+  /api/v1/files/:
+    post:
+      parameters: []
+      operationId: postApiV1Files
+      tags:
+        - File
+      summary: Upload a file
+      security:
+        - bearerAuth: []
+      description: Upload an image file (max 5MB)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  default: File
+                  type: string
+                  maxSize: 5242880
+                  error: File must be an image and not exceed 5MB
+                  extension: image
+                  format: binary
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  default: File
+                  type: string
+                  maxSize: 5242880
+                  error: File must be an image and not exceed 5MB
+                  extension: image
+                  format: binary
+          text/plain:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  default: File
+                  type: string
+                  maxSize: 5242880
+                  error: File must be an image and not exceed 5MB
+                  extension: image
+                  format: binary
+      responses:
+        "200": {}
+  /api/v1/bookings/:
+    post:
+      parameters: []
+      operationId: postApiV1Bookings
+      tags:
+        - Booking
+      summary: Create a booking
+      description: Create a new booking for a court
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - courtId
+                - bookingTitle
+                - startTime
+                - endTime
+              properties:
+                courtId:
+                  format: uuid
+                  error: Court ID must be a valid UUID
+                  type: string
+                bookingTitle:
+                  minLength: 3
+                  maxLength: 100
+                  error: Booking title must be between 3 and 100 characters
+                  type: string
+                startTime:
+                  format: date-time
+                  error: DateTime must be in ISO 8601 format (e.g., 2026-01-10T14:00:00Z)
+                  examples:
+                    - 2026-01-10T14:00:00Z
+                  type: string
+                endTime:
+                  format: date-time
+                  error: DateTime must be in ISO 8601 format (e.g., 2026-01-10T14:00:00Z)
+                  examples:
+                    - 2026-01-10T14:00:00Z
+                  type: string
+                note:
+                  maxLength: 500
+                  error: Note must not exceed 500 characters
+                  type: string
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - courtId
+                - bookingTitle
+                - startTime
+                - endTime
+              properties:
+                courtId:
+                  format: uuid
+                  error: Court ID must be a valid UUID
+                  type: string
+                bookingTitle:
+                  minLength: 3
+                  maxLength: 100
+                  error: Booking title must be between 3 and 100 characters
+                  type: string
+                startTime:
+                  format: date-time
+                  error: DateTime must be in ISO 8601 format (e.g., 2026-01-10T14:00:00Z)
+                  examples:
+                    - 2026-01-10T14:00:00Z
+                  type: string
+                endTime:
+                  format: date-time
+                  error: DateTime must be in ISO 8601 format (e.g., 2026-01-10T14:00:00Z)
+                  examples:
+                    - 2026-01-10T14:00:00Z
+                  type: string
+                note:
+                  maxLength: 500
+                  error: Note must not exceed 500 characters
+                  type: string
+          text/plain:
+            schema:
+              type: object
+              required:
+                - courtId
+                - bookingTitle
+                - startTime
+                - endTime
+              properties:
+                courtId:
+                  format: uuid
+                  error: Court ID must be a valid UUID
+                  type: string
+                bookingTitle:
+                  minLength: 3
+                  maxLength: 100
+                  error: Booking title must be between 3 and 100 characters
+                  type: string
+                startTime:
+                  format: date-time
+                  error: DateTime must be in ISO 8601 format (e.g., 2026-01-10T14:00:00Z)
+                  examples:
+                    - 2026-01-10T14:00:00Z
+                  type: string
+                endTime:
+                  format: date-time
+                  error: DateTime must be in ISO 8601 format (e.g., 2026-01-10T14:00:00Z)
+                  examples:
+                    - 2026-01-10T14:00:00Z
+                  type: string
+                note:
+                  maxLength: 500
+                  error: Note must not exceed 500 characters
+                  type: string
+      responses:
+        "200": {}
+    get:
+      parameters:
+        - schema:
+            type: number
+            minimum: 1
+          in: query
+          name: page
+          required: false
+        - schema:
+            type: number
+            minimum: 1
+            maximum: 100
+          in: query
+          name: limit
+          required: false
+        - schema:
+            anyOf:
+              - const: pending
+                type: string
+              - const: confirmed
+                type: string
+              - const: cancelled
+                type: string
+              - const: maintenance
+                type: string
+          in: query
+          name: status
+          required: false
+        - schema:
+            anyOf:
+              - const: unpaid
+                type: string
+              - const: paid
+                type: string
+              - const: refunded
+                type: string
+          in: query
+          name: statusPayment
+          required: false
+      operationId: getApiV1Bookings
+      tags:
+        - Booking
+      summary: Get all bookings
+      description: Get all bookings with optional filters
+      security:
+        - bearerAuth: []
+      responses:
+        "200": {}
+  /api/v1/bookings/branch/{branchId}:
+    get:
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            error: Branch ID must be a valid UUID
+          in: path
+          name: branchId
+          required: true
+        - examples:
+            - 2026-01-10
+          schema:
+            type: string
+            format: date
+            error: Date must be in format YYYY-MM-DD (e.g., 2026-01-10)
+          in: query
+          name: date
+          required: true
+      operationId: getApiV1BookingsBranchByBranchId
+      tags:
+        - Booking
+      summary: Get bookings by branch
+      description: Get all bookings for a specific branch on a given date
+      security:
+        - bearerAuth: []
+      responses:
+        "200": {}
+  /api/v1/bookings/court/{courtId}:
+    get:
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            error: Court ID must be a valid UUID
+          in: path
+          name: courtId
+          required: true
+        - examples:
+            - 2026-01-10
+          schema:
+            type: string
+            format: date
+            error: Date must be in format YYYY-MM-DD (e.g., 2026-01-10)
+          in: query
+          name: date
+          required: true
+      operationId: getApiV1BookingsCourtByCourtId
+      tags:
+        - Booking
+      summary: Get bookings by court
+      description: Get all bookings for a specific court on a given date
+      security:
+        - bearerAuth: []
+      responses:
+        "200": {}
+  /api/v1/bookings/my-bookings:
+    get:
+      parameters:
+        - schema:
+            minimum: 1
+            default: 1
+            anyOf:
+              - format: integer
+                default: 0
+                type: string
+              - minimum: 1
+                default: 1
+                type: integer
+          in: query
+          name: page
+          required: false
+        - schema:
+            minimum: 5
+            default: 100
+            anyOf:
+              - format: integer
+                default: 0
+                type: string
+              - minimum: 5
+                default: 100
+                type: integer
+          in: query
+          name: perPage
+          required: false
+        - schema:
+            type: string
+            minLength: 1
+            maxLength: 250
+          in: query
+          name: search
+          required: false
+      operationId: getApiV1BookingsMy-bookings
+      tags:
+        - Booking
+      summary: Get list booking of user
+      description: Get list booking of user
+      responses:
+        "200": {}
+  /api/v1/bookings/{id}:
+    get:
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+          in: path
+          name: id
+          required: true
+      operationId: getApiV1BookingsById
+      tags:
+        - Booking
+      summary: Get booking by ID
+      description: Get a specific booking by its ID
+      security:
+        - bearerAuth: []
+      responses:
+        "200": {}
+    patch:
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+          in: path
+          name: id
+          required: true
+      operationId: patchApiV1BookingsById
+      tags:
+        - Booking
+      summary: Update a booking
+      description: Update an existing booking by its ID
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bookingTitle:
+                  minLength: 3
+                  maxLength: 100
+                  error: Booking title must be between 3 and 100 characters
+                  type: string
+                startTime:
+                  format: date-time
+                  error: DateTime must be in ISO 8601 format (e.g., 2026-01-10T14:00:00Z)
+                  examples:
+                    - 2026-01-10T14:00:00Z
+                  type: string
+                endTime:
+                  format: date-time
+                  error: DateTime must be in ISO 8601 format (e.g., 2026-01-10T14:00:00Z)
+                  examples:
+                    - 2026-01-10T14:00:00Z
+                  type: string
+                totalPrice:
+                  minimum: 0
+                  error: Total price must be a positive number
+                  type: number
+                note:
+                  maxLength: 500
+                  error: Note must not exceed 500 characters
+                  type: string
+                status:
+                  anyOf:
+                    - const: pending
+                      type: string
+                    - const: confirmed
+                      type: string
+                    - const: cancelled
+                      type: string
+                    - const: maintenance
+                      type: string
+                statusPayment:
+                  anyOf:
+                    - const: unpaid
+                      type: string
+                    - const: paid
+                      type: string
+                    - const: refunded
+                      type: string
+              additionalProperties: false
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                bookingTitle:
+                  minLength: 3
+                  maxLength: 100
+                  error: Booking title must be between 3 and 100 characters
+                  type: string
+                startTime:
+                  format: date-time
+                  error: DateTime must be in ISO 8601 format (e.g., 2026-01-10T14:00:00Z)
+                  examples:
+                    - 2026-01-10T14:00:00Z
+                  type: string
+                endTime:
+                  format: date-time
+                  error: DateTime must be in ISO 8601 format (e.g., 2026-01-10T14:00:00Z)
+                  examples:
+                    - 2026-01-10T14:00:00Z
+                  type: string
+                totalPrice:
+                  minimum: 0
+                  error: Total price must be a positive number
+                  type: number
+                note:
+                  maxLength: 500
+                  error: Note must not exceed 500 characters
+                  type: string
+                status:
+                  anyOf:
+                    - const: pending
+                      type: string
+                    - const: confirmed
+                      type: string
+                    - const: cancelled
+                      type: string
+                    - const: maintenance
+                      type: string
+                statusPayment:
+                  anyOf:
+                    - const: unpaid
+                      type: string
+                    - const: paid
+                      type: string
+                    - const: refunded
+                      type: string
+              additionalProperties: false
+          text/plain:
+            schema:
+              type: object
+              properties:
+                bookingTitle:
+                  minLength: 3
+                  maxLength: 100
+                  error: Booking title must be between 3 and 100 characters
+                  type: string
+                startTime:
+                  format: date-time
+                  error: DateTime must be in ISO 8601 format (e.g., 2026-01-10T14:00:00Z)
+                  examples:
+                    - 2026-01-10T14:00:00Z
+                  type: string
+                endTime:
+                  format: date-time
+                  error: DateTime must be in ISO 8601 format (e.g., 2026-01-10T14:00:00Z)
+                  examples:
+                    - 2026-01-10T14:00:00Z
+                  type: string
+                totalPrice:
+                  minimum: 0
+                  error: Total price must be a positive number
+                  type: number
+                note:
+                  maxLength: 500
+                  error: Note must not exceed 500 characters
+                  type: string
+                status:
+                  anyOf:
+                    - const: pending
+                      type: string
+                    - const: confirmed
+                      type: string
+                    - const: cancelled
+                      type: string
+                    - const: maintenance
+                      type: string
+                statusPayment:
+                  anyOf:
+                    - const: unpaid
+                      type: string
+                    - const: paid
+                      type: string
+                    - const: refunded
+                      type: string
+              additionalProperties: false
+      responses:
+        "200": {}
+    delete:
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+          in: path
+          name: id
+          required: true
+      operationId: deleteApiV1BookingsById
+      tags:
+        - Booking
+      summary: Delete a booking
+      description: Delete a booking by its ID
+      security:
+        - bearerAuth: []
+      responses:
+        "200": {}

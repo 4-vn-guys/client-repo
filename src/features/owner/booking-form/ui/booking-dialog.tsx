@@ -8,7 +8,7 @@ import {
 } from '@/shared/ui/dialog';
 import { BookingForm } from './booking-form';
 import type { Court } from '@/entities/court';
-import type { CreateBookingDto } from '@/entities/booking';
+import type { CreateBookingDto, UpdateBookingDto } from '@/entities/booking';
 
 interface BookingDialogProps {
   open: boolean;
@@ -25,8 +25,11 @@ interface BookingDialogProps {
     startMinute?: string;
     endHour?: number;
     endMinute?: string;
+    status?: 'pending' | 'confirmed' | 'cancelled' | 'maintenance';
+    statusPayment?: 'unpaid' | 'paid' | 'refunded';
+    totalPrice?: number;
   };
-  onSubmit: (data: CreateBookingDto) => Promise<void>;
+  onSubmit: (data: CreateBookingDto | UpdateBookingDto) => Promise<void>;
   isLoading: boolean;
 }
 

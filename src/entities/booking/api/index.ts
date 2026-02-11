@@ -1,8 +1,9 @@
 import { axiosInstance } from '@/shared/lib/axios';
 import type { Court } from '@/entities/court';
 import { formatDateToYYYYMMDD } from '@/shared/lib/utils';
-import { BookingsByBranchResponse } from '../model/types';
+import { BookingsByBranchResponse, Booking } from '../model/types';
 import type { CreateBookingDto, UpdateBookingDto } from '../model/dto';
+import type { BookingFilters, PaginatedResponse } from '../model/filters';
 
 /**
  * Fetch all courts with bookings for a specific branch
@@ -85,6 +86,58 @@ export const updateBooking = async (id: string, data: UpdateBookingDto) => {
     return response.data;
   } catch (error) {
     console.error('Error updating booking:', error);
+    throw error;
+  }
+};
+
+/**
+ * Fetch list of bookings with pagination and filters
+ * @param filters - Filter parameters (page, limit, status, statusPayment)
+ * @returns Paginated list of bookings
+ */
+export const fetchBookings = async (filters?: BookingFilters): Promise<PaginatedResponse<Booking>> => {
+  try {
+    const response = await axiosInstance.get<PaginatedResponse<Booking>>('/bookings/', {
+      params: filters,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching bookings:', error);
+    throw error;
+  }
+};
+
+/**
+ * Fetch a single booking by ID
+ * @param id - Booking ID
+ * @returns Booking details
+ */
+export const fetchBookingById = async (id: string): Promise<Booking> => {
+  try {
+    const response = await axiosInstance.get<{ data: Booking }>(`/bookings/${id}`);
+    return response.data.data;
+  } catch (error) {
+    console.error('Error fetching booking:', error);
+    throw error;
+  }
+};
+
+/**
+ * Cancel a booking (sets status to 'cancelled')
+ * @param id - Booking ID
+ * @param reason - Optional cancellation reason
+ * @returns Updated booking
+ */
+export const cancelBooking = async (id: string, reason?: string) => {
+  try {
+    const data: UpdateBookingDto = {
+      status: 'cancelled',
+      ...(reason && { note: reason }),
+    };
+    const response = await axiosInstance.patch(`/bookings/${id}`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error cancelling booking:', error);
     throw error;
   }
 };

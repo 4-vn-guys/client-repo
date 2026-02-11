@@ -1,9 +1,9 @@
-import axios from 'axios';
+import axios from "axios";
 
 /**
  * Base API URL - Update this to match your backend server
  */
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 /**
  * Axios instance with default configuration
@@ -11,7 +11,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 export const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   timeout: 10000, // 10 seconds
 });
@@ -20,24 +20,24 @@ export const axiosInstance = axios.create({
  * Request interceptor - Add auth token to requests
  */
 axiosInstance.interceptors.request.use(
-  config => {
+  (config) => {
     // Get token from localStorage
-    const authStorage = localStorage.getItem('auth-storage');
+    const authStorage = localStorage.getItem("auth-storage");
     if (authStorage) {
       try {
         const { state } = JSON.parse(authStorage);
         const accessToken = state?.accessToken;
-
+        
         if (accessToken) {
           config.headers.Authorization = `Bearer ${accessToken}`;
         }
       } catch (error) {
-        console.error('Error parsing auth storage:', error);
+        console.error("Error parsing auth storage:", error);
       }
     }
     return config;
   },
-  error => {
+  (error) => {
     return Promise.reject(error);
   }
 );
@@ -46,34 +46,31 @@ axiosInstance.interceptors.request.use(
  * Response interceptor - Handle errors globally
  */
 axiosInstance.interceptors.response.use(
-  response => {
+  (response) => {
     return response;
   },
-  error => {
+  (error) => {
     if (error.response) {
       // Handle specific error codes
       switch (error.response.status) {
         case 401:
           // Unauthorized - clear auth and redirect to login
           // check current path to avoid infinite loop
-          if (
-            typeof window !== 'undefined' &&
-            window.location.pathname === '/login'
-          ) {
+          if (typeof window !== "undefined" && window.location.pathname === "/login") {
             break;
           }
-          localStorage.removeItem('auth-storage');
-          if (typeof window !== 'undefined') {
-            window.location.href = '/login';
+          localStorage.removeItem("auth-storage");
+          if (typeof window !== "undefined") {
+            window.location.href = "/login";
           }
           break;
         case 403:
           // Forbidden
-          console.error('Access forbidden');
+          console.error("Access forbidden");
           break;
         case 500:
           // Server error
-          console.error('Server error');
+          console.error("Server error");
           break;
       }
     }
