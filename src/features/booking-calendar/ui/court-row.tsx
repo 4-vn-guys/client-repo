@@ -8,7 +8,7 @@ import {
   calculateBookingPosition,
   generateTimeSlots,
   TIMELINE_CONFIG,
-} from '../lib/timeline-utils';
+} from '../lib/calendar-utils';
 
 interface CourtRowProps {
   court: Court;
@@ -49,7 +49,7 @@ export const CourtRow = memo(function CourtRow({
       <div className='relative flex flex-1'>
         {/* Grid lines with click handlers */}
         <div className='flex flex-1'>
-          {timeSlots.map((time, index) => {
+          {timeSlots.map((time: string, index: number) => {
             return (
               <div
                 key={time}
@@ -82,7 +82,7 @@ export const CourtRow = memo(function CourtRow({
 
             return (
               <BookingCard
-                key={booking.id}
+                key={booking.slotId ?? `${booking.id}-${booking.courtId}-${booking.startTime}`}
                 customerName={booking.customerName ?? 'Unknown'}
                 duration={booking.duration ?? 1}
                 price={booking.price ?? 0}

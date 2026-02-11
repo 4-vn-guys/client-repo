@@ -9,8 +9,20 @@ export {
 } from './api';
 
 // Types
-export type { Booking, BookingsByBranchResponse, CalendarData } from './model/types';
-export type { CreateBookingDto, UpdateBookingDto } from './model/dto';
+export type {
+  Booking,
+  BookingsByBranchResponse,
+  CalendarData,
+  CalendarFilters,
+  BookingsQuery,
+  OwnerBookingsQuery,
+  UserBookingsQuery,
+} from './model/types';
+export type {
+  CreateBookingDto,
+  CreateBookingDetailDto,
+  UpdateBookingDto,
+} from './model/dto';
 export type { BookingFilters, BookingStatus, BookingPaymentStatus, PaginatedResponse } from './model/filters';
 
 // Validation

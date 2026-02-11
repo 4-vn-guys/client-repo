@@ -49,6 +49,8 @@ export interface Booking {
   customerName?: string;
   duration?: number;
   price?: number;
+  /** Unique per slot when one booking has multiple details (from API bookingDetails) */
+  slotId?: string;
 }
 
 export interface BookingsByBranchResponse {

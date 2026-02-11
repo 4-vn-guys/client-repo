@@ -5,12 +5,15 @@ import type { Court } from '@/entities/court';
 import type { Booking } from '@/entities/booking';
 import { TimeHeader } from './time-header';
 import { CourtRow } from './court-row';
+import { TimelineLoadingSkeleton } from '@/src/pages/owner/timeline/ui/timeline-loading-skeleton';
 
 interface TimelineGridProps {
   courts: Court[];
   bookings: Booking[];
   onCellClick?: (courtId: string, slotIndex: number) => void;
   onBookingClick?: (booking: Booking) => void;
+  isSlotSelected?: (courtId: string, slotIndex: number) => boolean;
+  isLoading: boolean;
 }
 
 export const TimelineGrid = memo(function TimelineGrid({
@@ -18,6 +21,8 @@ export const TimelineGrid = memo(function TimelineGrid({
   bookings,
   onCellClick,
   onBookingClick,
+  isSlotSelected,
+  isLoading,
 }: TimelineGridProps) {
   // Memoize bookings by court ID for efficient filtering
   const bookingsByCourtId = useMemo(() => {
@@ -39,6 +44,9 @@ export const TimelineGrid = memo(function TimelineGrid({
     },
     [bookingsByCourtId]
   );
+  if (isLoading) {
+    return <TimelineLoadingSkeleton />;
+  }
 
   return (
     <div className='bg-card overflow-hidden rounded-lg border shadow-sm'>
@@ -54,6 +62,7 @@ export const TimelineGrid = memo(function TimelineGrid({
                 bookings={getBookingsForCourt(court.id)}
                 onCellClick={onCellClick}
                 onBookingClick={onBookingClick}
+                isSlotSelected={isSlotSelected}
               />
             ))}
           </div>

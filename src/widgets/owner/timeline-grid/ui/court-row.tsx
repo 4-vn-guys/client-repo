@@ -15,6 +15,7 @@ interface CourtRowProps {
   bookings: Booking[];
   onCellClick?: (courtId: string, slotIndex: number) => void;
   onBookingClick?: (booking: Booking) => void;
+  isSlotSelected?: (courtId: string, slotIndex: number) => boolean;
 }
 
 export const CourtRow = memo(function CourtRow({
@@ -22,6 +23,7 @@ export const CourtRow = memo(function CourtRow({
   bookings,
   onCellClick,
   onBookingClick,
+  isSlotSelected,
 }: CourtRowProps) {
   // Memoize time slots to avoid regenerating on every render
   const timeSlots = useMemo(() => generateTimeSlots(), []);
@@ -50,6 +52,7 @@ export const CourtRow = memo(function CourtRow({
         {/* Grid lines with click handlers */}
         <div className='flex flex-1'>
           {timeSlots.map((time, index) => {
+            const selected = isSlotSelected?.(court.id, index);
             return (
               <div
                 key={time}
@@ -57,7 +60,8 @@ export const CourtRow = memo(function CourtRow({
                 className={cn(
                   'border-border/50 w-[60px] shrink-0 border-r md:w-[80px]',
                   onCellClick &&
-                    'cursor-pointer transition-colors hover:bg-violet-50/50'
+                    'cursor-pointer transition-colors hover:bg-violet-50/50',
+                  selected && 'bg-violet-200/60 ring-1 ring-violet-400/50'
                 )}
                 style={{
                   height: TIMELINE_CONFIG.rowHeight,
@@ -80,9 +84,11 @@ export const CourtRow = memo(function CourtRow({
             // For desktop, we'll use CSS to scale proportionally
             const desktopScale = 80 / 60; // desktop width / mobile width
 
+            const slotKey = booking.slotId ?? `${booking.id}-${booking.courtId}-${booking.startTime}`;
+
             return (
               <BookingCard
-                key={booking.id}
+                key={slotKey}
                 customerName={booking.customerName ?? 'Unknown'}
                 duration={booking.duration ?? 1}
                 price={booking.price ?? 0}

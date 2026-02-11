@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 
 import { cn } from '@/shared/lib/utils';
 import {
+  BOOKING_STATUS,
   bookingStatusColors,
   type BookingStatus,
 } from '@/shared/config/booking-status';
@@ -38,12 +39,13 @@ export function BookingCard({
   startTime,
   onClick,
 }: BookingCardProps) {
-  const colors = bookingStatusColors[status];
+  const colors = bookingStatusColors[status as BookingStatus] ?? bookingStatusColors[BOOKING_STATUS.PENDING as BookingStatus];
 
   const statusIcon = useMemo(() => {
-    if (status === 'confirmed') return <CheckCircle2 className='size-3.5' />;
-    if (status === 'maintenance') return <Settings className='size-3.5' />;
-    if (status === 'pending') return <Clock className='size-3.5' />;
+    if (status === BOOKING_STATUS.CONFIRMED) return <CheckCircle2 className='size-3.5' />;
+    if (status === BOOKING_STATUS.CANCELLED) return <Settings className='size-3.5' />;
+    if (status === BOOKING_STATUS.PENDING) return <Clock className='size-3.5' />;
+    if (status === BOOKING_STATUS.MAINTENANCE) return <Settings className='size-3.5' />;
     return null;
   }, [status]);
 

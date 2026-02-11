@@ -13,8 +13,10 @@ import type { CreateBookingDto, UpdateBookingDto } from '@/entities/booking';
 interface BookingDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  branchId: string;
   courts: Court[];
   selectedDate: Date;
+  isOwnerRole: boolean;
   initialData?: {
     courtId?: string;
     startHour?: number;
@@ -26,8 +28,10 @@ interface BookingDialogProps {
     endHour?: number;
     endMinute?: string;
     status?: 'pending' | 'confirmed' | 'cancelled' | 'maintenance';
-    statusPayment?: 'unpaid' | 'paid' | 'refunded';
+    statusPayment?: 'paid' | 'unpaid';
     totalPrice?: number;
+    /** Pre-selected slots from grid multi-select */
+    details?: Array<{ courtId: string; slotIndex: number }>;
   };
   onSubmit: (data: CreateBookingDto | UpdateBookingDto) => Promise<void>;
   isLoading: boolean;
@@ -36,15 +40,17 @@ interface BookingDialogProps {
 export function BookingDialog({
   open,
   onOpenChange,
+  branchId,
   courts,
   selectedDate,
+  isOwnerRole,
   initialData,
   onSubmit,
   isLoading,
 }: BookingDialogProps) {
   const isEditMode = !!initialData?.bookingId;
 
-  const handleSubmit = async (data: CreateBookingDto) => {
+  const handleSubmit = async (data: CreateBookingDto | UpdateBookingDto) => {
     await onSubmit(data);
     // Close dialog on success
     onOpenChange(false);
@@ -60,8 +66,10 @@ export function BookingDialog({
         </DialogHeader>
 
         <BookingForm
+          branchId={branchId}
           courts={courts}
           selectedDate={selectedDate}
+          isOwnerRole={isOwnerRole}
           initialData={initialData}
           isEditMode={isEditMode}
           onSubmit={handleSubmit}

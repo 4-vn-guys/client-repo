@@ -49,6 +49,7 @@ export default function RootLayout({
     <html lang='en' suppressHydrationWarning>
       <body
         className={`${openSans.variable} ${openSansMono.variable} font-stretch-105% antialiased`}
+        suppressHydrationWarning
       >
         <NextIntlClientProvider>
           <ThemeProvider

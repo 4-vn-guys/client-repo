@@ -4,24 +4,35 @@ import z from 'zod';
 /**
  * Hook for booking form validation schemas
  * Follows TanStack Form pattern with Zod validation
+ * @param requireCustomerName - When true (owner role), customer name is required. When false (user role), backend resolves user from auth.
+ * @param isMultiSlotMode - When true, courtId is optional (slots come from grid selection). When false, courtId is required.
  */
-export function useBookingFormSchema() {
+export function useBookingFormSchema(requireCustomerName = true, isMultiSlotMode = false) {
   const bookingFormSchema = useMemo(
     () =>
       z
         .object({
-          courtId: z.string().nonempty({ message: 'Please select a court' }),
+          courtId: isMultiSlotMode
+            ? z.string().optional()
+            : z.string().nonempty({ message: 'Please select a court' }),
           bookingTitle: z
             .string()
             .min(3, { message: 'Title must be at least 3 characters' })
             .max(100, { message: 'Title must not exceed 100 characters' })
             .nonempty({ message: 'Booking title is required' }),
-          customerName: z
-            .string()
-            .min(2, { message: 'Customer name must be at least 2 characters' })
-            .nonempty({ message: 'Customer name is required' }),
+          customerName: requireCustomerName
+            ? z
+                .string()
+                .min(2, { message: 'Customer name must be at least 2 characters' })
+                .nonempty({ message: 'Customer name is required' })
+            : z.string().optional().default(''),
           type: z.enum(['walk-in', 'reservation']).default('walk-in'),
-          status: z.enum(['unpaid', 'paid', 'pending']).default('unpaid'),
+          status: z
+            .enum(['pending', 'confirmed', 'cancelled', 'maintenance'])
+            .default('pending'),
+          statusPayment: z
+            .enum(['paid', 'unpaid'])
+            .default('unpaid'),
           startHour: z
             .string()
             .regex(/^([0-1]?[0-9]|2[0-3])$/, { message: 'Invalid hour' }),
@@ -37,8 +48,8 @@ export function useBookingFormSchema() {
           note: z
             .string()
             .max(500, { message: 'Note must not exceed 500 characters' })
-            .optional()
-            .default(''),
+            .optional(),
+          totalPrice: z.number().min(0).default(0),
           extras: z
             .object({
               rackets: z.boolean().default(false),
@@ -62,7 +73,7 @@ export function useBookingFormSchema() {
             path: ['endHour'],
           }
         ),
-    []
+    [requireCustomerName, isMultiSlotMode]
   );
 
   return {

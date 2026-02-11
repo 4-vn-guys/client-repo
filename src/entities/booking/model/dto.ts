@@ -1,13 +1,27 @@
 /**
+ * Detail item for create booking - each court slot in the booking
+ */
+export interface CreateBookingDetailDto {
+  courtId: string;
+  startTime: string; // ISO 8601 (e.g., "2026-01-10T14:00:00Z")
+  endTime: string;
+}
+
+/**
  * Create Booking DTO - matches API create endpoint
- * API only requires: courtId, bookingTitle, startTime, endTime, note (optional)
+ * - branchId, bookingTitle, note, details required
+ * - userName required only for owner role (backend resolves user from auth for regular users)
+ * - status, statusPayment, totalPrice optional (owner can set when creating on behalf of customer)
  */
 export interface CreateBookingDto {
-  courtId: string;
+  branchId: string;
   bookingTitle: string;
-  startTime: string; // ISO 8601 with timezone (e.g., "2026-01-22T18:00:00+07:00")
-  endTime: string; // ISO 8601 with timezone
+  userName?: string; // Required when logged in as owner (booking on behalf of customer)
   note?: string;
+  details: CreateBookingDetailDto[];
+  status?: 'pending' | 'confirmed' | 'cancelled' | 'maintenance';
+  statusPayment?: 'paid' | 'unpaid';
+  totalPrice?: number;
 }
 
 /**
@@ -21,12 +35,12 @@ export interface UpdateBookingDto {
   totalPrice?: number;
   note?: string;
   status?: 'pending' | 'confirmed' | 'cancelled' | 'maintenance';
-  statusPayment?: 'unpaid' | 'paid' | 'refunded';
+  statusPayment?: 'paid' | 'unpaid';
 }
 
 /**
  * Booking form data type
- */
+ */ 
 export interface BookingFormData {
   courtId: string;
   bookingTitle: string;

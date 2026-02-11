@@ -1,6 +1,7 @@
 'use client';
 import { useState, useMemo, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuthStore } from '@/shared/store';
 import type { Court } from '@/entities/court';
 import { fetchBranchById } from '@/entities/venue';
 import {
@@ -8,6 +9,7 @@ import {
   createBooking,
   updateBooking,
   type CreateBookingDto,
+  type UpdateBookingDto,
   type Booking,
 } from '@/entities/booking';
 import { gridColumnToHour } from '@/shared/lib/utils/time-utils';
@@ -17,9 +19,19 @@ import toast from 'react-hot-toast';
  * Custom hook for timeline data fetching and state management
  * Encapsulates all data fetching logic following FSD principles
  */
+/** A selected slot in the grid (court + slot index) */
+export type SelectedSlot = { courtId: string; slotIndex: number };
+
+function slotKey(slot: SelectedSlot): string {
+  return `${slot.courtId}:${slot.slotIndex}`;
+}
+
 export function useTimelineData(venueId: string) {
+  const user = useAuthStore((s) => s.user);
+  const isOwnerRole = user?.role === 'owner';
   const now = new Date();
   const [selectedDate, setSelectedDate] = useState(new Date(now.getFullYear(), now.getMonth(), now.getDate()));
+  const [selectedSlots, setSelectedSlots] = useState<SelectedSlot[]>([]);
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
   const [bookingDialogData, setBookingDialogData] = useState<
     | {
@@ -33,8 +45,10 @@ export function useTimelineData(venueId: string) {
         endHour?: number;
         endMinute?: string;
         status?: 'pending' | 'confirmed' | 'cancelled' | 'maintenance';
-        statusPayment?: 'unpaid' | 'paid' | 'refunded';
+        statusPayment?: 'paid' | 'unpaid';
         totalPrice?: number;
+        /** Pre-selected details from grid multi-select (courtId + slotIndex per slot) */
+        details?: Array<{ courtId: string; slotIndex: number }>;
       }
     | undefined
   >();
@@ -95,7 +109,7 @@ export function useTimelineData(venueId: string) {
 
   // Mutation for updating a booking
   const updateBookingMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: CreateBookingDto }) =>
+    mutationFn: ({ id, data }: { id: string; data: UpdateBookingDto }) =>
       updateBooking(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -110,18 +124,38 @@ export function useTimelineData(venueId: string) {
     },
   });
 
-  // Handle new booking action from button
+  // Handle new booking action from button (no grid selection)
   const handleNewBooking = useCallback(() => {
+    setSelectedSlots([]);
     setBookingDialogData(undefined);
     setBookingDialogOpen(true);
   }, []);
 
-  // Handle calendar cell click
+  // Toggle slot selection (multi-select for booking)
   const handleCellClick = useCallback((courtId: string, slotIndex: number) => {
-    const startHour = gridColumnToHour(slotIndex);
-    setBookingDialogData({ courtId, startHour });
-    setBookingDialogOpen(true);
+    setSelectedSlots((prev) => {
+      const key = `${courtId}:${slotIndex}`;
+      const has = prev.some((s) => slotKey(s) === key);
+      if (has) return prev.filter((s) => slotKey(s) !== key);
+      return [...prev, { courtId, slotIndex }];
+    });
   }, []);
+
+  // Check if a slot is selected
+  const isSlotSelected = useCallback(
+    (courtId: string, slotIndex: number) =>
+      selectedSlots.some((s) => s.courtId === courtId && s.slotIndex === slotIndex),
+    [selectedSlots]
+  );
+
+  // Open booking dialog with selected slots
+  const handleBookingFromSelection = useCallback(() => {
+    if (selectedSlots.length === 0) return;
+    setBookingDialogData({
+      details: selectedSlots.map((s) => ({ courtId: s.courtId, slotIndex: s.slotIndex })),
+    });
+    setBookingDialogOpen(true);
+  }, [selectedSlots]);
 
   // Handle booking card click for editing
   const handleBookingClick = useCallback((booking: Booking) => {
@@ -138,8 +172,8 @@ export function useTimelineData(venueId: string) {
       startMinute: startDate.getMinutes().toString().padStart(2, '0'),
       endHour: endDate.getHours(),
       endMinute: endDate.getMinutes().toString().padStart(2, '0'),
-      status: booking.status,
-      statusPayment: booking.statusPayment as 'unpaid' | 'paid' | 'refunded',
+      status: booking.status as 'pending' | 'confirmed' | 'cancelled' | 'maintenance',
+      statusPayment: booking.statusPayment as 'paid' | 'unpaid',
       totalPrice: booking.totalPrice,
     });
     setBookingDialogOpen(true);
@@ -147,30 +181,37 @@ export function useTimelineData(venueId: string) {
 
   // Handle booking submission (create or update)
   const handleBookingSubmit = useCallback(
-    async (data: CreateBookingDto) => {
+    async (data: CreateBookingDto | UpdateBookingDto) => {
       if (bookingDialogData?.bookingId) {
-        // Update existing booking
         await updateBookingMutation.mutateAsync({
           id: bookingDialogData.bookingId,
-          data,
+          data: data as UpdateBookingDto,
         });
       } else {
-        // Create new booking
-        await createBookingMutation.mutateAsync(data);
+        await createBookingMutation.mutateAsync(data as CreateBookingDto);
       }
     },
     [bookingDialogData, createBookingMutation, updateBookingMutation]
   );
 
+  // Clear selection when dialog closes
+  const handleBookingDialogOpenChange = useCallback((open: boolean) => {
+    setBookingDialogOpen(open);
+    if (!open) setSelectedSlots([]);
+  }, []);
+
   return {
     // State
     selectedDate,
     setSelectedDate,
+    selectedSlots,
 
     // Data
     venue,
     courtsWithBookings,
     allBookings,
+    branchId: venueId,
+    isOwnerRole,
 
     // Loading states
     isLoading: isLoadingVenue || isLoadingBookings,
@@ -184,12 +225,14 @@ export function useTimelineData(venueId: string) {
 
     // Booking dialog state
     bookingDialogOpen,
-    setBookingDialogOpen,
+    setBookingDialogOpen: handleBookingDialogOpenChange,
     bookingDialogData,
 
     // Actions
     handleNewBooking,
     handleCellClick,
+    isSlotSelected,
+    handleBookingFromSelection,
     handleBookingClick,
     handleBookingSubmit,
     isSubmitting:
