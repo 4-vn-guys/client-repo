@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { AxiosError } from 'axios';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '@/shared/store';
 import { authApi } from '../apis';
@@ -202,11 +203,13 @@ export const useAuth = () => {
         toast.error('Registration failed');
         return { success: false };
       }
-    } catch (error) {
+    } catch (error: unknown) {
       // Handle nested error structure: { success: false, error: { message: "..." } }
+      const responseData =
+        error instanceof AxiosError ? error.response?.data : undefined;
       const message =
-        error?.response?.data?.error?.message ||
-        error?.response?.data?.message ||
+        responseData?.error?.message ||
+        responseData?.message ||
         'Registration failed';
       toast.error(message);
       return { success: false, error: message };
