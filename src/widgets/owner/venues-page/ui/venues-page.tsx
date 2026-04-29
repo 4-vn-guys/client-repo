@@ -1,22 +1,85 @@
 'use client';
 
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { FormEvent, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { BranchHeader } from '@/pages/owner/venues/ui/venue-header';
 import { BranchesList } from '@/pages/owner/venues/ui/venues-list';
-import { fetchBranches } from '@/entities/venue';
+import { createBranch, fetchBranches } from '@/entities/venue';
+import { Button } from '@/shared/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/shared/ui/dialog';
+import { Field, FieldLabel } from '@/shared/ui/field';
+import { Input } from '@/shared/ui/input';
+import toast from 'react-hot-toast';
+
+type BranchFormState = {
+  name: string;
+  address: string;
+  latitude: string;
+  longitude: string;
+  openTime: string;
+  closeTime: string;
+  hotline: string;
+  policy: string;
+};
+
+const initialBranchForm: BranchFormState = {
+  name: '',
+  address: '',
+  latitude: '10.762622',
+  longitude: '106.660172',
+  openTime: '06:00',
+  closeTime: '23:00',
+  hotline: '',
+  policy: '',
+};
 
 export function VenuesPage() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [form, setForm] = useState<BranchFormState>(initialBranchForm);
+  const queryClient = useQueryClient();
 
   const { data: branches = [], isLoading } = useQuery({
     queryKey: ['branches'],
     queryFn: fetchBranches,
   });
 
+  const createBranchMutation = useMutation({
+    mutationFn: createBranch,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['branches'] });
+      setForm(initialBranchForm);
+      setIsCreateOpen(false);
+      toast.success('Branch created successfully');
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to create branch');
+    },
+  });
+
   const handleAddBranch = () => {
-    // Navigate to create branch page or open modal
-    console.log('Navigate to create branch');
+    setIsCreateOpen(true);
+  };
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    createBranchMutation.mutate({
+      name: form.name.trim(),
+      address: form.address.trim(),
+      latitude: Number(form.latitude),
+      longitude: Number(form.longitude),
+      openTime: form.openTime,
+      closeTime: form.closeTime,
+      hotline: form.hotline.trim() || undefined,
+      policy: form.policy.trim() || undefined,
+    });
   };
 
   return (
@@ -30,7 +93,164 @@ export function VenuesPage() {
         isLoading={isLoading}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
+        onCreateBranch={handleAddBranch}
       />
+      <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+        <DialogContent className='sm:max-w-2xl'>
+          <form className='space-y-6' onSubmit={handleSubmit}>
+            <DialogHeader>
+              <DialogTitle>Create New Branch</DialogTitle>
+              <DialogDescription>
+                Add a branch so courts, schedule, and bookings can be managed
+                from the owner workspace.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className='grid gap-4 md:grid-cols-2'>
+              <Field className='md:col-span-2'>
+                <FieldLabel htmlFor='branch-name'>Branch Name</FieldLabel>
+                <Input
+                  id='branch-name'
+                  value={form.name}
+                  onChange={event =>
+                    setForm(current => ({
+                      ...current,
+                      name: event.target.value,
+                    }))
+                  }
+                  placeholder='Downtown Badminton Center'
+                  required
+                />
+              </Field>
+
+              <Field className='md:col-span-2'>
+                <FieldLabel htmlFor='branch-address'>Address</FieldLabel>
+                <Input
+                  id='branch-address'
+                  value={form.address}
+                  onChange={event =>
+                    setForm(current => ({
+                      ...current,
+                      address: event.target.value,
+                    }))
+                  }
+                  placeholder='123 Nguyen Trai, District 1'
+                  required
+                />
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor='branch-latitude'>Latitude</FieldLabel>
+                <Input
+                  id='branch-latitude'
+                  type='number'
+                  step='any'
+                  value={form.latitude}
+                  onChange={event =>
+                    setForm(current => ({
+                      ...current,
+                      latitude: event.target.value,
+                    }))
+                  }
+                  required
+                />
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor='branch-longitude'>Longitude</FieldLabel>
+                <Input
+                  id='branch-longitude'
+                  type='number'
+                  step='any'
+                  value={form.longitude}
+                  onChange={event =>
+                    setForm(current => ({
+                      ...current,
+                      longitude: event.target.value,
+                    }))
+                  }
+                  required
+                />
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor='branch-open-time'>Open Time</FieldLabel>
+                <Input
+                  id='branch-open-time'
+                  type='time'
+                  value={form.openTime}
+                  onChange={event =>
+                    setForm(current => ({
+                      ...current,
+                      openTime: event.target.value,
+                    }))
+                  }
+                  required
+                />
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor='branch-close-time'>Close Time</FieldLabel>
+                <Input
+                  id='branch-close-time'
+                  type='time'
+                  value={form.closeTime}
+                  onChange={event =>
+                    setForm(current => ({
+                      ...current,
+                      closeTime: event.target.value,
+                    }))
+                  }
+                  required
+                />
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor='branch-hotline'>Hotline</FieldLabel>
+                <Input
+                  id='branch-hotline'
+                  value={form.hotline}
+                  onChange={event =>
+                    setForm(current => ({
+                      ...current,
+                      hotline: event.target.value,
+                    }))
+                  }
+                  placeholder='0901234567'
+                />
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor='branch-policy'>Policy</FieldLabel>
+                <Input
+                  id='branch-policy'
+                  value={form.policy}
+                  onChange={event =>
+                    setForm(current => ({
+                      ...current,
+                      policy: event.target.value,
+                    }))
+                  }
+                  placeholder='Default cancellation policy'
+                />
+              </Field>
+            </div>
+
+            <DialogFooter>
+              <Button
+                type='button'
+                variant='outline'
+                onClick={() => setIsCreateOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button type='submit' isLoading={createBranchMutation.isPending}>
+                Create Branch
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
