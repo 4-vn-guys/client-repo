@@ -17,6 +17,16 @@ export const authApi = {
   },
 
   /**
+   * Login with Google OAuth2 ID token
+   */
+  loginWithGoogle: async (idToken: string) => {
+    const response = await axiosInstance.post('/auth/login/google', {
+      idToken,
+    });
+    return response.data;
+  },
+
+  /**
    * Register new user
    */
   register: async (data: {

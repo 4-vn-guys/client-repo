@@ -45,7 +45,6 @@
     "continueWithEmail": "Tiếp tục với Email",
     "continueWithPhone": "Tiếp tục với Số điện thoại",
     "continueWithGoogle": "Tiếp tục với Google",
-    "continueWithFacebook": "Tiếp tục với Facebook",
     "orContinueWith": "hoặc tiếp tục với",
     "forgotPassword": "Quên mật khẩu?",
     "noAccount": "Chưa có tài khoản?",
@@ -78,7 +77,6 @@
     "continueWithEmail": "Tiếp tục với Email",
     "continueWithPhone": "Tiếp tục với Số điện thoại",
     "continueWithGoogle": "Tiếp tục với Google",
-    "continueWithFacebook": "Tiếp tục với Facebook",
     "orContinueWith": "hoặc tiếp tục với",
     "alreadyHaveAccount": "Đã có tài khoản?",
     "signIn": "Đăng nhập",
@@ -125,7 +123,6 @@
       "continueWithEmail": "Tiếp tục với Email",
       "continueWithPhone": "Tiếp tục với Số điện thoại",
       "continueWithGoogle": "Tiếp tục với Google",
-      "continueWithFacebook": "Tiếp tục với Facebook",
       "orContinueWith": "hoặc tiếp tục với"
     },
     "TermConditionText": {

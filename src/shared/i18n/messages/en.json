@@ -41,7 +41,6 @@
     "continueWithEmail": "Continue with Email",
     "continueWithPhone": "Continue with Phone",
     "continueWithGoogle": "Continue with Google",
-    "continueWithFacebook": "Continue with Facebook",
     "orContinueWith": "or continue with",
     "forgotPassword": "Forgot password?",
     "noAccount": "Don't have an account?",
@@ -74,7 +73,6 @@
     "continueWithEmail": "Continue with Email",
     "continueWithPhone": "Continue with Phone",
     "continueWithGoogle": "Continue with Google",
-    "continueWithFacebook": "Continue with Facebook",
     "orContinueWith": "or continue with",
     "alreadyHaveAccount": "Already have an account?",
     "signIn": "Sign in",
@@ -121,7 +119,6 @@
       "continueWithEmail": "Continue with Email",
       "continueWithPhone": "Continue with Phone",
       "continueWithGoogle": "Continue with Google",
-      "continueWithFacebook": "Continue with Facebook",
       "orContinueWith": "or continue with"
     },
     "TermConditionText": {

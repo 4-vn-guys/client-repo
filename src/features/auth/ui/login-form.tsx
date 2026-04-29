@@ -33,7 +33,7 @@ export function LoginForm({
   const tLoginPage = useTranslations('LoginPage');
   const [showPassword, setShowPassword] = useState(false);
   const { loginSchema } = useAuthSchemas();
-  const { login, isLoading } = useAuth();
+  const { login, loginWithGoogle, isLoading } = useAuth();
 
   // Memoize form options to improve performance and prevent re-renders
   const form = useForm({
@@ -181,7 +181,12 @@ export function LoginForm({
               >
                 {isLoading ? 'Logging in...' : tLoginPage('login')}
               </Button>
-              <ExtraAuthForm />
+              <ExtraAuthForm
+                isLoading={isLoading}
+                onGoogleCredential={async idToken => {
+                  await loginWithGoogle(idToken);
+                }}
+              />
               <FieldDescription className='mt-2 text-center'>
                 {tLoginPage('noAccount')}&nbsp;
                 <Link

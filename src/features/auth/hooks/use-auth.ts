@@ -94,6 +94,93 @@ export const useAuth = () => {
     }
   };
 
+  const loginWithGoogle = async (idToken: string) => {
+    try {
+      setLoading(true);
+      const response = await authApi.loginWithGoogle(idToken);
+
+      if (response?.data) {
+        const { accessToken, refreshToken } = response.data;
+        setTokens(accessToken, refreshToken);
+
+        const profileResponse = await authApi.getProfile();
+        if (profileResponse?.data) {
+          const {
+            id,
+            username,
+            email,
+            role,
+            phoneNumber,
+            provider,
+            providerId,
+            createdAt,
+            updatedAt,
+            deletedAt,
+          } = profileResponse.data;
+
+          setAuth(
+            {
+              id,
+              username,
+              email,
+              role,
+              phoneNumber,
+              provider,
+              providerId,
+              createdAt,
+              updatedAt,
+              deletedAt,
+            },
+            accessToken,
+            refreshToken
+          );
+
+          toast.success('Login successful!');
+          router.push('/owner/branches');
+          return { success: true };
+        }
+      }
+
+      toast.error('Google login failed');
+      return { success: false, error: 'Google login failed' };
+    } catch (error) {
+      const message =
+        (error &&
+        typeof error === 'object' &&
+        'response' in error &&
+        error.response &&
+        typeof error.response === 'object' &&
+        'data' in error.response &&
+        error.response.data &&
+        typeof error.response.data === 'object' &&
+        'error' in error.response.data &&
+        error.response.data.error &&
+        typeof error.response.data.error === 'object' &&
+        'message' in error.response.data.error &&
+        typeof error.response.data.error.message === 'string'
+          ? error.response.data.error.message
+          : null) ||
+        (error &&
+        typeof error === 'object' &&
+        'response' in error &&
+        error.response &&
+        typeof error.response === 'object' &&
+        'data' in error.response &&
+        error.response.data &&
+        typeof error.response.data === 'object' &&
+        'message' in error.response.data &&
+        typeof error.response.data.message === 'string'
+          ? error.response.data.message
+          : null) ||
+        'Google login failed';
+
+      toast.error(message);
+      return { success: false, error: message };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   /**
    * Register new user
    */
@@ -189,6 +276,7 @@ export const useAuth = () => {
     isAuthenticated,
     isLoading,
     login,
+    loginWithGoogle,
     register,
     logout,
     refreshProfile,

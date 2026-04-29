@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Open_Sans } from 'next/font/google';
-import { ThemeProvider } from '@/shared/providers';
+import { AppGoogleOAuthProvider, ThemeProvider } from '@/shared/providers';
 import QueryProvider from '@/shared/providers/query-provider';
 import { NextIntlClientProvider } from 'next-intl';
 import { Toaster } from 'react-hot-toast';
@@ -52,18 +52,20 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <NextIntlClientProvider>
-          <ThemeProvider
-            attribute='class'
-            defaultTheme='system'
-            enableSystem
-            disableTransitionOnChange
-          >
-            <QueryProvider>
-              <Toaster position='top-right' />
-              {children}
-            </QueryProvider>
-            <SpeedInsights />
-          </ThemeProvider>
+          <AppGoogleOAuthProvider>
+            <ThemeProvider
+              attribute='class'
+              defaultTheme='system'
+              enableSystem
+              disableTransitionOnChange
+            >
+              <QueryProvider>
+                <Toaster position='top-right' />
+                {children}
+              </QueryProvider>
+              <SpeedInsights />
+            </ThemeProvider>
+          </AppGoogleOAuthProvider>
         </NextIntlClientProvider>
       </body>
     </html>
