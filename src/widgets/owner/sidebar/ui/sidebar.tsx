@@ -10,7 +10,6 @@ import { UserProfileButton } from '@/features/user-profile';
 import { Separator } from '@/shared/ui/separator';
 import { cn } from '@/shared/lib/utils';
 import { useAuthStore } from '@/src/shared/store';
-import { LanguageSwitcher } from '@/features/language-switch';
 import { useTranslations } from 'next-intl';
 
 export function OwnerSidebar() {
@@ -85,9 +84,6 @@ export function OwnerSidebar() {
                 onClick={() => setIsOpen(false)}
               />
             ))}
-          </div>
-          <div className='mt-3 flex justify-center'>
-            <LanguageSwitcher />
           </div>
           <Separator className='my-3' />
           <UserProfileButton
