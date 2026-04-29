@@ -60,7 +60,7 @@ export function OwnerSidebar() {
               <div className='space-y-1'>
                 {section.items.map(item => (
                   <SidebarNavItem
-                    key={item.href}
+                    key={item.label}
                     {...item}
                     onClick={() => setIsOpen(false)}
                   />
