@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 import { TimeInput } from './time-input';
 import { Button } from '@/shared/ui/button';
+import { useTranslations } from 'next-intl';
 
 interface EnhancedTimeInputsProps {
   startHour: string;
@@ -32,6 +33,8 @@ export function EnhancedTimeInputs({
   startTimeError,
   endTimeError,
 }: EnhancedTimeInputsProps) {
+  const tBookingForm = useTranslations('BookingForm');
+
   // Calculate duration and validate
   const { duration, isValid } = useMemo(() => {
     const startTotal = parseInt(startHour) * 60 + parseInt(startMinute);
@@ -72,7 +75,9 @@ export function EnhancedTimeInputs({
       {/* Start and End Time Row */}
       <div className='grid grid-cols-2 gap-4'>
         <div>
-          <label className='mb-2 block text-base font-medium'>Start Time</label>
+          <label className='mb-2 block text-base font-medium'>
+            {tBookingForm('startTime')}
+          </label>
           <TimeInput
             hour={startHour}
             minute={startMinute}
@@ -83,7 +88,9 @@ export function EnhancedTimeInputs({
         </div>
 
         <div>
-          <label className='mb-2 block text-base font-medium'>End Time</label>
+          <label className='mb-2 block text-base font-medium'>
+            {tBookingForm('endTime')}
+          </label>
           <TimeInput
             hour={endHour}
             minute={endMinute}
@@ -97,7 +104,7 @@ export function EnhancedTimeInputs({
       {/* Duration Display */}
       <div className='flex items-center justify-between rounded-lg border border-violet-200 bg-violet-50 p-3 dark:border-violet-800 dark:bg-violet-950'>
         <span className='text-sm font-medium text-gray-700 dark:text-gray-300'>
-          Duration
+          {tBookingForm('duration')}
         </span>
         <span
           className={`text-lg font-semibold ${
@@ -113,7 +120,7 @@ export function EnhancedTimeInputs({
       {/* Preset Duration Buttons */}
       <div className='space-y-2'>
         <label className='text-sm font-medium text-gray-600 dark:text-gray-400'>
-          Quick Select Duration
+          {tBookingForm('quickSelectDuration')}
         </label>
         <div className='flex flex-wrap gap-2'>
           {PRESET_DURATIONS.map(preset => (
@@ -134,7 +141,7 @@ export function EnhancedTimeInputs({
       {/* Validation Message */}
       {!isValid && (
         <p className='text-destructive text-sm'>
-          End time must be after start time
+          {tBookingForm('endTimeAfterStart')}
         </p>
       )}
     </div>

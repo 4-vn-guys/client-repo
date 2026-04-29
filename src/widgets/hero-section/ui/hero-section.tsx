@@ -5,7 +5,8 @@ import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 
 export async function HeroSection() {
-  const tCommon = await getTranslations('HomePage');
+  const tHomePage = await getTranslations('HomePage');
+  const tCommon = await getTranslations('Common');
 
   return (
     <section className='bg-primary text-primary-foreground relative py-20'>
@@ -13,18 +14,18 @@ export async function HeroSection() {
         className='absolute inset-0 h-full w-full object-cover object-center opacity-70'
         loading='eager'
         src='/images/background-home.jpeg'
-        alt='Sports Court'
+        alt={tCommon('sportsCourtAlt')}
         width={1920}
         height={1080}
       />
       <div className='relative mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8'>
         <TypographyH1 className='text-shadow-accent-foreground text-shadow-lg'>
-          {tCommon('slogan')}
+          {tHomePage('slogan')}
           <br />
-          <span className='text-yellow-300'>{tCommon('subSlogan')}</span>
+          <span className='text-yellow-300'>{tHomePage('subSlogan')}</span>
         </TypographyH1>
         <TypographyP className='text-shadow-accent-foreground mx-auto mb-8 max-w-3xl text-xl text-shadow-md md:text-2xl'>
-          {tCommon('infoText')}
+          {tHomePage('infoText')}
         </TypographyP>
 
         {/* Sport Selection */}
@@ -36,7 +37,7 @@ export async function HeroSection() {
               className='shadow-accent-foreground pointer-events-none h-auto rounded-full px-6 py-3 shadow-lg'
             >
               <span className='text-2xl'>{sport.emoji}</span>
-              <span>{sport.name}</span>
+              <span>{tCommon(sport.translationKey)}</span>
             </Button>
           ))}
         </div>

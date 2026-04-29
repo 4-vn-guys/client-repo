@@ -5,6 +5,7 @@ import { Geocoder } from '@mapbox/search-js-react';
 import mapboxgl from 'mapbox-gl';
 import { Field, FieldLabel } from './field';
 import { Input } from './input';
+import { useLocale, useTranslations } from 'next-intl';
 
 type Coordinates = {
   latitude: number;
@@ -31,6 +32,8 @@ export function LocationPicker({
   const markerRef = useRef<mapboxgl.Marker | null>(null);
   const [mapInstance, setMapInstance] = useState<mapboxgl.Map>();
   const [searchValue, setSearchValue] = useState('');
+  const locale = useLocale();
+  const tLocation = useTranslations('Components.LocationPicker');
 
   const updateCoordinates = (lngLat: mapboxgl.LngLatLike, shouldFly = false) => {
     const coordinates = mapboxgl.LngLat.convert(lngLat);
@@ -101,12 +104,13 @@ export function LocationPicker({
     return (
       <div className='border-border bg-muted/20 rounded-lg border p-4'>
         <p className='text-muted-foreground mb-4 text-sm'>
-          Add `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN` to enable the interactive map
-          picker. You can still enter coordinates manually for local setup.
+          {tLocation('missingToken')}
         </p>
         <div className='grid gap-4 md:grid-cols-2'>
           <Field>
-            <FieldLabel htmlFor='branch-latitude'>Latitude</FieldLabel>
+            <FieldLabel htmlFor='branch-latitude'>
+              {tLocation('latitude')}
+            </FieldLabel>
             <Input
               id='branch-latitude'
               type='number'
@@ -122,7 +126,9 @@ export function LocationPicker({
             />
           </Field>
           <Field>
-            <FieldLabel htmlFor='branch-longitude'>Longitude</FieldLabel>
+            <FieldLabel htmlFor='branch-longitude'>
+              {tLocation('longitude')}
+            </FieldLabel>
             <Input
               id='branch-longitude'
               type='number'
@@ -145,7 +151,7 @@ export function LocationPicker({
   return (
     <div className='space-y-3'>
       <div className='space-y-2'>
-        <FieldLabel>Branch Location</FieldLabel>
+        <FieldLabel>{tLocation('branchLocation')}</FieldLabel>
         <Geocoder
           accessToken={accessToken}
           map={mapInstance}
@@ -161,14 +167,14 @@ export function LocationPicker({
             updateCoordinates([coordinates[0], coordinates[1]], true);
           }}
           options={{
-            language: 'vi',
+            language: locale,
             country: 'VN',
             proximity: {
               lng: longitude,
               lat: latitude,
             },
           }}
-          placeholder='Search address or place'
+          placeholder={tLocation('searchPlaceholder')}
         />
       </div>
 
@@ -178,8 +184,10 @@ export function LocationPicker({
       />
 
       <p className='text-muted-foreground text-xs'>
-        Click the map, drag the marker, or search for an address. Selected:
-        latitude {latitude.toFixed(6)}, longitude {longitude.toFixed(6)}.
+        {tLocation('instructions', {
+          latitude: latitude.toFixed(6),
+          longitude: longitude.toFixed(6),
+        })}
       </p>
     </div>
   );

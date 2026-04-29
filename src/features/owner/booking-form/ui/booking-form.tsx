@@ -14,6 +14,7 @@ import { ExtrasSection } from './extras-section';
 import { Input } from '@/shared/ui/input';
 import { Field, FieldLabel, FieldError } from '@/shared/ui/field';
 import { cn } from '@/shared/lib/utils';
+import { useTranslations } from 'next-intl';
 
 interface BookingFormProps {
   branchId: string;
@@ -49,6 +50,8 @@ export function BookingForm({
   onSubmit,
   isLoading,
 }: BookingFormProps) {
+  const tCommon = useTranslations('Common');
+  const tBookingForm = useTranslations('BookingForm');
   const isMultiSlotMode =
     !isEditMode &&
     !!initialData?.details?.length;
@@ -78,7 +81,9 @@ export function BookingForm({
       onChange: ({ value }) => {
         const result = bookingFormSchema.safeParse(value);
         if (result.success) return undefined;
-        const msg = result.error.issues[0]?.message ?? 'Validation failed';
+        const msg =
+          result.error.issues[0]?.message ??
+          tBookingForm('validationFailed');
         return msg;
       },
     },
@@ -186,14 +191,16 @@ export function BookingForm({
               field.state.meta.isTouched && field.state.meta.errors.length > 0;
             return (
               <Field>
-                <FieldLabel htmlFor={field.name}>Customer Name</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  {tBookingForm('customerName')}
+                </FieldLabel>
                 <Input
                   id={field.name}
                   name={field.name}
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={e => field.handleChange(e.target.value)}
-                  placeholder='Search or enter name...'
+                  placeholder={tBookingForm('customerNamePlaceholder')}
                   className={cn(hasError && 'border-destructive')}
                 />
                 <div className='mt-1 min-h-5'>
@@ -205,7 +212,7 @@ export function BookingForm({
                             (typeof e === 'string'
                               ? e
                               : (e as unknown as { message?: string }).message) ||
-                            'Error',
+                            tCommon('error'),
                         })) as Array<{ message?: string }>
                       }
                     />
@@ -224,7 +231,9 @@ export function BookingForm({
             <form.Field name='status'>
               {field => (
                 <Field>
-                  <FieldLabel htmlFor={field.name}>Booking Status</FieldLabel>
+                  <FieldLabel htmlFor={field.name}>
+                    {tBookingForm('bookingStatus')}
+                  </FieldLabel>
                   <select
                     id={field.name}
                     value={field.state.value}
@@ -235,10 +244,16 @@ export function BookingForm({
                     }
                     className='w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-violet-500 focus:outline-none'
                   >
-                    <option value='pending'>Pending</option>
-                    <option value='confirmed'>Confirmed</option>
-                    <option value='cancelled'>Cancelled</option>
-                    <option value='maintenance'>Maintenance</option>
+                    <option value='pending'>{tBookingForm('pending')}</option>
+                    <option value='confirmed'>
+                      {tBookingForm('confirmed')}
+                    </option>
+                    <option value='cancelled'>
+                      {tBookingForm('cancelled')}
+                    </option>
+                    <option value='maintenance'>
+                      {tBookingForm('maintenance')}
+                    </option>
                   </select>
                 </Field>
               )}
@@ -247,7 +262,9 @@ export function BookingForm({
             <form.Field name='statusPayment'>
               {field => (
                 <Field>
-                  <FieldLabel htmlFor={field.name}>Payment Status</FieldLabel>
+                  <FieldLabel htmlFor={field.name}>
+                    {tBookingForm('paymentStatus')}
+                  </FieldLabel>
                   <select
                     id={field.name}
                     value={field.state.value}
@@ -258,8 +275,8 @@ export function BookingForm({
                     }
                     className='w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-violet-500 focus:outline-none'
                   >
-                    <option value='unpaid'>Unpaid</option>
-                    <option value='paid'>Paid</option>
+                    <option value='unpaid'>{tBookingForm('unpaid')}</option>
+                    <option value='paid'>{tBookingForm('paid')}</option>
                   </select>
                 </Field>
               )}
@@ -269,7 +286,9 @@ export function BookingForm({
           <form.Field name='totalPrice'>
             {field => (
               <Field>
-                <FieldLabel htmlFor={field.name}>Total Price</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  {tBookingForm('totalPrice')}
+                </FieldLabel>
                 <Input
                   id={field.name}
                   name={field.name}
@@ -278,7 +297,7 @@ export function BookingForm({
                   step='0.01'
                   value={field.state.value}
                   onChange={e => field.handleChange(parseFloat(e.target.value) || 0)}
-                  placeholder='Enter total price...'
+                  placeholder={tBookingForm('totalPricePlaceholder')}
                 />
               </Field>
             )}
@@ -289,14 +308,14 @@ export function BookingForm({
       {/* Court & Time Section */}
       <div className='space-y-4 border-t pt-6'>
         <h3 className='text-sm font-semibold tracking-wide text-violet-600 uppercase'>
-          Court & Time
+          {tBookingForm('courtAndTime')}
         </h3>
 
         {isMultiSlotMode ? (
           /* Multi-select from grid: show read-only summary */
           <div className='rounded-md border bg-muted/30 p-3'>
             <p className='mb-2 text-sm font-medium text-muted-foreground'>
-              Selected slots
+              {tBookingForm('selectedSlots')}
             </p>
             <ul className='space-y-1 text-sm'>
               {initialData?.details?.map(({ courtId, slotIndex }) => {
@@ -338,14 +357,16 @@ export function BookingForm({
               field.state.meta.isTouched && field.state.meta.errors.length > 0;
             return (
               <Field>
-                <FieldLabel htmlFor={field.name}>Booking Title</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  {tBookingForm('bookingTitle')}
+                </FieldLabel>
                 <Input
                   id={field.name}
                   name={field.name}
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={e => field.handleChange(e.target.value)}
-                  placeholder='Enter booking description...'
+                  placeholder={tBookingForm('bookingTitlePlaceholder')}
                   className={cn(hasError && 'border-destructive')}
                 />
                 <div className='mt-1 min-h-5'>
@@ -357,7 +378,7 @@ export function BookingForm({
                             (typeof e === 'string'
                               ? e
                               : (e as unknown as { message?: string }).message) ||
-                            'Error',
+                            tCommon('error'),
                         })) as Array<{ message?: string }>
                       }
                     />

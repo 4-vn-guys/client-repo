@@ -1,5 +1,6 @@
 import { cn } from '@/shared/lib/utils';
 import { courtTypeColors, type CourtType } from '@/shared/config/court-types';
+import { useTranslations } from 'next-intl';
 
 interface CourtLabelProps {
   name: string;
@@ -8,11 +9,13 @@ interface CourtLabelProps {
 }
 
 export function CourtLabel({ name, type, className }: CourtLabelProps) {
+  const tCommon = useTranslations('Common');
+
   return (
     <div className={cn('flex flex-col', className)}>
       <span className='text-foreground text-sm font-medium'>{name}</span>
       <span className={cn('text-xs capitalize', courtTypeColors[type])}>
-        {type}
+        {tCommon(type)}
       </span>
     </div>
   );

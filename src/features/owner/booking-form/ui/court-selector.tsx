@@ -2,6 +2,7 @@
 
 import { cn } from '@/shared/lib/utils';
 import type { Court } from '@/entities/court';
+import { useTranslations } from 'next-intl';
 
 interface CourtSelectorProps {
   courts: Court[];
@@ -16,9 +17,11 @@ export function CourtSelector({
   onSelectCourt,
   error,
 }: CourtSelectorProps) {
+  const tBookingForm = useTranslations('BookingForm');
+
   return (
     <div className='space-y-2'>
-      <label className='text-sm font-medium'>Court</label>
+      <label className='text-sm font-medium'>{tBookingForm('court')}</label>
       <div className='flex flex-wrap gap-2'>
         {courts.map(court => (
           <button

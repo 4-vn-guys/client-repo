@@ -9,6 +9,7 @@ import {
 import { BookingForm } from './booking-form';
 import type { Court } from '@/entities/court';
 import type { CreateBookingDto, UpdateBookingDto } from '@/entities/booking';
+import { useTranslations } from 'next-intl';
 
 interface BookingDialogProps {
   open: boolean;
@@ -49,6 +50,7 @@ export function BookingDialog({
   isLoading,
 }: BookingDialogProps) {
   const isEditMode = !!initialData?.bookingId;
+  const tBookingForm = useTranslations('BookingForm');
 
   const handleSubmit = async (data: CreateBookingDto | UpdateBookingDto) => {
     await onSubmit(data);
@@ -61,7 +63,9 @@ export function BookingDialog({
       <DialogContent className='max-h-[90vh] max-w-2xl overflow-y-auto'>
         <DialogHeader>
           <DialogTitle className='text-2xl font-semibold'>
-            {isEditMode ? 'Edit Reservation' : 'New Reservation'}
+            {isEditMode
+              ? tBookingForm('editReservation')
+              : tBookingForm('newReservation')}
           </DialogTitle>
         </DialogHeader>
 

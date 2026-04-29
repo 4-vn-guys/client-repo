@@ -33,6 +33,7 @@ const RESEND_CODE_INTERVAL = 60;
 
 export const ForgotPasswordForm = () => {
   const tForgotPasswordPage = useTranslations('ForgotPasswordPage');
+  const tCommon = useTranslations('Common');
 
   const [isLoading, setIsLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState<Step>('email');
@@ -292,7 +293,9 @@ export const ForgotPasswordForm = () => {
                             type='button'
                             onClick={toggleShowPassword}
                             aria-label={
-                              showPassword ? 'Hide password' : 'Show password'
+                              showPassword
+                                ? tCommon('hidePassword')
+                                : tCommon('showPassword')
                             }
                           >
                             {showPassword ? (
@@ -347,8 +350,8 @@ export const ForgotPasswordForm = () => {
                             onClick={toggleShowConfirmPassword}
                             aria-label={
                               showConfirmPassword
-                                ? 'Hide confirm password'
-                                : 'Show confirm password'
+                                ? tCommon('hideConfirmPassword')
+                                : tCommon('showConfirmPassword')
                             }
                           >
                             {showConfirmPassword ? (

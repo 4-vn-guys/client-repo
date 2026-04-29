@@ -9,6 +9,7 @@ import {
   generateTimeSlots,
   TIMELINE_CONFIG,
 } from '../lib/calendar-utils';
+import { useTranslations } from 'next-intl';
 
 interface CourtRowProps {
   court: Court;
@@ -23,6 +24,8 @@ export const CourtRow = memo(function CourtRow({
   onCellClick,
   onBookingClick,
 }: CourtRowProps) {
+  const tTimeline = useTranslations('OwnerTimelinePage');
+
   // Memoize time slots to avoid regenerating on every render
   const timeSlots = useMemo(() => generateTimeSlots(), []);
 
@@ -83,7 +86,7 @@ export const CourtRow = memo(function CourtRow({
             return (
               <BookingCard
                 key={booking.slotId ?? `${booking.id}-${booking.courtId}-${booking.startTime}`}
-                customerName={booking.customerName ?? 'Unknown'}
+                customerName={booking.customerName ?? tTimeline('unknownCustomer')}
                 duration={booking.duration ?? 1}
                 price={booking.price ?? 0}
                 status={booking.status}

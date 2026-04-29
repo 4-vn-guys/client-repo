@@ -17,6 +17,7 @@ import {
   DollarSign,
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip';
+import { useLocale, useTranslations } from 'next-intl';
 
 interface BookingCardProps {
   customerName: string;
@@ -39,6 +40,9 @@ export function BookingCard({
   startTime,
   onClick,
 }: BookingCardProps) {
+  const locale = useLocale();
+  const tTimeline = useTranslations('OwnerTimelinePage');
+  const tBookingForm = useTranslations('BookingForm');
   const colors = bookingStatusColors[status as BookingStatus] ?? bookingStatusColors[BOOKING_STATUS.PENDING as BookingStatus];
 
   const statusIcon = useMemo(() => {
@@ -52,7 +56,7 @@ export function BookingCard({
   const formatTime = (date?: Date | string) => {
     if (!date) return '';
     const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return dateObj.toLocaleTimeString('en-US', {
+    return dateObj.toLocaleTimeString(locale, {
       hour: '2-digit',
       minute: '2-digit',
       hour12: false,
@@ -60,7 +64,10 @@ export function BookingCard({
   };
 
   const getStatusLabel = (status: BookingStatus) => {
-    return status.charAt(0).toUpperCase() + status.slice(1);
+    if (status === BOOKING_STATUS.CONFIRMED) return tBookingForm('confirmed');
+    if (status === BOOKING_STATUS.CANCELLED) return tBookingForm('cancelled');
+    if (status === BOOKING_STATUS.MAINTENANCE) return tBookingForm('maintenance');
+    return tBookingForm('pending');
   };
 
   const handleClick = (e: React.MouseEvent) => {
@@ -131,7 +138,7 @@ export function BookingCard({
               <span className='capitalize'>{getStatusLabel(status)}</span>
             </div>
             <div className='text-muted-foreground mt-2 border-t pt-2 text-[10px]'>
-              Click to edit booking
+              {tTimeline('clickToEdit')}
             </div>
           </div>
         </div>

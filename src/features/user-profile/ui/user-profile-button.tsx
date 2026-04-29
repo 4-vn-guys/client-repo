@@ -1,6 +1,6 @@
 'use client';
 
-import { User, Settings, LogOut, Eye, Edit } from 'lucide-react';
+import { Settings, LogOut, Eye, Edit } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -13,6 +13,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { cn } from '@/shared/lib/utils';
 import { useUserProfile } from '../model/use-user-profile';
+import { useTranslations } from 'next-intl';
 
 interface UserProfileButtonProps {
     name: string;
@@ -34,6 +35,7 @@ export function UserProfileButton({
     className,
 }: UserProfileButtonProps) {
     const { handleAction } = useUserProfile();
+    const tUserProfile = useTranslations('Components.UserProfile');
 
     const initials = name
         .split(' ')
@@ -53,7 +55,7 @@ export function UserProfileButton({
                         'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary',
                         className
                     )}
-                    aria-label="Open user menu"
+                    aria-label={tUserProfile('openMenu')}
                 >
                     <Avatar className="size-10 bg-primary/20">
                         <AvatarImage src={avatar || '/placeholder.svg'} alt={name} />
@@ -91,21 +93,21 @@ export function UserProfileButton({
                         className="cursor-pointer"
                     >
                         <Eye className="mr-2 size-4" />
-                        <span>View Profile</span>
+                        <span>{tUserProfile('viewProfile')}</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem
                         onClick={() => handleAction('edit-profile')}
                         className="cursor-pointer"
                     >
                         <Edit className="mr-2 size-4" />
-                        <span>Edit Profile</span>
+                        <span>{tUserProfile('editProfile')}</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem
                         onClick={() => handleAction('settings')}
                         className="cursor-pointer"
                     >
                         <Settings className="mr-2 size-4" />
-                        <span>Settings</span>
+                        <span>{tUserProfile('settings')}</span>
                     </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
@@ -114,7 +116,7 @@ export function UserProfileButton({
                     className="cursor-pointer text-destructive focus:text-destructive"
                 >
                     <LogOut className="mr-2 size-4" />
-                    <span>Log out</span>
+                    <span>{tUserProfile('logout')}</span>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

@@ -13,6 +13,7 @@ interface NavigationProps {
 
 export const Navigation = ({ simpleHeader = false }: NavigationProps) => {
   const tNavigation = useTranslations('Navigation');
+  const tCommon = useTranslations('Common');
 
   const links = useMemo(
     () => [
@@ -29,7 +30,9 @@ export const Navigation = ({ simpleHeader = false }: NavigationProps) => {
       <div className='mx-auto px-4 sm:px-6 lg:px-8'>
         <div className='flex h-16 items-center justify-between'>
           <div className='flex items-center'>
-            <div className='text-primary text-2xl font-bold'>CourtConnect</div>
+            <div className='text-primary text-2xl font-bold'>
+              {tCommon('brandName')}
+            </div>
           </div>
           {!simpleHeader && (
             <div className='hidden space-x-8 md:flex'>

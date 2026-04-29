@@ -21,7 +21,7 @@ export function SidebarNavItem({
   isActive: isActivePath,
   onClick,
 }: SidebarNavItemProps) {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? '';
   const isActive = isActivePath ? isActivePath(pathname) : pathname === href;
 
   return (

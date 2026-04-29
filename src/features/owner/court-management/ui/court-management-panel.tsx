@@ -21,6 +21,7 @@ import {
 import { Field, FieldLabel } from '@/shared/ui/field';
 import { Input } from '@/shared/ui/input';
 import toast from 'react-hot-toast';
+import { useTranslations } from 'next-intl';
 
 type CourtFormState = {
   name: string;
@@ -48,6 +49,8 @@ export function CourtManagementPanel({
   const [form, setForm] = useState<CourtFormState>(initialCourtForm);
   const [editingCourtId, setEditingCourtId] = useState<string | null>(null);
   const queryClient = useQueryClient();
+  const tCommon = useTranslations('Common');
+  const tCourtManagement = useTranslations('CourtManagement');
 
   const courtsQuery = useQuery({
     queryKey: ['courts', 'branch', branchId],
@@ -67,10 +70,10 @@ export function CourtManagementPanel({
     onSuccess: () => {
       invalidateBranchData();
       setForm(initialCourtForm);
-      toast.success('Court created successfully');
+      toast.success(tCourtManagement('successCreate'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to create court');
+      toast.error(error.message || tCourtManagement('errorCreate'));
     },
   });
 
@@ -87,10 +90,10 @@ export function CourtManagementPanel({
       invalidateBranchData();
       setForm(initialCourtForm);
       setEditingCourtId(null);
-      toast.success('Court updated successfully');
+      toast.success(tCourtManagement('successUpdate'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to update court');
+      toast.error(error.message || tCourtManagement('errorUpdate'));
     },
   });
 
@@ -98,10 +101,10 @@ export function CourtManagementPanel({
     mutationFn: deleteCourt,
     onSuccess: () => {
       invalidateBranchData();
-      toast.success('Court deleted successfully');
+      toast.success(tCourtManagement('successDelete'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to delete court');
+      toast.error(error.message || tCourtManagement('errorDelete'));
     },
   });
 
@@ -148,10 +151,9 @@ export function CourtManagementPanel({
   return (
     <Card className='border-border/60 bg-card/80'>
       <CardHeader className='gap-1'>
-        <CardTitle>Branch Courts</CardTitle>
+        <CardTitle>{tCourtManagement('title')}</CardTitle>
         <CardDescription>
-          Configure courts for this branch. The schedule updates from this
-          branch-level court list.
+          {tCourtManagement('description')}
         </CardDescription>
       </CardHeader>
       <CardContent className='space-y-5'>
@@ -160,19 +162,23 @@ export function CourtManagementPanel({
           onSubmit={handleSubmit}
         >
           <Field>
-            <FieldLabel htmlFor='court-name'>Court Name</FieldLabel>
+            <FieldLabel htmlFor='court-name'>
+              {tCourtManagement('courtName')}
+            </FieldLabel>
             <Input
               id='court-name'
               value={form.name}
               onChange={event =>
                 setForm(current => ({ ...current, name: event.target.value }))
               }
-              placeholder='Court A'
+              placeholder={tCourtManagement('courtNamePlaceholder')}
               required
             />
           </Field>
           <Field>
-            <FieldLabel htmlFor='court-surface'>Surface</FieldLabel>
+            <FieldLabel htmlFor='court-surface'>
+              {tCourtManagement('surface')}
+            </FieldLabel>
             <Input
               id='court-surface'
               value={form.surfaceType}
@@ -182,12 +188,14 @@ export function CourtManagementPanel({
                   surfaceType: event.target.value,
                 }))
               }
-              placeholder='Synthetic'
+              placeholder={tCourtManagement('surfacePlaceholder')}
               required
             />
           </Field>
           <Field>
-            <FieldLabel htmlFor='court-rate'>Hourly Rate</FieldLabel>
+            <FieldLabel htmlFor='court-rate'>
+              {tCourtManagement('hourlyRate')}
+            </FieldLabel>
             <Input
               id='court-rate'
               type='number'
@@ -204,7 +212,9 @@ export function CourtManagementPanel({
             />
           </Field>
           <Field className='justify-end'>
-            <FieldLabel htmlFor='court-active'>Active</FieldLabel>
+            <FieldLabel htmlFor='court-active'>
+              {tCourtManagement('active')}
+            </FieldLabel>
             <input
               id='court-active'
               type='checkbox'
@@ -220,11 +230,11 @@ export function CourtManagementPanel({
           </Field>
           <div className='flex items-end gap-2'>
             <Button type='submit' isLoading={isSubmitting}>
-              {editingCourtId ? 'Save' : 'Add'}
+              {editingCourtId ? tCommon('save') : tCommon('add')}
             </Button>
             {editingCourtId && (
               <Button type='button' variant='outline' onClick={handleCancelEdit}>
-                Cancel
+                {tCommon('cancel')}
               </Button>
             )}
           </div>
@@ -232,7 +242,7 @@ export function CourtManagementPanel({
 
         {courts.length === 0 ? (
           <div className='rounded-lg border border-dashed border-border/70 p-6 text-center text-sm text-muted-foreground'>
-            No courts configured for this branch yet.
+            {tCourtManagement('empty')}
           </div>
         ) : (
           <div className='grid gap-3 md:grid-cols-2 xl:grid-cols-3'>
@@ -245,10 +255,13 @@ export function CourtManagementPanel({
                   <div>
                     <h3 className='font-semibold'>{court.name}</h3>
                     <p className='text-sm text-muted-foreground'>
-                      {court.surfaceType} · {court.defaultHourlyRate.toLocaleString()}/hour
+                      {court.surfaceType} ·{' '}
+                      {tCourtManagement('ratePerHour', {
+                        rate: court.defaultHourlyRate.toLocaleString(),
+                      })}
                     </p>
                     <p className='mt-1 text-xs text-muted-foreground'>
-                      {court.isActive ? 'Active' : 'Inactive'}
+                      {court.isActive ? tCommon('active') : tCommon('inactive')}
                     </p>
                   </div>
                   <div className='flex gap-1'>
@@ -259,7 +272,9 @@ export function CourtManagementPanel({
                       onClick={() => handleEdit(court)}
                     >
                       <Pencil className='size-4' />
-                      <span className='sr-only'>Edit court</span>
+                      <span className='sr-only'>
+                        {tCourtManagement('editCourt')}
+                      </span>
                     </Button>
                     <Button
                       type='button'
@@ -270,7 +285,9 @@ export function CourtManagementPanel({
                       disabled={deleteCourtMutation.isPending}
                     >
                       <Trash2 className='size-4' />
-                      <span className='sr-only'>Delete court</span>
+                      <span className='sr-only'>
+                        {tCourtManagement('deleteCourt')}
+                      </span>
                     </Button>
                   </div>
                 </div>

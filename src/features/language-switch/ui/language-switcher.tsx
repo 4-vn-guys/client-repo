@@ -15,8 +15,8 @@ import {
 import Image from 'next/image';
 
 const languages = [
-  { code: 'en', name: 'English', flagImage: '/flags/america.jpeg' },
-  { code: 'vi', name: 'Tiếng Việt', flagImage: '/flags/vietnam.jpeg' },
+  { code: 'en', nameKey: 'englishLanguage', flagImage: '/flags/america.jpeg' },
+  { code: 'vi', nameKey: 'vietnameseLanguage', flagImage: '/flags/vietnam.jpeg' },
 ];
 
 export function LanguageSwitcher() {
@@ -48,7 +48,7 @@ export function LanguageSwitcher() {
         <SelectValue>
           <Image
             src={currentLanguage?.flagImage ?? ''}
-            alt={currentLanguage?.name ?? ''}
+            alt={currentLanguage ? tCommon(currentLanguage.nameKey) : ''}
             width={24}
             height={24}
           />
@@ -66,11 +66,11 @@ export function LanguageSwitcher() {
               <Image
                 loading='lazy'
                 src={lang?.flagImage ?? ''}
-                alt={lang?.name ?? ''}
+                alt={tCommon(lang.nameKey)}
                 width={24}
                 height={24}
               />
-              <span>{lang.name}</span>
+              <span>{tCommon(lang.nameKey)}</span>
             </SelectItem>
           ))}
         </SelectGroup>
