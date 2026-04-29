@@ -1,4 +1,4 @@
-import { MapPin, Clock, Info, ArrowRight, Phone } from 'lucide-react';
+import { MapPin, Clock, Info, ArrowRight, Phone, FileText } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
@@ -26,8 +26,7 @@ export const BranchCard = memo(function BranchCard({
   const operatingHours = `${formatTime(branch.openTime)} - ${formatTime(branch.closeTime)}`;
 
   return (
-    <Link href={`/owner/${branch.id}/timeline`}>
-      <Card className='group border-border/50 hover:border-primary/50 relative h-full cursor-pointer overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-lg'>
+    <Card className='group border-border/50 hover:border-primary/50 relative h-full overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-lg'>
         {/* Header with Avatar and Status */}
         <CardHeader className='p-4 pb-3'>
           <div className='flex items-start gap-3'>
@@ -37,7 +36,7 @@ export const BranchCard = memo(function BranchCard({
                 alt={branch.name}
                 className='object-cover'
               />
-              <AvatarFallback className='from-primary/20 to-primary/5 text-primary bg-gradient-to-br font-semibold'>
+              <AvatarFallback className='from-primary/20 to-primary/5 text-primary bg-linear-to-br font-semibold'>
                 {branch.name.substring(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
@@ -78,21 +77,39 @@ export const BranchCard = memo(function BranchCard({
               <span className='font-medium'>{branch.hotline}</span>
             </div>
           )}
-          <div className='text-muted-foreground/80 bg-muted/40 border-border/30 flex items-start gap-2 rounded-lg border p-2.5 text-xs'>
-            <Info className='text-muted-foreground/60 mt-0.5 h-3.5 w-3.5 shrink-0' />
-            <span className='line-clamp-2 leading-relaxed'>
-              {branch.policy}
-            </span>
-          </div>
+          {branch.policyFile ? (
+            <a
+              href={branch.policyFile.url}
+              target='_blank'
+              rel='noreferrer'
+              className='text-primary bg-primary/5 border-primary/15 hover:bg-primary/10 flex items-center gap-2 rounded-lg border p-2.5 text-xs font-semibold transition-colors'
+            >
+              <FileText className='h-3.5 w-3.5 shrink-0' />
+              <span className='line-clamp-1'>
+                View policy: {branch.policyFile.fileName}
+              </span>
+            </a>
+          ) : (
+            branch.policy && (
+              <div className='text-muted-foreground/80 bg-muted/40 border-border/30 flex items-start gap-2 rounded-lg border p-2.5 text-xs'>
+                <Info className='text-muted-foreground/60 mt-0.5 h-3.5 w-3.5 shrink-0' />
+                <span className='line-clamp-2 leading-relaxed'>
+                  {branch.policy}
+                </span>
+              </div>
+            )
+          )}
         </CardContent>
 
         {/* Footer */}
         <CardFooter className='flex justify-end p-4 pt-0'>
-          <div className='text-primary flex -translate-x-2 items-center gap-1 text-xs font-semibold opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100'>
+          <Link
+            href={`/owner/${branch.id}/timeline`}
+            className='text-primary flex -translate-x-2 items-center gap-1 text-xs font-semibold opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100'
+          >
             View Schedule <ArrowRight className='h-3.5 w-3.5' />
-          </div>
+          </Link>
         </CardFooter>
       </Card>
-    </Link>
   );
 });

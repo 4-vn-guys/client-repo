@@ -4,7 +4,7 @@ import { FormEvent, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { BranchHeader } from '@/pages/owner/venues/ui/venue-header';
 import { BranchesList } from '@/pages/owner/venues/ui/venues-list';
-import { createBranch, fetchBranches } from '@/entities/venue';
+import { createBranch, fetchBranches, uploadBranchFile } from '@/entities/venue';
 import { Button } from '@/shared/ui/button';
 import {
   Dialog,
@@ -16,6 +16,7 @@ import {
 } from '@/shared/ui/dialog';
 import { Field, FieldLabel } from '@/shared/ui/field';
 import { Input } from '@/shared/ui/input';
+import { LocationPicker } from '@/shared/ui/location-picker';
 import toast from 'react-hot-toast';
 
 type BranchFormState = {
@@ -26,7 +27,7 @@ type BranchFormState = {
   openTime: string;
   closeTime: string;
   hotline: string;
-  policy: string;
+  policyFile: File | null;
 };
 
 const initialBranchForm: BranchFormState = {
@@ -37,8 +38,10 @@ const initialBranchForm: BranchFormState = {
   openTime: '06:00',
   closeTime: '23:00',
   hotline: '',
-  policy: '',
+  policyFile: null,
 };
+
+const mapboxAccessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
 export function VenuesPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -52,7 +55,22 @@ export function VenuesPage() {
   });
 
   const createBranchMutation = useMutation({
-    mutationFn: createBranch,
+    mutationFn: async () => {
+      const policyFile = form.policyFile
+        ? await uploadBranchFile(form.policyFile)
+        : null;
+
+      return createBranch({
+        name: form.name.trim(),
+        address: form.address.trim(),
+        latitude: Number(form.latitude),
+        longitude: Number(form.longitude),
+        openTime: form.openTime,
+        closeTime: form.closeTime,
+        hotline: form.hotline.trim() || undefined,
+        policyFileId: policyFile?.id,
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['branches'] });
       setForm(initialBranchForm);
@@ -70,16 +88,7 @@ export function VenuesPage() {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    createBranchMutation.mutate({
-      name: form.name.trim(),
-      address: form.address.trim(),
-      latitude: Number(form.latitude),
-      longitude: Number(form.longitude),
-      openTime: form.openTime,
-      closeTime: form.closeTime,
-      hotline: form.hotline.trim() || undefined,
-      policy: form.policy.trim() || undefined,
-    });
+    createBranchMutation.mutate();
   };
 
   return (
@@ -139,39 +148,20 @@ export function VenuesPage() {
                 />
               </Field>
 
-              <Field>
-                <FieldLabel htmlFor='branch-latitude'>Latitude</FieldLabel>
-                <Input
-                  id='branch-latitude'
-                  type='number'
-                  step='any'
-                  value={form.latitude}
-                  onChange={event =>
+              <div className='md:col-span-2'>
+                <LocationPicker
+                  accessToken={mapboxAccessToken}
+                  latitude={Number(form.latitude)}
+                  longitude={Number(form.longitude)}
+                  onChange={({ latitude, longitude }) =>
                     setForm(current => ({
                       ...current,
-                      latitude: event.target.value,
+                      latitude: String(latitude),
+                      longitude: String(longitude),
                     }))
                   }
-                  required
                 />
-              </Field>
-
-              <Field>
-                <FieldLabel htmlFor='branch-longitude'>Longitude</FieldLabel>
-                <Input
-                  id='branch-longitude'
-                  type='number'
-                  step='any'
-                  value={form.longitude}
-                  onChange={event =>
-                    setForm(current => ({
-                      ...current,
-                      longitude: event.target.value,
-                    }))
-                  }
-                  required
-                />
-              </Field>
+              </div>
 
               <Field>
                 <FieldLabel htmlFor='branch-open-time'>Open Time</FieldLabel>
@@ -220,19 +210,26 @@ export function VenuesPage() {
                 />
               </Field>
 
-              <Field>
+              <Field className='md:col-span-2'>
                 <FieldLabel htmlFor='branch-policy'>Policy</FieldLabel>
                 <Input
                   id='branch-policy'
-                  value={form.policy}
+                  type='file'
+                  accept='application/pdf,.pdf'
                   onChange={event =>
                     setForm(current => ({
                       ...current,
-                      policy: event.target.value,
+                      policyFile: event.target.files?.[0] ?? null,
                     }))
                   }
-                  placeholder='Default cancellation policy'
                 />
+                <p className='text-muted-foreground text-xs'>
+                  Upload the branch policy as a PDF so long cancellation or
+                  house rules can be opened from the branch card.
+                </p>
+                {form.policyFile && (
+                  <p className='text-sm font-medium'>{form.policyFile.name}</p>
+                )}
               </Field>
             </div>
 

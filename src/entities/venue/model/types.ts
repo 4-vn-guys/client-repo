@@ -5,7 +5,9 @@ export interface Branch {
   openTime: string;
   closeTime: string;
   isActive: boolean;
-  policy: string;
+  policy?: string;
+  policyFileId?: string;
+  policyFile?: UploadedFile;
   hotline?: string;
   avatar?: string;
   latitude?: number;
@@ -33,5 +35,13 @@ export type CreateBranchDto = {
   openTime: string;
   closeTime: string;
   policy?: string;
+  policyFileId?: string;
   hotline?: string;
+};
+
+export type UploadedFile = {
+  id: string;
+  url: string;
+  fileType: string;
+  fileName: string;
 };

@@ -9,6 +9,7 @@ export * from './field';
 export * from './form';
 export * from './input';
 export * from './label';
+export * from './location-picker';
 export * from './popover';
 export * from './select';
 export * from './separator';

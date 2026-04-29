@@ -1,5 +1,5 @@
 import { axiosInstance } from '@/shared/lib/axios';
-import { Branch, CreateBranchDto } from '../model/types';
+import { Branch, CreateBranchDto, UploadedFile } from '../model/types';
 
 /**
  * API response structure from backend
@@ -70,6 +70,35 @@ export const createBranch = async (data: CreateBranchDto): Promise<Branch> => {
     throw new Error(response.data.message || 'Failed to create branch');
   } catch (error) {
     console.error('Error creating branch:', error);
+    throw error;
+  }
+};
+
+/**
+ * Upload a file that can be attached to branch metadata, such as policy PDFs.
+ */
+export const uploadBranchFile = async (file: File): Promise<UploadedFile> => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await axiosInstance.post<{
+      success: boolean;
+      data: UploadedFile;
+      message?: string;
+    }>('/files/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    if (response.data.success) {
+      return response.data.data;
+    }
+
+    throw new Error(response.data.message || 'Failed to upload file');
+  } catch (error) {
+    console.error('Error uploading branch file:', error);
     throw error;
   }
 };

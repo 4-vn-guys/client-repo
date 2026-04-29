@@ -1,1 +1,6 @@
-export { fetchBranches, fetchBranchById, createBranch } from './venue-api';
+export {
+  fetchBranches,
+  fetchBranchById,
+  createBranch,
+  uploadBranchFile,
+} from './venue-api';
