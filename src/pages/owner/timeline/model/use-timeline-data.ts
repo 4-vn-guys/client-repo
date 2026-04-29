@@ -12,7 +12,7 @@ import {
   type UpdateBookingDto,
   type Booking,
 } from '@/entities/booking';
-import { gridColumnToHour } from '@/shared/lib/utils/time-utils';
+import { formatDateToYYYYMMDD } from '@/shared/lib/utils';
 import toast from 'react-hot-toast';
 
 /**
@@ -57,7 +57,7 @@ export function useTimelineData(venueId: string) {
 
   // Memoize date string for stable query key (prevents unnecessary refetches)
   const selectedDateKey = useMemo(
-    () => selectedDate.toISOString().split('T')[0],
+    () => formatDateToYYYYMMDD(selectedDate),
     [selectedDate]
   );
 

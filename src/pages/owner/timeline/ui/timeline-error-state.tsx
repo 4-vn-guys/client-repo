@@ -17,8 +17,8 @@ export function TimelineErrorState() {
         The venue you are looking for does not exist or you do not have
         permission to view it.
       </p>
-      <Link href='/owner/venues'>
-        <Button variant='outline'>Back to Venues</Button>
+      <Link href='/owner/branches'>
+        <Button variant='outline'>Back to Branches</Button>
       </Link>
     </div>
   );

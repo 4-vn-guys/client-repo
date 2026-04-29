@@ -6,10 +6,10 @@ import { TimelineGrid } from '@/widgets/owner/';
 import { DateNavigation } from '@/features/owner/filter-by-day';
 import { NewBookingButton } from '@/features/owner/create-booking';
 import { BookingDialog } from '@/features/owner/booking-form';
+import { CourtManagementPanel } from '@/features/owner/court-management';
 import { Button } from '@/shared/ui/button';
 import Link from 'next/link';
 
-import { Skeleton } from '@/shared/ui/skeleton';
 import { useTimelineData } from '../model';
 
 interface TimelinePageProps {
@@ -53,8 +53,8 @@ export function TimelinePageContent({ venueId }: TimelinePageProps) {
           The venue you are looking for does not exist or you do not have
           permission to view it.
         </p>
-        <Link href="/owner/venues">
-          <Button variant="outline">Back to Venues</Button>
+        <Link href="/owner/branches">
+          <Button variant="outline">Back to Branches</Button>
         </Link>
       </div>
     );
@@ -100,6 +100,11 @@ export function TimelinePageContent({ venueId }: TimelinePageProps) {
         onBookingClick={handleBookingClick}
         isSlotSelected={isSlotSelected}
         isLoading={isLoading}
+      />
+
+      <CourtManagementPanel
+        branchId={branchId}
+        initialCourts={venue.courts ?? courts}
       />
 
       <BookingDialog

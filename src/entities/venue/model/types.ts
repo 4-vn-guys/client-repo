@@ -8,4 +8,30 @@ export interface Branch {
   policy: string;
   hotline?: string;
   avatar?: string;
+  latitude?: number;
+  longitude?: number;
+  courts?: BranchCourt[];
 }
+
+export interface BranchCourt {
+  id: string;
+  name: string;
+  branchId: string;
+  surfaceType: string;
+  defaultHourlyRate: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  bookings: [];
+}
+
+export type CreateBranchDto = {
+  name: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  openTime: string;
+  closeTime: string;
+  policy?: string;
+  hotline?: string;
+};

@@ -10,6 +10,7 @@ interface BranchesListProps {
   isLoading: boolean;
   searchQuery: string;
   onSearchChange: (value: string) => void;
+  onCreateBranch?: () => void;
 }
 
 export const BranchesList = memo(function BranchesList({
@@ -17,6 +18,7 @@ export const BranchesList = memo(function BranchesList({
   isLoading,
   searchQuery,
   onSearchChange,
+  onCreateBranch,
 }: BranchesListProps) {
   if (isLoading) {
     return (
@@ -44,7 +46,7 @@ export const BranchesList = memo(function BranchesList({
           Get started by creating your first branch to manage courts and
           bookings.
         </p>
-        <Button>Create Branch</Button>
+        <Button onClick={onCreateBranch}>Create Branch</Button>
       </div>
     );
   }

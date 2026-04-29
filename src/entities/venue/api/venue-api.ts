@@ -1,5 +1,5 @@
 import { axiosInstance } from '@/shared/lib/axios';
-import { Branch } from '../model/types';
+import { Branch, CreateBranchDto } from '../model/types';
 
 /**
  * API response structure from backend
@@ -48,6 +48,28 @@ export const fetchBranchById = async (id: string): Promise<Branch> => {
     throw new Error('Failed to fetch branch');
   } catch (error) {
     console.error('Error fetching branch:', error);
+    throw error;
+  }
+};
+
+/**
+ * Create a new branch owned by the current user
+ */
+export const createBranch = async (data: CreateBranchDto): Promise<Branch> => {
+  try {
+    const response = await axiosInstance.post<{
+      success: boolean;
+      data: Branch;
+      message?: string;
+    }>('/branches/', data);
+
+    if (response.data.success) {
+      return response.data.data;
+    }
+
+    throw new Error(response.data.message || 'Failed to create branch');
+  } catch (error) {
+    console.error('Error creating branch:', error);
     throw error;
   }
 };
