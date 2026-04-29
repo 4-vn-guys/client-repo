@@ -18,6 +18,14 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Environment
+
+The branch location picker uses Mapbox. Add this public token to `.env.local`:
+
+```bash
+NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=your-mapbox-public-token
+```
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the
 file.
 
