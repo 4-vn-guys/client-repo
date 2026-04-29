@@ -29,13 +29,16 @@ export function SidebarNavItem({
       href={href}
       onClick={onClick}
       className={cn(
-        'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+        'group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 focus-visible:ring-3 focus-visible:ring-violet-500/30 focus-visible:outline-none',
         isActive
-          ? 'bg-primary text-primary-foreground'
-          : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+          ? 'bg-primary text-primary-foreground shadow-lg shadow-violet-500/20'
+          : 'text-muted-foreground hover:translate-x-0.5 hover:bg-accent hover:text-foreground'
       )}
     >
-      <Icon className='size-5' />
+      {isActive && (
+        <span className='absolute top-1/2 left-0 h-6 w-1 -translate-y-1/2 rounded-r-full bg-white/90' />
+      )}
+      <Icon className='size-5 transition-transform duration-200 group-hover:scale-105' />
       <span>{label}</span>
     </Link>
   );

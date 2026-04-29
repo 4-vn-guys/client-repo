@@ -5,6 +5,7 @@ export * from './badge';
 export * from './button';
 export * from './calendar';
 export * from './card';
+export * from './dialog';
 export * from './field';
 export * from './form';
 export * from './input';
