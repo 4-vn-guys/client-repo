@@ -10,6 +10,7 @@ interface SidebarNavItemProps {
   label: string;
   href: string;
   icon: LucideIcon;
+  isActive?: (pathname: string) => boolean;
   onClick?: () => void;
 }
 
@@ -17,10 +18,11 @@ export function SidebarNavItem({
   label,
   href,
   icon: Icon,
+  isActive: isActivePath,
   onClick,
 }: SidebarNavItemProps) {
   const pathname = usePathname();
-  const isActive = pathname === href;
+  const isActive = isActivePath ? isActivePath(pathname) : pathname === href;
 
   return (
     <Link

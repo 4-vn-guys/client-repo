@@ -1,0 +1,51 @@
+---
+description: Autonomous harness workflow with requirements-only input and gated approvals
+globs: src/**/*.ts, src/**/*.tsx, app/**/*.tsx
+alwaysApply: false
+---
+
+# Autonomous Harness Agent Rule
+
+Follow this workflow for feature work:
+
+## Human Input Model
+- Assume user provides:
+  1) requirements
+  2) approval at defined gates
+- Do not request repeated clarification unless strictly blocking.
+
+## Approval Gates
+Pause only at:
+
+1. Plan Approval
+- Provide tasks, touched files, test plan, and risks.
+- Wait for explicit approval.
+
+2. Pre-PR Approval
+- Provide final summary, validation results, and commit/branch/PR plan.
+- Wait for explicit approval.
+
+## Required Phase Order
+1. Plan
+2. Implement
+3. Test
+4. Validate (lint, typecheck, test, coverage)
+5. Git prep
+6. PR prep
+
+Do not skip validation.
+
+## Implementation Constraints
+- Respect FSD layering and existing project conventions.
+- Keep changes minimal and feature-scoped.
+- Add or update tests for all behavior changes.
+- Avoid unrelated refactors during feature delivery.
+
+## Reporting Format
+Respond with:
+1. Current Phase
+2. What changed
+3. Validation status
+4. Next action
+
+At gates, include: `Awaiting approval: YES/NO`
