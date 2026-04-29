@@ -3,6 +3,7 @@
 import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/lib/utils';
 import { Zap, ShoppingBag, Droplets } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface ExtrasData {
   rackets: boolean;
@@ -31,6 +32,8 @@ export function ExtrasSection({
   isEditMode,
   noteError,
 }: ExtrasSectionProps) {
+  const tBookingForm = useTranslations('BookingForm');
+
   const toggleExtra = (key: keyof ExtrasData) => {
     onExtrasChange({
       ...extras,
@@ -42,7 +45,7 @@ export function ExtrasSection({
     <div className='space-y-4'>
       <div className='space-y-3'>
         <h3 className='text-sm font-semibold tracking-wide text-violet-600 uppercase'>
-          Extras & Notes
+          {tBookingForm('extrasAndNotes')}
         </h3>
 
         {/* Extras */}
@@ -58,7 +61,7 @@ export function ExtrasSection({
             )}
           >
             <Zap className='size-4' />
-            Rackets
+            {tBookingForm('rackets')}
           </button>
           <button
             type='button'
@@ -71,7 +74,7 @@ export function ExtrasSection({
             )}
           >
             <ShoppingBag className='size-4' />
-            Shoes
+            {tBookingForm('shoes')}
           </button>
           <button
             type='button'
@@ -84,7 +87,7 @@ export function ExtrasSection({
             )}
           >
             <Droplets className='size-4' />
-            Water
+            {tBookingForm('water')}
           </button>
         </div>
 
@@ -93,7 +96,7 @@ export function ExtrasSection({
           <textarea
             value={note}
             onChange={e => onNoteChange(e.target.value)}
-            placeholder='Add special notes...'
+            placeholder={tBookingForm('notePlaceholder')}
             rows={3}
             className='w-full resize-none rounded-md border border-gray-300 px-3 py-2 placeholder:text-gray-400 focus:border-transparent focus:ring-2 focus:ring-violet-500 focus:outline-none'
           />
@@ -110,11 +113,11 @@ export function ExtrasSection({
       >
         {isLoading
           ? isEditMode
-            ? 'Updating Booking...'
-            : 'Creating Booking...'
+            ? tBookingForm('updatingBooking')
+            : tBookingForm('creatingBooking')
           : isEditMode
-            ? 'Update Booking'
-            : 'Create Booking'}
+            ? tBookingForm('updateBooking')
+            : tBookingForm('createBooking')}
       </Button>
     </div>
   );

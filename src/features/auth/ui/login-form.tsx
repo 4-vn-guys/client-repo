@@ -179,7 +179,7 @@ export function LoginForm({
                 className='mt-2 w-full'
                 disabled={isLoading}
               >
-                {isLoading ? 'Logging in...' : tLoginPage('login')}
+                {isLoading ? tLoginPage('loggingIn') : tLoginPage('login')}
               </Button>
               <ExtraAuthForm
                 isLoading={isLoading}
@@ -202,7 +202,7 @@ export function LoginForm({
           <div className='bg-muted relative hidden md:block'>
             <Image
               src='/images/background-login-register.jpeg'
-              alt='Login background'
+              alt={tLoginPage('imageAlt')}
               className='absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale'
               width={500}
               height={500}

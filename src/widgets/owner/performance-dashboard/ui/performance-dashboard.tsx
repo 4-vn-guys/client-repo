@@ -4,8 +4,11 @@ import { WebVitalsSection } from './web-vitals-section';
 import { BundleAnalysisSection } from './bundle-analysis-section';
 import { Separator } from '@/shared/ui/separator';
 import { Gauge } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export function PerformanceDashboard() {
+  const tPerformance = useTranslations('OwnerPerformancePage');
+
   return (
     <div className='space-y-8'>
       <div className='space-y-2'>
@@ -14,9 +17,9 @@ export function PerformanceDashboard() {
             <Gauge className='text-primary h-6 w-6' />
           </div>
           <div>
-            <h1 className='text-3xl font-bold'>Performance Dashboard</h1>
+            <h1 className='text-3xl font-bold'>{tPerformance('title')}</h1>
             <p className='text-muted-foreground'>
-              Monitor your application&apos;s performance metrics in real-time
+              {tPerformance('description')}
             </p>
           </div>
         </div>
@@ -33,13 +36,10 @@ export function PerformanceDashboard() {
       <div className='bg-muted/30 border-border/50 mt-8 rounded-lg border p-4'>
         <h3 className='mb-2 flex items-center gap-2 font-semibold'>
           <Gauge className='h-4 w-4' />
-          About Performance Monitoring
+          {tPerformance('aboutTitle')}
         </h3>
         <p className='text-muted-foreground text-sm'>
-          This dashboard uses Web Vitals to track Core Web Vitals metrics that
-          Google uses for Search ranking. The metrics are measured in real-time
-          as you interact with the application. For production monitoring, data
-          is sent to Vercel Speed Insights.
+          {tPerformance('aboutDescription')}
         </p>
       </div>
     </div>

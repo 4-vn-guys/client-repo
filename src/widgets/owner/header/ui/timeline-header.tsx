@@ -10,6 +10,7 @@ import {
   BOOKING_STATUS,
 } from '@/shared/config/booking-status';
 import { cn } from '@/shared/lib/utils';
+import { useTranslations } from 'next-intl';
 
 interface TimelineHeaderProps {
   title: string;
@@ -22,6 +23,8 @@ export function TimelineHeader({
   dateNavigation,
   actions,
 }: TimelineHeaderProps) {
+  const tTimeline = useTranslations('OwnerTimelinePage');
+
   return (
     <div className='space-y-4'>
       {/* Top row with title and theme toggle */}
@@ -29,7 +32,7 @@ export function TimelineHeader({
         <h1 className='text-2xl font-semibold'>{title}</h1>
         <Button variant='ghost' size='icon' className='rounded-full'>
           <Moon className='size-5' />
-          <span className='sr-only'>Toggle theme</span>
+          <span className='sr-only'>{tTimeline('toggleTheme')}</span>
         </Button>
       </div>
 

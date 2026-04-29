@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { format } from 'date-fns';
 import { CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { Button } from '@/shared/ui/button';
 import { Calendar } from '@/shared/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
+import { useLocale, useTranslations } from 'next-intl';
 
 interface DateNavigationProps {
   date: Date;
@@ -15,6 +15,8 @@ interface DateNavigationProps {
 
 export function DateNavigation({ date, onDateChange }: DateNavigationProps) {
   const [open, setOpen] = useState(false);
+  const locale = useLocale();
+  const tTimeline = useTranslations('OwnerTimelinePage');
 
   const handlePrevDay = () => {
     const prevDay = new Date(date);
@@ -44,7 +46,11 @@ export function DateNavigation({ date, onDateChange }: DateNavigationProps) {
             className='gap-2 bg-transparent font-normal'
           >
             <CalendarIcon className='size-4' />
-            {format(date, 'MMM dd, yyyy')}
+            {new Intl.DateTimeFormat(locale, {
+              year: 'numeric',
+              month: 'short',
+              day: '2-digit',
+            }).format(date)}
           </Button>
         </PopoverTrigger>
         <PopoverContent className='w-auto p-0' align='start'>
@@ -59,12 +65,12 @@ export function DateNavigation({ date, onDateChange }: DateNavigationProps) {
 
       <Button variant='outline' size='icon' onClick={handlePrevDay}>
         <ChevronLeft className='size-4' />
-        <span className='sr-only'>Previous day</span>
+        <span className='sr-only'>{tTimeline('previousDay')}</span>
       </Button>
 
       <Button variant='outline' size='icon' onClick={handleNextDay}>
         <ChevronRight className='size-4' />
-        <span className='sr-only'>Next day</span>
+        <span className='sr-only'>{tTimeline('nextDay')}</span>
       </Button>
     </div>
   );

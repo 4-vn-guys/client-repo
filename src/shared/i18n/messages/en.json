@@ -5,14 +5,32 @@
     "locationLabel": "Location",
     "dateLabel": "Date",
     "languageLabel": "Language",
+    "englishLanguage": "English",
+    "vietnameseLanguage": "Vietnamese",
     "sportLabel": "Sport",
-    "allSports": "All Sports",
+    "allSports": "All sports",
+    "brandName": "CourtConnect",
+    "unknown": "Unknown",
+    "error": "Error",
+    "cancel": "Cancel",
+    "save": "Save",
+    "add": "Add",
+    "active": "Active",
+    "inactive": "Inactive",
+    "hour": "hour",
     "badminton": "Badminton",
     "football": "Football",
     "basketball": "Basketball",
     "tennis": "Tennis",
     "pickleball": "Pickleball",
-    "tableTennis": "Table tennis"
+    "tableTennis": "Table tennis",
+    "synthetic": "Synthetic",
+    "wooden": "Wooden",
+    "sportsCourtAlt": "Sports court",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "showConfirmPassword": "Show confirm password",
+    "hideConfirmPassword": "Hide confirm password"
   },
   "Navigation": {
     "homeLabel": "Home",
@@ -24,13 +42,86 @@
     "findLabel": "Find court"
   },
   "HomePage": {
+    "metadataTitle": "CourtConnect - Book Sports Courts Instantly",
+    "metadataDescription": "Book football, badminton, and pickleball courts instantly. Find premium venues, check real-time availability, and secure your spot in minutes.",
     "slogan": "Book Your Perfect",
     "subSlogan": "Sports Court",
     "infoText": "Find and book football, badminton, and pickleball courts instantly. Real-time availability, secure payments, play when you want.",
     "SearchBar": {
       "locationPlaceholder": "Enter your location...",
-      "datePlaceholder": "Select date..."
-    }
+      "datePlaceholder": "Select date...",
+      "sportPlaceholder": "Select sport",
+      "searchLocationAria": "Search location",
+      "selectDateAria": "Select date",
+      "selectTimeAria": "Select time"
+    },
+    "featuredTitle": "Popular Venues Near You",
+    "bookNow": "Book Now",
+    "venues": {
+      "sportsComplex": {
+        "name": "Sports Complex Downtown",
+        "description": "Downtown • 2 courts available"
+      },
+      "greenField": {
+        "name": "Green Field Arena",
+        "description": "Westside • Full field available"
+      },
+      "urbanCourts": {
+        "name": "Urban Courts Hub",
+        "description": "Midtown • 4 courts available"
+      }
+    },
+    "howItWorksTitle": "How It Works",
+    "steps": {
+      "find": {
+        "title": "1. Find Your Court",
+        "description": "Search by location, sport, and time. Browse photos, read reviews, and compare prices."
+      },
+      "book": {
+        "title": "2. Book Instantly",
+        "description": "Select your preferred time slot and book immediately. No waiting, no phone calls."
+      },
+      "play": {
+        "title": "3. Play & Enjoy",
+        "description": "Show up and play! All courts are verified, well-maintained, and ready for action."
+      }
+    },
+    "whyTitle": "Why Choose CourtConnect?",
+    "whyDescription": "The easiest way to find and book sports courts. Trusted by thousands of players.",
+    "features": {
+      "instant": {
+        "title": "Instant Booking",
+        "description": "Book courts in under 2 minutes"
+      },
+      "payments": {
+        "title": "Secure Payments",
+        "description": "Safe and encrypted transactions"
+      },
+      "venues": {
+        "title": "Verified Venues",
+        "description": "All courts inspected and rated"
+      },
+      "mobile": {
+        "title": "Mobile App",
+        "description": "Book on the go, anytime"
+      }
+    },
+    "ctaTitle": "Ready to Play?",
+    "ctaDescription": "Join thousands of players who trust CourtConnect for their sports court bookings.",
+    "findCourtsNearMe": "Find Courts Near Me",
+    "listYourVenue": "List Your Venue"
+  },
+  "Footer": {
+    "description": "Your trusted partner for booking sports courts across the city.",
+    "sportsTitle": "Sports",
+    "companyTitle": "Company",
+    "aboutUs": "About Us",
+    "contact": "Contact",
+    "support": "Support",
+    "legalTitle": "Legal",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "copyright": "© 2024 CourtConnect. All rights reserved."
   },
   "LoginPage": {
     "title": "Welcome back",
@@ -46,13 +137,15 @@
     "noAccount": "Don't have an account?",
     "signUp": "Sign up",
     "login": "Login",
+    "loggingIn": "Logging in...",
     "phonePlaceholder": "Enter your phone number",
     "emailPlaceholder": "Enter your email",
     "passwordPlaceholder": "Enter your password",
     "phoneVerification": "Phone Verification",
     "enterCode": "Enter the 6-digit code sent to",
     "resendCode": "Resend code",
-    "verify": "Verify"
+    "verify": "Verify",
+    "imageAlt": "Login background"
   },
   "RegisterPage": {
     "title": "Join {platform} Today",
@@ -83,7 +176,8 @@
     "passwordPlaceholder": "Create a password",
     "confirmPasswordPlaceholder": "Confirm your password",
     "termsAndConditions": "I agree to the Terms and Conditions",
-    "privacyPolicy": "Privacy Policy"
+    "privacyPolicy": "Privacy Policy",
+    "imageAlt": "Register background"
   },
   "ForgotPasswordPage": {
     "title": "Reset Your Password",
@@ -126,7 +220,175 @@
       "privacyPolicy": "Privacy Policy",
       "beforeTermsAndConditions": "By clicking continue, you agree to our",
       "termsAndConditions": "and"
+    },
+    "LocationPicker": {
+      "missingToken": "Add `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN` to enable the interactive map picker. You can still enter coordinates manually for local setup.",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "branchLocation": "Branch Location",
+      "searchPlaceholder": "Search address or place",
+      "instructions": "Click the map, drag the marker, or search for an address. Selected: latitude {latitude}, longitude {longitude}."
+    },
+    "UserProfile": {
+      "openMenu": "Open user menu",
+      "viewProfile": "View Profile",
+      "editProfile": "Edit Profile",
+      "settings": "Settings",
+      "logout": "Log out"
     }
+  },
+  "OwnerSidebar": {
+    "toggleMenu": "Toggle menu",
+    "management": "Management",
+    "branches": "Branches",
+    "timelineView": "Timeline View",
+    "members": "Members",
+    "reports": "Reports",
+    "settings": "Settings",
+    "defaultUser": "User",
+    "defaultOwner": "Owner"
+  },
+  "OwnerVenuesPage": {
+    "title": "My Branches",
+    "branchCount": "{count, plural, one {# branch managed} other {# branches managed}}",
+    "addNewBranch": "Add New Branch",
+    "emptyTitle": "No branches yet",
+    "emptyDescription": "Get started by creating your first branch to manage courts and bookings.",
+    "createBranch": "Create Branch",
+    "searchPlaceholder": "Search by name or location...",
+    "noSearchResults": "No branches found matching \"{query}\"",
+    "createDialogTitle": "Create New Branch",
+    "createDialogDescription": "Add a branch so courts, schedule, and bookings can be managed from the owner workspace.",
+    "branchName": "Branch Name",
+    "branchNamePlaceholder": "Downtown Badminton Center",
+    "address": "Address",
+    "addressPlaceholder": "123 Nguyen Trai, District 1",
+    "openTime": "Open Time",
+    "closeTime": "Close Time",
+    "hotline": "Hotline",
+    "policy": "Policy",
+    "policyHelp": "Upload the branch policy as a PDF so long cancellation or house rules can be opened from the branch card.",
+    "successCreate": "Branch created successfully",
+    "errorCreate": "Failed to create branch",
+    "viewPolicy": "View policy: {fileName}",
+    "viewSchedule": "View Schedule"
+  },
+  "OwnerTimelinePage": {
+    "schedule": "Schedule",
+    "venueNotFound": "Venue Not Found",
+    "venueNotFoundDescription": "The venue you are looking for does not exist or you do not have permission to view it.",
+    "backToBranches": "Back to Branches",
+    "bookSelected": "Book Selected ({count})",
+    "newBooking": "New Booking",
+    "previousDay": "Previous day",
+    "nextDay": "Next day",
+    "toggleTheme": "Toggle theme",
+    "unknownCustomer": "Unknown",
+    "clickToEdit": "Click to edit booking"
+  },
+  "BookingForm": {
+    "editReservation": "Edit Reservation",
+    "newReservation": "New Reservation",
+    "validationFailed": "Validation failed",
+    "customerName": "Customer Name",
+    "customerNamePlaceholder": "Search or enter name...",
+    "bookingStatus": "Booking Status",
+    "paymentStatus": "Payment Status",
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "cancelled": "Cancelled",
+    "maintenance": "Maintenance",
+    "unpaid": "Unpaid",
+    "paid": "Paid",
+    "totalPrice": "Total Price",
+    "totalPricePlaceholder": "Enter total price...",
+    "courtAndTime": "Court & Time",
+    "selectedSlots": "Selected slots",
+    "bookingTitle": "Booking Title",
+    "bookingTitlePlaceholder": "Enter booking description...",
+    "court": "Court",
+    "startTime": "Start Time",
+    "endTime": "End Time",
+    "duration": "Duration",
+    "quickSelectDuration": "Quick Select Duration",
+    "endTimeAfterStart": "End time must be after start time",
+    "extrasAndNotes": "Extras & Notes",
+    "rackets": "Rackets",
+    "shoes": "Shoes",
+    "water": "Water",
+    "notePlaceholder": "Add special notes...",
+    "updatingBooking": "Updating Booking...",
+    "creatingBooking": "Creating Booking...",
+    "updateBooking": "Update Booking",
+    "createBooking": "Create Booking"
+  },
+  "CourtManagement": {
+    "title": "Branch Courts",
+    "description": "Configure courts for this branch. The schedule updates from this branch-level court list.",
+    "courtName": "Court Name",
+    "courtNamePlaceholder": "Court A",
+    "surface": "Surface",
+    "surfacePlaceholder": "Synthetic",
+    "hourlyRate": "Hourly Rate",
+    "active": "Active",
+    "empty": "No courts configured for this branch yet.",
+    "successCreate": "Court created successfully",
+    "successUpdate": "Court updated successfully",
+    "successDelete": "Court deleted successfully",
+    "errorCreate": "Failed to create court",
+    "errorUpdate": "Failed to update court",
+    "errorDelete": "Failed to delete court",
+    "editCourt": "Edit court",
+    "deleteCourt": "Delete court",
+    "ratePerHour": "{rate}/hour"
+  },
+  "OwnerPages": {
+    "settings": "Settings",
+    "members": "Members",
+    "reports": "Reports",
+    "courtStatus": "Court Status"
+  },
+  "OwnerPerformancePage": {
+    "title": "Performance Dashboard",
+    "description": "Monitor your application's performance metrics in real-time",
+    "aboutTitle": "About Performance Monitoring",
+    "aboutDescription": "This dashboard uses Web Vitals to track Core Web Vitals metrics that Google uses for Search ranking. The metrics are measured in real-time as you interact with the application. For production monitoring, data is sent to Vercel Speed Insights.",
+    "coreWebVitals": "Core Web Vitals",
+    "webVitalsDescription": "Real-time performance metrics for this page. These metrics update as you interact with the application.",
+    "measuring": "Measuring...",
+    "metricThresholds": "Metric Thresholds",
+    "good": "good",
+    "needsImprovement": "needs improvement",
+    "poor": "poor",
+    "clsName": "Cumulative Layout Shift",
+    "clsDescription": "Visual stability - measures layout shifts",
+    "inpName": "Interaction to Next Paint",
+    "inpDescription": "Responsiveness - time to process interactions",
+    "fcpName": "First Contentful Paint",
+    "fcpDescription": "Loading - first content appears",
+    "lcpName": "Largest Contentful Paint",
+    "lcpDescription": "Loading - main content visible",
+    "ttfbName": "Time to First Byte",
+    "ttfbDescription": "Server response time",
+    "bundleAnalysis": "Bundle Analysis",
+    "bundleDescription": "Bundle size information and optimization recommendations.",
+    "totalBundleSize": "Total Bundle Size",
+    "runBuildToAnalyze": "Run build to analyze",
+    "runProductionBuild": "Run production build for accurate size",
+    "optimizationTips": "Optimization Tips",
+    "dynamicImports": "Use Next.js dynamic imports",
+    "lazyLoad": "Lazy load components",
+    "howToAnalyze": "How to Analyze Bundle",
+    "analyzeDescription": "This will build your application and open an interactive bundle visualization showing:",
+    "moduleSize": "Size of each module",
+    "dependenciesTree": "Dependencies tree",
+    "largestImports": "Largest imports",
+    "optimizationOpportunities": "Optimization opportunities",
+    "recommendationsTitle": "Optimization Recommendations",
+    "recommendationAnalyze": "Run \"pnpm run analyze\" to generate bundle analysis",
+    "recommendationDuplicates": "Check for duplicate dependencies",
+    "recommendationDynamic": "Use dynamic imports for large components",
+    "recommendationImages": "Optimize images and assets"
   },
   "Validation": {
     "loginSchema": {
@@ -177,6 +439,7 @@
     "serviceUnavailable": "Service temporarily unavailable",
     "insufficientPermissions": "You don't have permission to perform this action",
     "resourceNotFound": "The requested resource was not found",
-    "operationFailed": "Operation failed. Please try again"
+    "operationFailed": "Operation failed. Please try again",
+    "unexpected": "An unexpected error occurred"
   }
 }

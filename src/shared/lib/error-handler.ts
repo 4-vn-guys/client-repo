@@ -74,7 +74,7 @@ export const extractErrorMessage = (error: unknown): string => {
     return error.message;
   }
   
-  return 'An unexpected error occurred';
+  return 'Unexpected error';
 };
 
 /**

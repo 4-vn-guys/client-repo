@@ -4,6 +4,7 @@ import { Input } from '@/shared/ui/input';
 import { BranchCard, Branch } from '@/entities/venue';
 import { Button } from '@/shared/ui/button';
 import { Skeleton } from '@/shared/ui/skeleton';
+import { useTranslations } from 'next-intl';
 
 interface BranchesListProps {
   branches: Branch[];
@@ -20,6 +21,8 @@ export const BranchesList = memo(function BranchesList({
   onSearchChange,
   onCreateBranch,
 }: BranchesListProps) {
+  const tVenues = useTranslations('OwnerVenuesPage');
+
   if (isLoading) {
     return (
       <div className='space-y-6'>
@@ -41,12 +44,13 @@ export const BranchesList = memo(function BranchesList({
         <div className='bg-primary/10 mb-4 flex h-16 w-16 items-center justify-center rounded-full'>
           <MapPin className='text-primary h-8 w-8' />
         </div>
-        <h3 className='mb-2 text-xl font-semibold'>No branches yet</h3>
+        <h3 className='mb-2 text-xl font-semibold'>
+          {tVenues('emptyTitle')}
+        </h3>
         <p className='text-muted-foreground mb-6 max-w-sm'>
-          Get started by creating your first branch to manage courts and
-          bookings.
+          {tVenues('emptyDescription')}
         </p>
-        <Button onClick={onCreateBranch}>Create Branch</Button>
+        <Button onClick={onCreateBranch}>{tVenues('createBranch')}</Button>
       </div>
     );
   }
@@ -62,7 +66,7 @@ export const BranchesList = memo(function BranchesList({
       <div className='relative max-w-sm'>
         <Search className='text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2' />
         <Input
-          placeholder='Search by name or location...'
+          placeholder={tVenues('searchPlaceholder')}
           className='bg-background/50 border-input/60 focus-visible:ring-primary/20 pl-9'
           value={searchQuery}
           onChange={e => onSearchChange(e.target.value)}
@@ -72,7 +76,7 @@ export const BranchesList = memo(function BranchesList({
       {filteredBranches.length === 0 ? (
         <div className='text-muted-foreground flex flex-col items-center justify-center py-12 text-center'>
           <Search className='mb-4 h-12 w-12 opacity-20' />
-          <p>No branches found matching &quot;{searchQuery}&quot;</p>
+          <p>{tVenues('noSearchResults', { query: searchQuery })}</p>
         </div>
       ) : (
         <div className='grid grid-cols-1 gap-4 pb-20 md:grid-cols-2 lg:grid-cols-3 lg:gap-6'>

@@ -33,6 +33,7 @@ export function RegisterForm({
   ...props
 }: React.ComponentProps<'div'>) {
   const tRegisterPage = useTranslations('RegisterPage');
+  const tCommon = useTranslations('Common');
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -230,7 +231,9 @@ export function RegisterForm({
                           type='button'
                           onClick={toggleShowPassword}
                           aria-label={
-                            showPassword ? 'Hide password' : 'Show password'
+                            showPassword
+                              ? tCommon('hidePassword')
+                              : tCommon('showPassword')
                           }
                         >
                           {showPassword ? (
@@ -279,8 +282,8 @@ export function RegisterForm({
                           onClick={toggleShowConfirmPassword}
                           aria-label={
                             showConfirmPassword
-                              ? 'Hide confirm password'
-                              : 'Show confirm password'
+                              ? tCommon('hideConfirmPassword')
+                              : tCommon('showConfirmPassword')
                           }
                         >
                           {showConfirmPassword ? (
@@ -320,7 +323,7 @@ export function RegisterForm({
           <div className='bg-muted relative hidden md:block'>
             <Image
               src='/images/background-login-register.jpeg'
-              alt='Image'
+              alt={tRegisterPage('imageAlt')}
               className='absolute inset-0 h-full w-full rotate-y-180 object-cover dark:brightness-[0.2] dark:grayscale'
               width={500}
               height={500}

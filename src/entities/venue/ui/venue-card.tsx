@@ -7,6 +7,7 @@ import { cn } from '@/shared/lib/utils';
 import Link from 'next/link';
 
 import { memo } from 'react';
+import { useTranslations } from 'next-intl';
 
 // ... existing imports
 
@@ -17,6 +18,9 @@ interface BranchCardProps {
 export const BranchCard = memo(function BranchCard({
   branch,
 }: BranchCardProps) {
+  const tCommon = useTranslations('Common');
+  const tVenues = useTranslations('OwnerVenuesPage');
+
   // Format time from HH:MM:SS to HH:MM
   const formatTime = (time: string) => {
     if (!time) return '';
@@ -53,7 +57,7 @@ export const BranchCard = memo(function BranchCard({
                     : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                 )}
               >
-                {branch.isActive ? 'Active' : 'Inactive'}
+                {branch.isActive ? tCommon('active') : tCommon('inactive')}
               </Badge>
             </div>
           </div>
@@ -86,7 +90,7 @@ export const BranchCard = memo(function BranchCard({
             >
               <FileText className='h-3.5 w-3.5 shrink-0' />
               <span className='line-clamp-1'>
-                View policy: {branch.policyFile.fileName}
+                {tVenues('viewPolicy', { fileName: branch.policyFile.fileName })}
               </span>
             </a>
           ) : (
@@ -107,7 +111,7 @@ export const BranchCard = memo(function BranchCard({
             href={`/owner/${branch.id}/timeline`}
             className='text-primary flex -translate-x-2 items-center gap-1 text-xs font-semibold opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100'
           >
-            View Schedule <ArrowRight className='h-3.5 w-3.5' />
+            {tVenues('viewSchedule')} <ArrowRight className='h-3.5 w-3.5' />
           </Link>
         </CardFooter>
       </Card>

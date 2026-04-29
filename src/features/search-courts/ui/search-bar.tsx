@@ -49,7 +49,7 @@ export function SearchBar() {
               >
                 <SelectValue
                   className='text-primary font-normal'
-                  placeholder='Select Sport'
+                  placeholder={tSearchBar('sportPlaceholder')}
                 />
               </SelectTrigger>
               <SelectContent align='start'>
@@ -57,7 +57,7 @@ export function SearchBar() {
                 {SPORTS.map(sport => (
                   <SelectItem key={sport.name} value={sport.name}>
                     {sport.icon}
-                    {sport.name}
+                    {tCommon(sport.translationKey)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -76,7 +76,7 @@ export function SearchBar() {
               type='text'
               placeholder={tSearchBar('locationPlaceholder')}
               className='text-primary h-full border-0 px-4 py-6 text-sm shadow-xs'
-              aria-label='Search location'
+              aria-label={tSearchBar('searchLocationAria')}
             />
           </div>
           {/* Date & Time */}
@@ -112,7 +112,7 @@ export function SearchBar() {
                       setShowDatePicker(false);
                     }}
                     captionLayout='dropdown'
-                    aria-label='Select date'
+                    aria-label={tSearchBar('selectDateAria')}
                   />
                 </PopoverContent>
               </Popover>
@@ -123,7 +123,7 @@ export function SearchBar() {
               <Input
                 type='time'
                 id='time-picker'
-                aria-label='Select time'
+                aria-label={tSearchBar('selectTimeAria')}
                 className='text-primary hidden appearance-none border-0 bg-transparent px-4 py-6 md:block [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
               />
             </div>

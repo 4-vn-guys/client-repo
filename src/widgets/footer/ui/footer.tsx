@@ -1,69 +1,73 @@
 import { Separator } from '@/src/shared/ui';
+import { getTranslations } from 'next-intl/server';
 
-export function Footer() {
+export async function Footer() {
+  const tFooter = await getTranslations('Footer');
+  const tCommon = await getTranslations('Common');
+
   return (
     <footer className='bg-gray-800 py-12 text-white'>
       <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
         <div className='grid grid-cols-1 gap-8 md:grid-cols-4'>
           <div>
             <div className='text-primary mb-4 text-2xl font-bold'>
-              CourtConnect
+              {tCommon('brandName')}
             </div>
             <p className='text-gray-400'>
-              Your trusted partner for booking sports courts across the city.
+              {tFooter('description')}
             </p>
           </div>
           <div>
-            <h3 className='mb-4 font-bold'>Sports</h3>
+            <h3 className='mb-4 font-bold'>{tFooter('sportsTitle')}</h3>
             <ul className='space-y-2 text-gray-400'>
               <li>
                 <a href='#' className='hover:text-white'>
-                  Football
+                  {tCommon('football')}
                 </a>
               </li>
               <li>
                 <a href='#' className='hover:text-white'>
-                  Badminton
+                  {tCommon('badminton')}
                 </a>
               </li>
               <li>
                 <a href='#' className='hover:text-white'>
-                  Pickleball
+                  {tCommon('pickleball')}
                 </a>
               </li>
             </ul>
           </div>
           <div>
-            <h3 className='mb-4 font-bold'>Company</h3>
+            <h3 className='mb-4 font-bold'>{tFooter('companyTitle')}</h3>
             <ul className='space-y-2 text-gray-400'>
               <li>
                 <a href='#' className='hover:text-white'>
-                  About Us
+                  {tFooter('aboutUs')}
                 </a>
               </li>
               <li>
                 <a href='#' className='hover:text-white'>
-                  Contact
+                  {tFooter('contact')}
                 </a>
               </li>
               <li>
                 <a href='#' className='hover:text-white'>
-                  Support
+                  {tFooter('support')}
                 </a>
               </li>
             </ul>
           </div>
           <div>
-            <h3 className='mb-4 font-bold'>Legal</h3>
+            <h3 className='mb-4 font-bold'>{tFooter('legalTitle')}</h3>
             <ul className='space-y-2 text-gray-400'>
               <li>
                 <a href='#' className='hover:text-white'>
-                  Privacy Policy
+                  {tFooter('privacyPolicy')}
                 </a>
               </li>
               <li>
                 <a href='#' className='hover:text-white'>
-                  Terms of Service
+                  {tFooter('termsOfService')}
                 </a>
               </li>
             </ul>
@@ -71,7 +75,7 @@ export function Footer() {
         </div>
         <Separator className='my-8' />
         <div className='text-muted-foreground text-center'>
-          <p>&copy; 2024 CourtConnect. All rights reserved.</p>
+          <p>{tFooter('copyright')}</p>
         </div>
       </div>
     </footer>

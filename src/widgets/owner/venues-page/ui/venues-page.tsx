@@ -18,6 +18,7 @@ import { Field, FieldLabel } from '@/shared/ui/field';
 import { Input } from '@/shared/ui/input';
 import { LocationPicker } from '@/shared/ui/location-picker';
 import toast from 'react-hot-toast';
+import { useTranslations } from 'next-intl';
 
 type BranchFormState = {
   name: string;
@@ -48,6 +49,8 @@ export function VenuesPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [form, setForm] = useState<BranchFormState>(initialBranchForm);
   const queryClient = useQueryClient();
+  const tCommon = useTranslations('Common');
+  const tVenues = useTranslations('OwnerVenuesPage');
 
   const { data: branches = [], isLoading } = useQuery({
     queryKey: ['branches'],
@@ -75,10 +78,10 @@ export function VenuesPage() {
       queryClient.invalidateQueries({ queryKey: ['branches'] });
       setForm(initialBranchForm);
       setIsCreateOpen(false);
-      toast.success('Branch created successfully');
+      toast.success(tVenues('successCreate'));
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to create branch');
+      toast.error(error.message || tVenues('errorCreate'));
     },
   });
 
@@ -108,16 +111,17 @@ export function VenuesPage() {
         <DialogContent className='sm:max-w-2xl'>
           <form className='space-y-6' onSubmit={handleSubmit}>
             <DialogHeader>
-              <DialogTitle>Create New Branch</DialogTitle>
+              <DialogTitle>{tVenues('createDialogTitle')}</DialogTitle>
               <DialogDescription>
-                Add a branch so courts, schedule, and bookings can be managed
-                from the owner workspace.
+                {tVenues('createDialogDescription')}
               </DialogDescription>
             </DialogHeader>
 
             <div className='grid gap-4 md:grid-cols-2'>
               <Field className='md:col-span-2'>
-                <FieldLabel htmlFor='branch-name'>Branch Name</FieldLabel>
+                <FieldLabel htmlFor='branch-name'>
+                  {tVenues('branchName')}
+                </FieldLabel>
                 <Input
                   id='branch-name'
                   value={form.name}
@@ -127,13 +131,15 @@ export function VenuesPage() {
                       name: event.target.value,
                     }))
                   }
-                  placeholder='Downtown Badminton Center'
+                  placeholder={tVenues('branchNamePlaceholder')}
                   required
                 />
               </Field>
 
               <Field className='md:col-span-2'>
-                <FieldLabel htmlFor='branch-address'>Address</FieldLabel>
+                <FieldLabel htmlFor='branch-address'>
+                  {tVenues('address')}
+                </FieldLabel>
                 <Input
                   id='branch-address'
                   value={form.address}
@@ -143,7 +149,7 @@ export function VenuesPage() {
                       address: event.target.value,
                     }))
                   }
-                  placeholder='123 Nguyen Trai, District 1'
+                  placeholder={tVenues('addressPlaceholder')}
                   required
                 />
               </Field>
@@ -164,7 +170,9 @@ export function VenuesPage() {
               </div>
 
               <Field>
-                <FieldLabel htmlFor='branch-open-time'>Open Time</FieldLabel>
+                <FieldLabel htmlFor='branch-open-time'>
+                  {tVenues('openTime')}
+                </FieldLabel>
                 <Input
                   id='branch-open-time'
                   type='time'
@@ -180,7 +188,9 @@ export function VenuesPage() {
               </Field>
 
               <Field>
-                <FieldLabel htmlFor='branch-close-time'>Close Time</FieldLabel>
+                <FieldLabel htmlFor='branch-close-time'>
+                  {tVenues('closeTime')}
+                </FieldLabel>
                 <Input
                   id='branch-close-time'
                   type='time'
@@ -196,7 +206,9 @@ export function VenuesPage() {
               </Field>
 
               <Field>
-                <FieldLabel htmlFor='branch-hotline'>Hotline</FieldLabel>
+                <FieldLabel htmlFor='branch-hotline'>
+                  {tVenues('hotline')}
+                </FieldLabel>
                 <Input
                   id='branch-hotline'
                   value={form.hotline}
@@ -211,7 +223,9 @@ export function VenuesPage() {
               </Field>
 
               <Field className='md:col-span-2'>
-                <FieldLabel htmlFor='branch-policy'>Policy</FieldLabel>
+                <FieldLabel htmlFor='branch-policy'>
+                  {tVenues('policy')}
+                </FieldLabel>
                 <Input
                   id='branch-policy'
                   type='file'
@@ -224,8 +238,7 @@ export function VenuesPage() {
                   }
                 />
                 <p className='text-muted-foreground text-xs'>
-                  Upload the branch policy as a PDF so long cancellation or
-                  house rules can be opened from the branch card.
+                  {tVenues('policyHelp')}
                 </p>
                 {form.policyFile && (
                   <p className='text-sm font-medium'>{form.policyFile.name}</p>
@@ -239,10 +252,10 @@ export function VenuesPage() {
                 variant='outline'
                 onClick={() => setIsCreateOpen(false)}
               >
-                Cancel
+                {tCommon('cancel')}
               </Button>
               <Button type='submit' isLoading={createBranchMutation.isPending}>
-                Create Branch
+                {tVenues('createBranch')}
               </Button>
             </DialogFooter>
           </form>

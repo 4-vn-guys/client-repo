@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { cn } from '@/shared/lib';
+import { useTranslations } from 'next-intl';
 
 interface PerformanceCardProps {
   title: string;
@@ -28,7 +29,12 @@ export function PerformanceCard({
   description,
   unit = 'ms',
 }: PerformanceCardProps) {
+  const tPerformance = useTranslations('OwnerPerformancePage');
   const displayValue = typeof value === 'number' ? value.toFixed(2) : value;
+  const ratingLabel =
+    rating === 'needs-improvement'
+      ? tPerformance('needsImprovement')
+      : tPerformance(rating);
 
   return (
     <Card
@@ -62,7 +68,7 @@ export function PerformanceCard({
               )}
             />
             <span className='text-xs capitalize'>
-              {rating.replace('-', ' ')}
+              {ratingLabel}
             </span>
           </div>
         </div>

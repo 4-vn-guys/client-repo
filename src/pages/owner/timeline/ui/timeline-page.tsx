@@ -9,6 +9,7 @@ import { BookingDialog } from '@/features/owner/booking-form';
 import { CourtManagementPanel } from '@/features/owner/court-management';
 import { Button } from '@/shared/ui/button';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 import { useTimelineData } from '../model';
 
@@ -17,6 +18,7 @@ interface TimelinePageProps {
 }
 
 export function TimelinePageContent({ venueId }: TimelinePageProps) {
+  const tTimeline = useTranslations('OwnerTimelinePage');
   const {
     selectedDate,
     setSelectedDate,
@@ -48,13 +50,14 @@ export function TimelinePageContent({ venueId }: TimelinePageProps) {
         <div className="mb-4 rounded-full bg-destructive/10 p-4">
           <AlertCircle className="h-8 w-8 text-destructive" />
         </div>
-        <h2 className="mb-2 text-2xl font-bold">Venue Not Found</h2>
+        <h2 className="mb-2 text-2xl font-bold">
+          {tTimeline('venueNotFound')}
+        </h2>
         <p className="mb-6 max-w-md text-muted-foreground">
-          The venue you are looking for does not exist or you do not have
-          permission to view it.
+          {tTimeline('venueNotFoundDescription')}
         </p>
         <Link href="/owner/branches">
-          <Button variant="outline">Back to Branches</Button>
+          <Button variant="outline">{tTimeline('backToBranches')}</Button>
         </Link>
       </div>
     );
@@ -71,7 +74,7 @@ export function TimelinePageContent({ venueId }: TimelinePageProps) {
       </div>
 
       <TimelineHeader
-        title="Schedule"
+        title={tTimeline('schedule')}
         dateNavigation={
           <DateNavigation
             date={selectedDate}
@@ -86,7 +89,7 @@ export function TimelinePageContent({ venueId }: TimelinePageProps) {
                 onClick={handleBookingFromSelection}
                 className="bg-primary hover:bg-primary/90"
               >
-                Book Selected ({selectedSlots.length})
+                {tTimeline('bookSelected', { count: selectedSlots.length })}
               </Button>
             )}
             <NewBookingButton onClick={handleNewBooking} />
