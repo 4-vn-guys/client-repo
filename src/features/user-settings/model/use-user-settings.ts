@@ -86,9 +86,8 @@ export const useUserSettings = () => {
     },
   });
 
-  const updateSettings = (patch: UpdateUserSettingsDto) => {
-    updateSettingsMutation.mutate(patch);
-  };
+  const updateSettings = (patch: UpdateUserSettingsDto) =>
+    updateSettingsMutation.mutateAsync(patch);
 
   return {
     settings: settingsQuery.data,

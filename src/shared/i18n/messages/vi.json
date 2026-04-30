@@ -138,6 +138,20 @@
     "signUp": "Đăng ký",
     "login": "Đăng nhập",
     "loggingIn": "Đang đăng nhập...",
+    "loginSuccess": "Đăng nhập thành công. Đang chuyển hướng...",
+    "loginFailed": "Đăng nhập thất bại. Vui lòng thử lại.",
+    "emailValid": "Email hợp lệ",
+    "showPassword": "Hiện mật khẩu",
+    "hidePassword": "Ẩn mật khẩu",
+    "passwordRequirementsTitle": "Yêu cầu mật khẩu",
+    "passwordRequirement": {
+      "minLength": "Ít nhất 8 ký tự",
+      "maxLength": "Tối đa 16 ký tự",
+      "lowercase": "Có chữ thường",
+      "uppercase": "Có chữ hoa",
+      "number": "Có số",
+      "special": "Có ký tự đặc biệt"
+    },
     "phonePlaceholder": "Nhập số điện thoại của bạn",
     "emailPlaceholder": "Nhập email của bạn",
     "passwordPlaceholder": "Nhập mật khẩu của bạn",
@@ -212,7 +226,9 @@
     "ExtraAuthForm": {
       "continueWithEmail": "Tiếp tục với Email",
       "continueWithPhone": "Tiếp tục với Số điện thoại",
-      "continueWithGoogle": "Tiếp tục với Google",
+      "continueWithGoogle": "Sử dụng dịch vụ bằng Google",
+      "connectingWithGoogle": "Đang kết nối...",
+      "googleAriaLabel": "Sign in with Google",
       "orContinueWith": "hoặc tiếp tục với"
     },
     "TermConditionText": {
@@ -354,6 +370,7 @@
   "OwnerSettingsPage": {
     "workspaceLabel": "Không gian chủ sân",
     "readyBadge": "Sẵn sàng tùy chỉnh",
+    "unsavedBadge": "Có thay đổi chưa lưu",
     "savingBadge": "Đang lưu...",
     "savedBadge": "Đã lưu cài đặt",
     "saveSuccess": "Đã lưu cài đặt",
@@ -372,9 +389,14 @@
     "securitySummary": "Bảo vệ tài khoản",
     "securityDescription": "Giữ tài khoản chủ sân an toàn với tùy chọn khôi phục và đăng nhập.",
     "themeLabel": "Chủ đề",
+    "themePreviewDescription": "Xem trước chủ đề ngay lập tức. Cài đặt chỉ được lưu vào tài khoản sau khi bạn bấm lưu.",
     "themeSystem": "Theo hệ thống",
+    "themeSystemDescription": "Theo tùy chọn của thiết bị",
     "themeLight": "Sáng",
+    "themeLightDescription": "Dùng giao diện làm việc sáng",
     "themeDark": "Tối",
+    "themeDarkDescription": "Dùng giao diện ít sáng",
+    "localPreviewBadge": "Xem trước cục bộ",
     "densityLabel": "Mật độ bố cục",
     "densityComfortable": "Thoải mái",
     "densityCompact": "Gọn",
@@ -396,6 +418,7 @@
     "mobileTitle": "Điều khiển thân thiện di động",
     "mobileDescription": "Bố cục cài đặt này tự thích ứng với màn hình nhỏ bằng card xếp dọc và vùng chạm lớn hơn.",
     "saveButton": "Lưu tùy chọn",
+    "discardButton": "Hủy thay đổi",
     "savedButton": "Đã lưu"
   },
   "OwnerPerformancePage": {
