@@ -32,7 +32,15 @@ export const useAuth = () => {
       setLoading(true);
       const response = await authApi.login(email, password);
 
-      if (response?.data) {
+      if (response?.data?.requiresTwoFactor) {
+        return {
+          success: true,
+          requiresTwoFactor: true,
+          challengeToken: response.data.challengeToken,
+        };
+      }
+
+      if (response?.data?.accessToken && response?.data?.refreshToken) {
         // Extract tokens from login response
         const { accessToken, refreshToken } = response.data;
 
@@ -95,10 +103,93 @@ export const useAuth = () => {
     }
   };
 
+  const verifyTwoFactorLogin = async (challengeToken: string, code: string) => {
+    try {
+      setLoading(true);
+      const response = await authApi.verifyTwoFactorLogin(challengeToken, code);
+
+      if (!response?.data?.accessToken || !response?.data?.refreshToken) {
+        return { success: false, error: 'Invalid 2FA response' };
+      }
+
+      const { accessToken, refreshToken } = response.data;
+      setTokens(accessToken, refreshToken);
+      const profileResponse = await authApi.getProfile();
+
+      if (!profileResponse?.data) {
+        return { success: false, error: 'Unable to load profile' };
+      }
+
+      const {
+        id,
+        username,
+        email,
+        role,
+        phoneNumber,
+        provider,
+        providerId,
+        createdAt,
+        updatedAt,
+        deletedAt,
+      } = profileResponse.data;
+
+      setAuth(
+        {
+          id,
+          username,
+          email,
+          role,
+          phoneNumber,
+          provider,
+          providerId,
+          createdAt,
+          updatedAt,
+          deletedAt,
+        },
+        accessToken,
+        refreshToken
+      );
+
+      toast.success('2FA verified. Login successful!');
+      router.push('/owner/branches');
+      return { success: true };
+    } catch (error) {
+      const message =
+        (error &&
+        typeof error === 'object' &&
+        'response' in error &&
+        error.response &&
+        typeof error.response === 'object' &&
+        'data' in error.response &&
+        error.response.data &&
+        typeof error.response.data === 'object' &&
+        'error' in error.response.data &&
+        error.response.data.error &&
+        typeof error.response.data.error === 'object' &&
+        'message' in error.response.data.error &&
+        typeof error.response.data.error.message === 'string'
+          ? error.response.data.error.message
+          : null) ||
+        '2FA verification failed';
+      toast.error(message);
+      return { success: false, error: message };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const loginWithGoogle = async (idToken: string) => {
     try {
       setLoading(true);
       const response = await authApi.loginWithGoogle(idToken);
+
+      if (response?.data?.requiresTwoFactor) {
+        return {
+          success: true,
+          requiresTwoFactor: true,
+          challengeToken: response.data.challengeToken,
+        };
+      }
 
       if (response?.data) {
         const { accessToken, refreshToken } = response.data;
@@ -279,6 +370,7 @@ export const useAuth = () => {
     isAuthenticated,
     isLoading,
     login,
+    verifyTwoFactorLogin,
     loginWithGoogle,
     register,
     logout,

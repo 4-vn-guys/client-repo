@@ -16,6 +16,14 @@ export const authApi = {
     return response.data;
   },
 
+  verifyTwoFactorLogin: async (challengeToken: string, code: string) => {
+    const response = await axiosInstance.post('/auth/2fa/verify-login', {
+      challengeToken,
+      code,
+    });
+    return response.data;
+  },
+
   /**
    * Login with Google OAuth2 ID token
    */
@@ -67,6 +75,18 @@ export const authApi = {
       oldPassword,
       newPassword,
     });
+    return response.data;
+  },
+  setupTwoFactor: async () => {
+    const response = await axiosInstance.post('/auth/2fa/setup');
+    return response.data;
+  },
+  verifyTwoFactorSetup: async (code: string) => {
+    const response = await axiosInstance.post('/auth/2fa/verify-setup', { code });
+    return response.data;
+  },
+  disableTwoFactor: async (code: string) => {
+    const response = await axiosInstance.post('/auth/2fa/disable', { code });
     return response.data;
   },
 

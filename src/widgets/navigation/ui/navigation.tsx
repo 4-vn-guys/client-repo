@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { LanguageSwitcher } from '@/src/features/language-switch';
+import { useAuth } from '@/features/auth/hooks/use-auth';
 import { Button } from '@/src/shared/ui';
-import { LogIn, MousePointerClick } from 'lucide-react';
+import { LayoutDashboard, LogIn, LogOut, MousePointerClick } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Fragment, useMemo } from 'react';
 
@@ -14,6 +15,7 @@ interface NavigationProps {
 export const Navigation = ({ simpleHeader = false }: NavigationProps) => {
   const tNavigation = useTranslations('Navigation');
   const tCommon = useTranslations('Common');
+  const { isAuthenticated, logout } = useAuth();
 
   const links = useMemo(
     () => [
@@ -51,20 +53,44 @@ export const Navigation = ({ simpleHeader = false }: NavigationProps) => {
             <LanguageSwitcher />
             {!simpleHeader && (
               <Fragment>
-                <Link href='/login'>
-                  <Button
-                    variant='outline'
-                    icon={<LogIn />}
-                    iconPlacement='left'
-                  >
-                    {tNavigation('loginLabel')}
-                  </Button>
-                </Link>
-                <Link href={'/register'}>
-                  <Button icon={<MousePointerClick />} iconPlacement='left'>
-                    {tNavigation('signupLabel')}
-                  </Button>
-                </Link>
+                {isAuthenticated ? (
+                  <>
+                    <Link href='/owner/branches'>
+                      <Button
+                        variant='outline'
+                        icon={<LayoutDashboard />}
+                        iconPlacement='left'
+                      >
+                        {tNavigation('dashboardLabel')}
+                      </Button>
+                    </Link>
+                    <Button
+                      variant='ghost'
+                      icon={<LogOut />}
+                      iconPlacement='left'
+                      onClick={() => void logout()}
+                    >
+                      {tNavigation('logoutLabel')}
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Link href='/login'>
+                      <Button
+                        variant='outline'
+                        icon={<LogIn />}
+                        iconPlacement='left'
+                      >
+                        {tNavigation('loginLabel')}
+                      </Button>
+                    </Link>
+                    <Link href={'/register'}>
+                      <Button icon={<MousePointerClick />} iconPlacement='left'>
+                        {tNavigation('signupLabel')}
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </Fragment>
             )}
           </div>

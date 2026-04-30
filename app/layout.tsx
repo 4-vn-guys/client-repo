@@ -19,7 +19,13 @@ const openSansMono = Open_Sans({
   subsets: ['latin'],
 });
 
+/** Absolute site URL for Open Graph / Twitter image resolution (set in env for prod or non-default dev port). */
+const metadataBaseUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+
 export const metadata: Metadata = {
+  metadataBase: new URL(metadataBaseUrl),
   title: 'CourtConnect - Book Sports Courts Instantly',
   description:
     'Book football, badminton, and pickleball courts instantly. Find premium venues, check real-time availability, and secure your spot in minutes.',

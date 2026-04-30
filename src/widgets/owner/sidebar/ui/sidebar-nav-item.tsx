@@ -12,6 +12,7 @@ interface SidebarNavItemProps {
   icon: LucideIcon;
   isActive?: (pathname: string) => boolean;
   onClick?: () => void;
+  badgeCount?: number;
 }
 
 export function SidebarNavItem({
@@ -20,6 +21,7 @@ export function SidebarNavItem({
   icon: Icon,
   isActive: isActivePath,
   onClick,
+  badgeCount,
 }: SidebarNavItemProps) {
   const pathname = usePathname() ?? '';
   const isActive = isActivePath ? isActivePath(pathname) : pathname === href;
@@ -40,6 +42,11 @@ export function SidebarNavItem({
       )}
       <Icon className='size-5 transition-transform duration-200 group-hover:scale-105' />
       <span>{label}</span>
+      {badgeCount && badgeCount > 0 ? (
+        <span className='ml-auto rounded-full bg-red-500 px-2 py-0.5 text-xs font-semibold text-white'>
+          {badgeCount > 99 ? '99+' : badgeCount}
+        </span>
+      ) : null}
     </Link>
   );
 }

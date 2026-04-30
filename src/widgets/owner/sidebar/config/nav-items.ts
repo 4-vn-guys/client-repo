@@ -1,4 +1,4 @@
-import { Calendar, MapPin, Users, BarChart3, Settings } from 'lucide-react';
+import { Calendar, MapPin, Users, BarChart3, Settings, Bell } from 'lucide-react';
 
 const ownerTimelinePathPattern = /^\/owner\/[^/]+\/timeline$/;
 
@@ -20,5 +20,6 @@ export const ownerNavItems = [
 ];
 
 export const ownerBottomNavItems = [
+  { labelKey: 'notifications', href: '/owner/notifications', icon: Bell },
   { labelKey: 'settings', href: '/owner/settings', icon: Settings },
 ];

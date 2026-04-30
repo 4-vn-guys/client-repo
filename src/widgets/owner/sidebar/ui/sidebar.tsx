@@ -11,11 +11,13 @@ import { Separator } from '@/shared/ui/separator';
 import { cn } from '@/shared/lib/utils';
 import { useAuthStore } from '@/src/shared/store';
 import { useTranslations } from 'next-intl';
+import { useNotifications } from '@/features/notifications';
 
 export function OwnerSidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useAuthStore();
   const tSidebar = useTranslations('OwnerSidebar');
+  const { unreadCount } = useNotifications();
 
   return (
     <>
@@ -81,6 +83,9 @@ export function OwnerSidebar() {
                 key={item.href}
                 {...item}
                 label={tSidebar(item.labelKey)}
+                badgeCount={
+                  item.href === '/owner/notifications' ? unreadCount : undefined
+                }
                 onClick={() => setIsOpen(false)}
               />
             ))}

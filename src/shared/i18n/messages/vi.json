@@ -34,6 +34,7 @@
   },
   "Navigation": {
     "homeLabel": "Trang chủ",
+    "dashboardLabel": "Bảng điều khiển",
     "loginLabel": "Đăng nhập",
     "signupLabel": "Đăng ký",
     "logoutLabel": "Đăng xuất",
@@ -159,6 +160,10 @@
     "enterCode": "Nhập mã 6 chữ số được gửi đến",
     "resendCode": "Gửi lại mã",
     "verify": "Xác minh",
+    "twoFactorRequired": "Yêu cầu xác thực hai bước. Vui lòng nhập mã OTP.",
+    "twoFactorCodeLabel": "Mã xác thực hai bước",
+    "twoFactorCodePlaceholder": "Nhập mã 6 chữ số",
+    "verifyTwoFactor": "Xác minh 2FA",
     "imageAlt": "Ảnh nền đăng nhập"
   },
   "RegisterPage": {
@@ -260,9 +265,19 @@
     "timelineView": "Xem lịch",
     "members": "Thành viên",
     "reports": "Báo cáo",
+    "notifications": "Thông báo",
     "settings": "Cài đặt",
     "defaultUser": "Người dùng",
     "defaultOwner": "Chủ sân"
+  },
+  "OwnerNotificationsPage": {
+    "title": "Thông báo",
+    "description": "Cập nhật đặt sân, thanh toán và bảo mật cho tài khoản của bạn.",
+    "unreadCount": "{count, plural, =0 {Không có chưa đọc} one {# chưa đọc} other {# chưa đọc}}",
+    "markAllRead": "Đánh dấu tất cả đã đọc",
+    "markRead": "Đánh dấu đã đọc",
+    "loading": "Đang tải thông báo...",
+    "empty": "Chưa có thông báo nào."
   },
   "OwnerVenuesPage": {
     "title": "Chi nhánh của tôi",
@@ -410,13 +425,22 @@
     "recoveryEmailLabel": "Email khôi phục",
     "recoveryEmailInvalid": "Nhập địa chỉ email khôi phục hợp lệ.",
     "saveRecoveryEmail": "Lưu email khôi phục",
+    "changedFieldHint": "Đã thay đổi",
     "twoFactorTitle": "Xác thực hai bước",
     "twoFactorDescription": "Yêu cầu thêm một bước xác minh khi đăng nhập.",
     "twoFactorDialogTitle": "Bật xác thực hai bước?",
     "twoFactorDialogDescription": "Thiết lập này sẽ lưu trạng thái 2FA là đã bật cho tài khoản của bạn. Luồng đăng nhập trong tương lai có thể dùng cài đặt này để yêu cầu bước xác minh bổ sung.",
     "enableTwoFactor": "Bật 2FA",
+    "disableTwoFactor": "Tắt 2FA",
+    "twoFactorQrAlt": "Mã QR 2FA",
+    "twoFactorCodePlaceholder": "Nhập mã OTP",
+    "twoFactorDisablePlaceholder": "Nhập OTP hoặc mã dự phòng để tắt 2FA",
+    "verifyTwoFactor": "Xác minh mã",
+    "twoFactorBackupCodes": "Mã dự phòng (hãy lưu an toàn)",
     "mobileTitle": "Điều khiển thân thiện di động",
     "mobileDescription": "Bố cục cài đặt này tự thích ứng với màn hình nhỏ bằng card xếp dọc và vùng chạm lớn hơn.",
+    "saveBarTitle": "Lưu cài đặt",
+    "autoSavingBadge": "Đang tự động lưu...",
     "saveButton": "Lưu tùy chọn",
     "discardButton": "Hủy thay đổi",
     "savedButton": "Đã lưu"
