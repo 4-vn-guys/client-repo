@@ -1,3 +1,6 @@
+'use client';
+
+import { usePathname } from 'next/navigation';
 import { Navigation } from '@/src/widgets/navigation';
 
 interface SimpleHeaderLayoutProps {
@@ -5,9 +8,13 @@ interface SimpleHeaderLayoutProps {
 }
 
 export function SimpleHeaderLayout({ children }: SimpleHeaderLayoutProps) {
+  const pathname = usePathname();
+  const shouldHideNavigation =
+    pathname === '/login' || pathname === '/register';
+
   return (
     <div>
-      <Navigation simpleHeader={true} />
+      {!shouldHideNavigation && <Navigation simpleHeader={true} />}
       {children}
     </div>
   );

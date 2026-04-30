@@ -34,6 +34,7 @@
   },
   "Navigation": {
     "homeLabel": "Home",
+    "dashboardLabel": "Dashboard",
     "loginLabel": "Login",
     "signupLabel": "Register",
     "logoutLabel": "Logout",
@@ -159,6 +160,10 @@
     "enterCode": "Enter the 6-digit code sent to",
     "resendCode": "Resend code",
     "verify": "Verify",
+    "twoFactorRequired": "Two-factor verification required. Enter your OTP code.",
+    "twoFactorCodeLabel": "Two-factor code",
+    "twoFactorCodePlaceholder": "Enter 6-digit code",
+    "verifyTwoFactor": "Verify 2FA",
     "imageAlt": "Login background"
   },
   "RegisterPage": {
@@ -260,9 +265,19 @@
     "timelineView": "Timeline View",
     "members": "Members",
     "reports": "Reports",
+    "notifications": "Notifications",
     "settings": "Settings",
     "defaultUser": "User",
     "defaultOwner": "Owner"
+  },
+  "OwnerNotificationsPage": {
+    "title": "Notifications",
+    "description": "Booking, payment, and security updates for your account.",
+    "unreadCount": "{count, plural, =0 {No unread} one {# unread} other {# unread}}",
+    "markAllRead": "Mark all as read",
+    "markRead": "Mark read",
+    "loading": "Loading notifications...",
+    "empty": "No notifications yet."
   },
   "OwnerVenuesPage": {
     "title": "My Branches",
@@ -410,13 +425,22 @@
     "recoveryEmailLabel": "Recovery email",
     "recoveryEmailInvalid": "Enter a valid recovery email address.",
     "saveRecoveryEmail": "Save recovery email",
+    "changedFieldHint": "Changed",
     "twoFactorTitle": "Two-factor authentication",
     "twoFactorDescription": "Ask for an extra verification step when signing in.",
     "twoFactorDialogTitle": "Enable two-factor authentication?",
     "twoFactorDialogDescription": "This will save 2FA as enabled for your account. A future sign-in flow can use this setting to require an extra verification step.",
     "enableTwoFactor": "Enable 2FA",
+    "disableTwoFactor": "Disable 2FA",
+    "twoFactorQrAlt": "2FA QR code",
+    "twoFactorCodePlaceholder": "Enter OTP code",
+    "twoFactorDisablePlaceholder": "Enter OTP or backup code to disable 2FA",
+    "verifyTwoFactor": "Verify code",
+    "twoFactorBackupCodes": "Backup codes (save these safely)",
     "mobileTitle": "Mobile-friendly controls",
     "mobileDescription": "This settings layout adapts to smaller screens with stacked cards and larger touch targets.",
+    "saveBarTitle": "Save settings",
+    "autoSavingBadge": "Auto-saving...",
     "saveButton": "Save preferences",
     "discardButton": "Discard changes",
     "savedButton": "Saved"

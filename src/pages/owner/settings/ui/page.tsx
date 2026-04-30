@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Bell,
   CheckCircle2,
@@ -11,7 +11,6 @@ import {
   MonitorCog,
   Palette,
   ShieldCheck,
-  Smartphone,
   Sun,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -47,6 +46,8 @@ import {
   type UpdateUserSettingsDto,
   type UserSettings,
 } from '@/features/user-settings';
+import { authApi } from '@/features/auth';
+import { registerWebPushSubscription } from '@/features/notifications';
 
 type ToggleRowProps = {
   title: string;
@@ -163,13 +164,24 @@ export default function SettingsPage() {
   } = useUserSettings();
   const [draftSettings, setDraftSettings] = useState<UpdateUserSettingsDto>({});
   const [saved, setSaved] = useState(false);
+  const [isAutoSaving, setIsAutoSaving] = useState(false);
+  const [isAutoSaveQueued, setIsAutoSaveQueued] = useState(false);
   const [recoveryEmailError, setRecoveryEmailError] = useState('');
   const [isTwoFactorDialogOpen, setIsTwoFactorDialogOpen] = useState(false);
-  const savedSettings = toEditableSettings(settings);
-  const effectiveSettings = {
-    ...savedSettings,
-    ...draftSettings,
-  };
+  const [twoFactorSetupQr, setTwoFactorSetupQr] = useState<string | null>(null);
+  const [twoFactorSetupCode, setTwoFactorSetupCode] = useState('');
+  const [twoFactorDisableCode, setTwoFactorDisableCode] = useState('');
+  const [twoFactorBackupCodes, setTwoFactorBackupCodes] = useState<string[]>([]);
+  const [isTwoFactorSubmitting, setIsTwoFactorSubmitting] = useState(false);
+  const autoSaveTimerRef = useRef<number | null>(null);
+  const savedSettings = useMemo(() => toEditableSettings(settings), [settings]);
+  const effectiveSettings = useMemo(
+    () => ({
+      ...savedSettings,
+      ...draftSettings,
+    }),
+    [savedSettings, draftSettings]
+  );
   const isThemePreviewing =
     draftSettings.theme !== undefined &&
     draftSettings.theme !== savedSettings.theme;
@@ -219,12 +231,109 @@ export default function SettingsPage() {
     handleDraftChange({ theme });
   };
 
+  const handleThemeHoverPreview = (theme: SettingsTheme) => {
+    setTheme(theme);
+  };
+
+  const handleThemeHoverLeave = () => {
+    setTheme((effectiveSettings.theme ?? 'system') as SettingsTheme);
+  };
+
+  const resetTwoFactorDialogState = () => {
+    setTwoFactorSetupQr(null);
+    setTwoFactorSetupCode('');
+    setTwoFactorDisableCode('');
+    setTwoFactorBackupCodes([]);
+    setIsTwoFactorSubmitting(false);
+  };
+
+  const beginTwoFactorSetup = async () => {
+    try {
+      setIsTwoFactorSubmitting(true);
+      const response = await authApi.setupTwoFactor();
+      setTwoFactorSetupQr(response?.data?.qrCodeDataUrl ?? null);
+    } finally {
+      setIsTwoFactorSubmitting(false);
+    }
+  };
+
+  const verifyTwoFactorSetup = async () => {
+    if (!twoFactorSetupCode.trim()) return;
+    try {
+      setIsTwoFactorSubmitting(true);
+      const response = await authApi.verifyTwoFactorSetup(twoFactorSetupCode.trim());
+      setTwoFactorBackupCodes(response?.data?.backupCodes ?? []);
+      handleDraftChange({ twoFactorEnabled: true });
+      await updateSettings({ twoFactorEnabled: true });
+      setSaved(true);
+    } finally {
+      setIsTwoFactorSubmitting(false);
+    }
+  };
+
+  const disableTwoFactor = async () => {
+    if (!twoFactorDisableCode.trim()) return;
+    try {
+      setIsTwoFactorSubmitting(true);
+      await authApi.disableTwoFactor(twoFactorDisableCode.trim());
+      handleDraftChange({ twoFactorEnabled: false });
+      await updateSettings({ twoFactorEnabled: false });
+      setSaved(true);
+      setIsTwoFactorDialogOpen(false);
+      resetTwoFactorDialogState();
+    } finally {
+      setIsTwoFactorSubmitting(false);
+    }
+  };
+
   const handleDiscardChanges = () => {
     setDraftSettings({});
     setRecoveryEmailError('');
     setSaved(false);
     setTheme(savedSettings.theme ?? 'system');
   };
+
+  const buildSettingsPatch = useCallback(
+    (includeRecoveryEmail: boolean) => {
+      const patch: UpdateUserSettingsDto = {};
+
+      if (effectiveSettings.theme !== savedSettings.theme) {
+        patch.theme = effectiveSettings.theme;
+      }
+      if (effectiveSettings.layoutDensity !== savedSettings.layoutDensity) {
+        patch.layoutDensity = effectiveSettings.layoutDensity;
+      }
+      if (effectiveSettings.compactMode !== savedSettings.compactMode) {
+        patch.compactMode = effectiveSettings.compactMode;
+      }
+      if (effectiveSettings.languageCode !== savedSettings.languageCode) {
+        patch.languageCode = effectiveSettings.languageCode;
+      }
+      if (effectiveSettings.notifEmail !== savedSettings.notifEmail) {
+        patch.notifEmail = effectiveSettings.notifEmail;
+      }
+      if (effectiveSettings.notifPush !== savedSettings.notifPush) {
+        patch.notifPush = effectiveSettings.notifPush;
+      }
+      if (effectiveSettings.twoFactorEnabled !== savedSettings.twoFactorEnabled) {
+        patch.twoFactorEnabled = effectiveSettings.twoFactorEnabled;
+      }
+
+      if (includeRecoveryEmail) {
+        const nextRecoveryEmail =
+          (effectiveSettings.recoveryEmail ?? '').trim() || null;
+        const currentRecoveryEmail =
+          (savedSettings.recoveryEmail ?? '').trim() || null;
+
+        if (nextRecoveryEmail !== currentRecoveryEmail) {
+          patch.recoveryEmail = nextRecoveryEmail;
+        }
+      }
+
+      return patch;
+    },
+    [effectiveSettings, savedSettings]
+  );
 
   const handleSaveSettings = async () => {
     const trimmedEmail = (effectiveSettings.recoveryEmail ?? '').trim();
@@ -234,10 +343,14 @@ export default function SettingsPage() {
     }
 
     setRecoveryEmailError('');
-    await updateSettings({
-      ...effectiveSettings,
-      recoveryEmail: trimmedEmail || null,
-    });
+    if (
+      effectiveSettings.notifPush &&
+      savedSettings.notifPush === false &&
+      typeof window !== 'undefined'
+    ) {
+      await registerWebPushSubscription();
+    }
+    await updateSettings(buildSettingsPatch(true));
     setDraftSettings({});
     handleSavedCue();
   };
@@ -256,6 +369,71 @@ export default function SettingsPage() {
         recoveryEmail: (effectiveSettings.recoveryEmail ?? '').trim() || null,
       })
     : false;
+
+  const hasInvalidRecoveryEmail =
+    !!(effectiveSettings.recoveryEmail ?? '').trim() &&
+    !emailPattern.test((effectiveSettings.recoveryEmail ?? '').trim());
+
+  const hasChangedSetting = <K extends keyof UpdateUserSettingsDto>(key: K) => {
+    return savedSettings[key] !== effectiveSettings[key];
+  };
+
+  useEffect(() => {
+    return () => {
+      if (autoSaveTimerRef.current) {
+        window.clearTimeout(autoSaveTimerRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!settings || isSaving || hasInvalidRecoveryEmail) {
+      setIsAutoSaveQueued(false);
+      return;
+    }
+
+    const autoPatch = buildSettingsPatch(false);
+    if (Object.keys(autoPatch).length === 0) {
+      setIsAutoSaveQueued(false);
+      return;
+    }
+
+    if (autoSaveTimerRef.current) {
+      window.clearTimeout(autoSaveTimerRef.current);
+    }
+
+    setIsAutoSaveQueued(true);
+    autoSaveTimerRef.current = window.setTimeout(async () => {
+      setIsAutoSaveQueued(false);
+      setIsAutoSaving(true);
+      try {
+        await updateSettings(autoPatch);
+        handleSavedCue();
+      } finally {
+        setIsAutoSaving(false);
+      }
+    }, 900);
+  }, [
+    settings,
+    isSaving,
+    hasInvalidRecoveryEmail,
+    effectiveSettings.theme,
+    effectiveSettings.layoutDensity,
+    effectiveSettings.compactMode,
+    effectiveSettings.languageCode,
+    effectiveSettings.notifEmail,
+    effectiveSettings.notifPush,
+    effectiveSettings.twoFactorEnabled,
+    savedSettings.theme,
+    savedSettings.layoutDensity,
+    savedSettings.compactMode,
+    savedSettings.languageCode,
+    savedSettings.notifEmail,
+    savedSettings.notifPush,
+    savedSettings.twoFactorEnabled,
+    updateSettings,
+    buildSettingsPatch,
+  ]);
 
   return (
     <div className='container mx-auto max-w-6xl space-y-6 pt-6 pb-20'>
@@ -360,6 +538,10 @@ export default function SettingsPage() {
                         key={option.value}
                         type='button'
                         onClick={() => handleThemePreview(option.value)}
+                        onFocus={() => handleThemeHoverPreview(option.value)}
+                        onMouseEnter={() => handleThemeHoverPreview(option.value)}
+                        onMouseLeave={handleThemeHoverLeave}
+                        onBlur={handleThemeHoverLeave}
                         disabled={isLoading}
                         aria-pressed={isSelected}
                         className={cn(
@@ -381,6 +563,11 @@ export default function SettingsPage() {
                         </span>
                         <span className='block text-sm font-semibold'>
                           {tSettings(option.labelKey)}
+                        </span>
+                        <span className='mt-2 flex gap-1'>
+                          <span className='h-2 w-6 rounded-full bg-slate-200' />
+                          <span className='h-2 w-6 rounded-full bg-violet-200' />
+                          <span className='h-2 w-6 rounded-full bg-slate-700' />
                         </span>
                         <span className='text-muted-foreground mt-1 block text-xs'>
                           {tSettings(option.descriptionKey)}
@@ -404,7 +591,13 @@ export default function SettingsPage() {
                     }
                     disabled={isLoading}
                   >
-                    <SelectTrigger className='h-11 w-full rounded-xl transition-all duration-200 hover:border-violet-300 focus-visible:ring-violet-500/30'>
+                    <SelectTrigger
+                      className={cn(
+                        'h-11 w-full rounded-xl transition-all duration-200 hover:border-violet-300 focus-visible:ring-violet-500/30',
+                        hasChangedSetting('layoutDensity') &&
+                          'ring-2 ring-violet-200'
+                      )}
+                    >
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -428,6 +621,11 @@ export default function SettingsPage() {
                   })
                 }
               />
+              {hasChangedSetting('compactMode') && (
+                <p className='text-xs font-medium text-violet-700'>
+                  {tSettings('changedFieldHint')}
+                </p>
+              )}
             </CardContent>
           </Card>
 
@@ -459,6 +657,11 @@ export default function SettingsPage() {
                   })
                 }
               />
+              {hasChangedSetting('notifEmail') && (
+                <p className='text-xs font-medium text-violet-700'>
+                  {tSettings('changedFieldHint')}
+                </p>
+              )}
               <ToggleRow
                 title={tSettings('pushNotificationsTitle')}
                 description={tSettings('pushNotificationsDescription')}
@@ -469,6 +672,11 @@ export default function SettingsPage() {
                   })
                 }
               />
+              {hasChangedSetting('notifPush') && (
+                <p className='text-xs font-medium text-violet-700'>
+                  {tSettings('changedFieldHint')}
+                </p>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -505,7 +713,12 @@ export default function SettingsPage() {
                   }
                   disabled={isLoading}
                 >
-                  <SelectTrigger className='h-11 w-full rounded-xl px-3 transition-all duration-200 hover:border-violet-300 focus-visible:ring-violet-500/30'>
+                  <SelectTrigger
+                    className={cn(
+                      'h-11 w-full rounded-xl px-3 transition-all duration-200 hover:border-violet-300 focus-visible:ring-violet-500/30',
+                      hasChangedSetting('languageCode') && 'ring-2 ring-violet-200'
+                    )}
+                  >
                     <span className='flex min-w-0 items-center gap-3'>
                       <Image
                         src={currentLanguage.flag}
@@ -580,11 +793,19 @@ export default function SettingsPage() {
                     setRecoveryEmailError('');
                   }}
                   aria-invalid={!!recoveryEmailError}
-                  className='h-11 rounded-xl transition-all duration-200 hover:border-violet-300 focus-visible:ring-violet-500/30'
+                  className={cn(
+                    'h-11 rounded-xl transition-all duration-200 hover:border-violet-300 focus-visible:ring-violet-500/30',
+                    hasChangedSetting('recoveryEmail') && 'ring-2 ring-violet-200'
+                  )}
                 />
                 {recoveryEmailError && (
                   <p className='text-destructive text-sm'>
                     {recoveryEmailError}
+                  </p>
+                )}
+                {!recoveryEmailError && hasChangedSetting('recoveryEmail') && (
+                  <p className='text-xs font-medium text-violet-700'>
+                    {tSettings('changedFieldHint')}
                   </p>
                 )}
               </label>
@@ -593,56 +814,60 @@ export default function SettingsPage() {
                 description={tSettings('twoFactorDescription')}
                 checked={effectiveSettings.twoFactorEnabled ?? false}
                 onChange={() => {
-                  if (effectiveSettings.twoFactorEnabled) {
-                    handleDraftChange({ twoFactorEnabled: false });
-                    return;
-                  }
                   setIsTwoFactorDialogOpen(true);
                 }}
               />
             </CardContent>
           </Card>
 
-          <Card className='rounded-3xl border-slate-200 bg-slate-950 text-white shadow-lg'>
-            <CardContent className='flex items-start gap-4 p-5'>
-              <div className='flex size-11 shrink-0 items-center justify-center rounded-xl bg-white/10 text-emerald-300'>
-                <Smartphone className='size-5' />
-              </div>
-              <div className='space-y-3'>
-                <div>
-                  <h3 className='font-semibold'>{tSettings('mobileTitle')}</h3>
-                  <p className='mt-1 text-sm text-white/70'>
-                    {tSettings('mobileDescription')}
-                  </p>
-                </div>
-                <Button
-                  type='button'
-                  variant='surface'
-                  className='border-white/20 bg-white/10 text-white hover:bg-white/20'
-                  onClick={handleSaveSettings}
-                  isLoading={isSaving}
-                  disabled={!hasUnsavedChanges || isSaving}
-                >
-                  {saved ? tSettings('savedButton') : tSettings('saveButton')}
-                </Button>
-                <Button
-                  type='button'
-                  variant='ghost'
-                  className='text-white/80 hover:bg-white/10 hover:text-white'
-                  onClick={handleDiscardChanges}
-                  disabled={!hasUnsavedChanges || isSaving}
-                >
-                  {tSettings('discardButton')}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+        </div>
+      </div>
+
+      <div className='sticky bottom-3 z-40 rounded-2xl border border-slate-200/80 bg-white/95 p-3 shadow-xl backdrop-blur md:p-4'>
+        <div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
+          <div>
+            <p className='text-sm font-semibold'>{tSettings('saveBarTitle')}</p>
+            <p className='text-muted-foreground text-xs md:text-sm'>
+              {isSaving || isAutoSaving
+                ? tSettings('savingBadge')
+                : isAutoSaveQueued
+                  ? tSettings('autoSavingBadge')
+                  : hasUnsavedChanges
+                    ? tSettings('unsavedBadge')
+                    : tSettings('savedBadge')}
+            </p>
+          </div>
+          <div className='flex w-full gap-2 md:w-auto'>
+            <Button
+              type='button'
+              variant='outline'
+              className='flex-1 md:flex-none'
+              onClick={handleDiscardChanges}
+              disabled={!hasUnsavedChanges || isSaving || isAutoSaving}
+            >
+              {tSettings('discardButton')}
+            </Button>
+            <Button
+              type='button'
+              className='flex-1 md:flex-none'
+              onClick={handleSaveSettings}
+              isLoading={isSaving}
+              disabled={
+                !hasUnsavedChanges || isSaving || isAutoSaving || hasInvalidRecoveryEmail
+              }
+            >
+              {saved ? tSettings('savedButton') : tSettings('saveButton')}
+            </Button>
+          </div>
         </div>
       </div>
 
       <Dialog
         open={isTwoFactorDialogOpen}
-        onOpenChange={setIsTwoFactorDialogOpen}
+        onOpenChange={open => {
+          setIsTwoFactorDialogOpen(open);
+          if (!open) resetTwoFactorDialogState();
+        }}
       >
         <DialogContent>
           <DialogHeader>
@@ -651,6 +876,67 @@ export default function SettingsPage() {
               {tSettings('twoFactorDialogDescription')}
             </DialogDescription>
           </DialogHeader>
+          {!effectiveSettings.twoFactorEnabled ? (
+            <div className='space-y-3'>
+              {!twoFactorSetupQr ? (
+                <Button
+                  type='button'
+                  onClick={beginTwoFactorSetup}
+                  isLoading={isTwoFactorSubmitting}
+                >
+                  {tSettings('enableTwoFactor')}
+                </Button>
+              ) : (
+                <>
+                  <Image
+                    src={twoFactorSetupQr}
+                    alt={tSettings('twoFactorQrAlt')}
+                    width={176}
+                    height={176}
+                    className='mx-auto size-44 rounded-lg border object-cover'
+                  />
+                  <Input
+                    value={twoFactorSetupCode}
+                    onChange={event => setTwoFactorSetupCode(event.target.value)}
+                    placeholder={tSettings('twoFactorCodePlaceholder')}
+                  />
+                  <Button
+                    type='button'
+                    onClick={verifyTwoFactorSetup}
+                    isLoading={isTwoFactorSubmitting}
+                    disabled={!twoFactorSetupCode.trim()}
+                  >
+                    {tSettings('verifyTwoFactor')}
+                  </Button>
+                  {twoFactorBackupCodes.length > 0 && (
+                    <div className='rounded-xl bg-violet-50 p-3 text-xs'>
+                      <p className='mb-2 font-semibold'>
+                        {tSettings('twoFactorBackupCodes')}
+                      </p>
+                      <p>{twoFactorBackupCodes.join(', ')}</p>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          ) : (
+            <div className='space-y-3'>
+              <Input
+                value={twoFactorDisableCode}
+                onChange={event => setTwoFactorDisableCode(event.target.value)}
+                placeholder={tSettings('twoFactorDisablePlaceholder')}
+              />
+              <Button
+                type='button'
+                variant='outline'
+                onClick={disableTwoFactor}
+                isLoading={isTwoFactorSubmitting}
+                disabled={!twoFactorDisableCode.trim()}
+              >
+                {tSettings('disableTwoFactor')}
+              </Button>
+            </div>
+          )}
           <DialogFooter>
             <Button
               type='button'
@@ -658,15 +944,6 @@ export default function SettingsPage() {
               onClick={() => setIsTwoFactorDialogOpen(false)}
             >
               {tCommon('cancel')}
-            </Button>
-            <Button
-              type='button'
-              onClick={() => {
-                handleDraftChange({ twoFactorEnabled: true });
-                setIsTwoFactorDialogOpen(false);
-              }}
-            >
-              {tSettings('enableTwoFactor')}
             </Button>
           </DialogFooter>
         </DialogContent>
