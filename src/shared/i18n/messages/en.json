@@ -138,6 +138,20 @@
     "signUp": "Sign up",
     "login": "Login",
     "loggingIn": "Logging in...",
+    "loginSuccess": "Login successful. Redirecting...",
+    "loginFailed": "Login failed. Please try again.",
+    "emailValid": "Email looks good",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "passwordRequirementsTitle": "Password requirements",
+    "passwordRequirement": {
+      "minLength": "At least 8 characters",
+      "maxLength": "At most 16 characters",
+      "lowercase": "Includes lowercase",
+      "uppercase": "Includes uppercase",
+      "number": "Includes a number",
+      "special": "Includes a special character"
+    },
     "phonePlaceholder": "Enter your phone number",
     "emailPlaceholder": "Enter your email",
     "passwordPlaceholder": "Enter your password",
@@ -212,7 +226,9 @@
     "ExtraAuthForm": {
       "continueWithEmail": "Continue with Email",
       "continueWithPhone": "Continue with Phone",
-      "continueWithGoogle": "Continue with Google",
+      "continueWithGoogle": "Sign in with Google",
+      "connectingWithGoogle": "Connecting...",
+      "googleAriaLabel": "Sign in with Google",
       "orContinueWith": "or continue with"
     },
     "TermConditionText": {
@@ -354,6 +370,7 @@
   "OwnerSettingsPage": {
     "workspaceLabel": "Owner workspace",
     "readyBadge": "Ready to customize",
+    "unsavedBadge": "Unsaved changes",
     "savingBadge": "Saving...",
     "savedBadge": "Settings saved",
     "saveSuccess": "Settings saved",
@@ -372,9 +389,14 @@
     "securitySummary": "Account protection",
     "securityDescription": "Keep your owner account protected with recovery and sign-in options.",
     "themeLabel": "Theme",
+    "themePreviewDescription": "Preview the theme instantly. It is saved to your account only after you click save.",
     "themeSystem": "System",
+    "themeSystemDescription": "Follow your device preference",
     "themeLight": "Light",
+    "themeLightDescription": "Use a bright workspace",
     "themeDark": "Dark",
+    "themeDarkDescription": "Use a low-light workspace",
+    "localPreviewBadge": "Local preview",
     "densityLabel": "Layout density",
     "densityComfortable": "Comfortable",
     "densityCompact": "Compact",
@@ -396,6 +418,7 @@
     "mobileTitle": "Mobile-friendly controls",
     "mobileDescription": "This settings layout adapts to smaller screens with stacked cards and larger touch targets.",
     "saveButton": "Save preferences",
+    "discardButton": "Discard changes",
     "savedButton": "Saved"
   },
   "OwnerPerformancePage": {

@@ -7,12 +7,15 @@ import {
   ChevronRight,
   Languages,
   LockKeyhole,
+  Moon,
   MonitorCog,
   Palette,
   ShieldCheck,
   Smartphone,
+  Sun,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import {
   Badge,
@@ -42,6 +45,7 @@ import {
   type SettingsLayoutDensity,
   type SettingsTheme,
   type UpdateUserSettingsDto,
+  type UserSettings,
 } from '@/features/user-settings';
 
 type ToggleRowProps = {
@@ -104,22 +108,71 @@ const languages: Array<{
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+const themeOptions: Array<{
+  value: SettingsTheme;
+  icon: typeof MonitorCog;
+  labelKey: 'themeSystem' | 'themeLight' | 'themeDark';
+  descriptionKey:
+    | 'themeSystemDescription'
+    | 'themeLightDescription'
+    | 'themeDarkDescription';
+}> = [
+  {
+    value: 'system',
+    icon: MonitorCog,
+    labelKey: 'themeSystem',
+    descriptionKey: 'themeSystemDescription',
+  },
+  {
+    value: 'light',
+    icon: Sun,
+    labelKey: 'themeLight',
+    descriptionKey: 'themeLightDescription',
+  },
+  {
+    value: 'dark',
+    icon: Moon,
+    labelKey: 'themeDark',
+    descriptionKey: 'themeDarkDescription',
+  },
+];
+
+const toEditableSettings = (
+  settings?: UserSettings
+): UpdateUserSettingsDto => ({
+  theme: settings?.theme ?? 'system',
+  layoutDensity: settings?.layoutDensity ?? 'comfortable',
+  compactMode: settings?.compactMode ?? false,
+  languageCode: settings?.languageCode ?? 'vi',
+  notifEmail: settings?.notifEmail ?? true,
+  notifPush: settings?.notifPush ?? true,
+  recoveryEmail: settings?.recoveryEmail ?? null,
+  twoFactorEnabled: settings?.twoFactorEnabled ?? false,
+});
+
 export default function SettingsPage() {
   const tCommon = useTranslations('Common');
   const tOwnerPages = useTranslations('OwnerPages');
   const tSettings = useTranslations('OwnerSettingsPage');
+  const { setTheme } = useTheme();
   const {
     settings,
     isLoading,
     isSaving,
     updateSettings,
   } = useUserSettings();
+  const [draftSettings, setDraftSettings] = useState<UpdateUserSettingsDto>({});
   const [saved, setSaved] = useState(false);
-  const [recoveryEmailDraft, setRecoveryEmailDraft] = useState<string | null>(
-    null
-  );
   const [recoveryEmailError, setRecoveryEmailError] = useState('');
   const [isTwoFactorDialogOpen, setIsTwoFactorDialogOpen] = useState(false);
+  const savedSettings = toEditableSettings(settings);
+  const effectiveSettings = {
+    ...savedSettings,
+    ...draftSettings,
+  };
+  const isThemePreviewing =
+    draftSettings.theme !== undefined &&
+    draftSettings.theme !== savedSettings.theme;
 
   const categories = useMemo(
     () => [
@@ -156,30 +209,53 @@ export default function SettingsPage() {
     window.setTimeout(() => setSaved(false), 2400);
   };
 
-  const handleUpdate = (patch: UpdateUserSettingsDto) => {
-    updateSettings(patch);
-    handleSavedCue();
+  const handleDraftChange = (patch: UpdateUserSettingsDto) => {
+    setDraftSettings(current => ({ ...current, ...patch }));
+    setSaved(false);
   };
 
-  const handleRecoveryEmailSave = () => {
-    const trimmedEmail = (
-      recoveryEmailDraft ??
-      settings?.recoveryEmail ??
-      ''
-    ).trim();
+  const handleThemePreview = (theme: SettingsTheme) => {
+    setTheme(theme);
+    handleDraftChange({ theme });
+  };
+
+  const handleDiscardChanges = () => {
+    setDraftSettings({});
+    setRecoveryEmailError('');
+    setSaved(false);
+    setTheme(savedSettings.theme ?? 'system');
+  };
+
+  const handleSaveSettings = async () => {
+    const trimmedEmail = (effectiveSettings.recoveryEmail ?? '').trim();
     if (trimmedEmail && !emailPattern.test(trimmedEmail)) {
       setRecoveryEmailError(tSettings('recoveryEmailInvalid'));
       return;
     }
 
     setRecoveryEmailError('');
-    setRecoveryEmailDraft(null);
-    handleUpdate({ recoveryEmail: trimmedEmail || null });
+    await updateSettings({
+      ...effectiveSettings,
+      recoveryEmail: trimmedEmail || null,
+    });
+    setDraftSettings({});
+    handleSavedCue();
   };
 
   const currentLanguage = languages.find(
-    language => language.code === settings?.languageCode
+    language => language.code === effectiveSettings.languageCode
   ) ?? languages[1];
+
+  const hasUnsavedChanges = settings
+    ? JSON.stringify({
+        ...savedSettings,
+        recoveryEmail: settings.recoveryEmail ?? null,
+      }) !==
+      JSON.stringify({
+        ...effectiveSettings,
+        recoveryEmail: (effectiveSettings.recoveryEmail ?? '').trim() || null,
+      })
+    : false;
 
   return (
     <div className='container mx-auto max-w-6xl space-y-6 pt-6 pb-20'>
@@ -206,7 +282,9 @@ export default function SettingsPage() {
               ? tSettings('savingBadge')
               : saved
                 ? tSettings('savedBadge')
-                : tSettings('readyBadge')}
+                : hasUnsavedChanges
+                  ? tSettings('unsavedBadge')
+                  : tSettings('readyBadge')}
           </Badge>
         </div>
       </div>
@@ -252,42 +330,75 @@ export default function SettingsPage() {
               </div>
             </CardHeader>
             <CardContent className='space-y-4'>
+              <div className='space-y-2'>
+                <div className='flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between'>
+                  <div>
+                    <span className='text-sm font-medium'>
+                      {tSettings('themeLabel')}
+                    </span>
+                    <p className='text-muted-foreground text-sm'>
+                      {tSettings('themePreviewDescription')}
+                    </p>
+                  </div>
+                  {isThemePreviewing && (
+                    <Badge
+                      variant='secondary'
+                      className='w-fit rounded-full bg-violet-50 text-violet-700'
+                    >
+                      {tSettings('localPreviewBadge')}
+                    </Badge>
+                  )}
+                </div>
+                <div className='grid gap-3 sm:grid-cols-3'>
+                  {themeOptions.map(option => {
+                    const Icon = option.icon;
+                    const isSelected =
+                      (effectiveSettings.theme ?? 'system') === option.value;
+
+                    return (
+                      <button
+                        key={option.value}
+                        type='button'
+                        onClick={() => handleThemePreview(option.value)}
+                        disabled={isLoading}
+                        aria-pressed={isSelected}
+                        className={cn(
+                          'group rounded-2xl border p-4 text-left transition-all duration-200 focus-visible:ring-3 focus-visible:ring-violet-500/30 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60',
+                          isSelected
+                            ? 'border-violet-300 bg-violet-50 shadow-sm shadow-violet-500/10'
+                            : 'border-slate-200 bg-white hover:border-violet-200 hover:bg-violet-50/50'
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            'mb-3 flex size-10 items-center justify-center rounded-xl transition-colors',
+                            isSelected
+                              ? 'bg-violet-600 text-white'
+                              : 'bg-slate-100 text-slate-600 group-hover:bg-violet-100 group-hover:text-violet-600'
+                          )}
+                        >
+                          <Icon className='size-5' />
+                        </span>
+                        <span className='block text-sm font-semibold'>
+                          {tSettings(option.labelKey)}
+                        </span>
+                        <span className='text-muted-foreground mt-1 block text-xs'>
+                          {tSettings(option.descriptionKey)}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
               <div className='grid gap-4 sm:grid-cols-2'>
-                <label className='space-y-2'>
-                  <span className='text-sm font-medium'>
-                    {tSettings('themeLabel')}
-                  </span>
-                  <Select
-                    value={settings?.theme ?? 'system'}
-                    onValueChange={value =>
-                      handleUpdate({ theme: value as SettingsTheme })
-                    }
-                    disabled={isLoading}
-                  >
-                    <SelectTrigger className='h-11 w-full rounded-xl transition-all duration-200 hover:border-violet-300 focus-visible:ring-violet-500/30'>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value='system'>
-                        {tSettings('themeSystem')}
-                      </SelectItem>
-                      <SelectItem value='light'>
-                        {tSettings('themeLight')}
-                      </SelectItem>
-                      <SelectItem value='dark'>
-                        {tSettings('themeDark')}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </label>
                 <label className='space-y-2'>
                   <span className='text-sm font-medium'>
                     {tSettings('densityLabel')}
                   </span>
                   <Select
-                    value={settings?.layoutDensity ?? 'comfortable'}
+                    value={effectiveSettings.layoutDensity ?? 'comfortable'}
                     onValueChange={value =>
-                      handleUpdate({
+                      handleDraftChange({
                         layoutDensity: value as SettingsLayoutDensity,
                       })
                     }
@@ -310,10 +421,10 @@ export default function SettingsPage() {
               <ToggleRow
                 title={tSettings('compactModeTitle')}
                 description={tSettings('compactModeDescription')}
-                checked={settings?.compactMode ?? false}
+                checked={effectiveSettings.compactMode ?? false}
                 onChange={() =>
-                  handleUpdate({
-                    compactMode: !(settings?.compactMode ?? false),
+                  handleDraftChange({
+                    compactMode: !(effectiveSettings.compactMode ?? false),
                   })
                 }
               />
@@ -341,17 +452,21 @@ export default function SettingsPage() {
               <ToggleRow
                 title={tSettings('emailNotificationsTitle')}
                 description={tSettings('emailNotificationsDescription')}
-                checked={settings?.notifEmail ?? true}
+                checked={effectiveSettings.notifEmail ?? true}
                 onChange={() =>
-                  handleUpdate({ notifEmail: !(settings?.notifEmail ?? true) })
+                  handleDraftChange({
+                    notifEmail: !(effectiveSettings.notifEmail ?? true),
+                  })
                 }
               />
               <ToggleRow
                 title={tSettings('pushNotificationsTitle')}
                 description={tSettings('pushNotificationsDescription')}
-                checked={settings?.notifPush ?? true}
+                checked={effectiveSettings.notifPush ?? true}
                 onChange={() =>
-                  handleUpdate({ notifPush: !(settings?.notifPush ?? true) })
+                  handleDraftChange({
+                    notifPush: !(effectiveSettings.notifPush ?? true),
+                  })
                 }
               />
             </CardContent>
@@ -376,21 +491,21 @@ export default function SettingsPage() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className='space-y-3'>
-              <label className='space-y-2'>
-                <span className='text-sm font-medium'>
+            <CardContent>
+              <label className='grid gap-2'>
+                <span className='text-sm font-semibold'>
                   {tSettings('systemLanguageLabel')}
                 </span>
                 <Select
-                  value={settings?.languageCode ?? 'vi'}
+                  value={effectiveSettings.languageCode ?? 'vi'}
                   onValueChange={value =>
-                    handleUpdate({
+                    handleDraftChange({
                       languageCode: value as SettingsLanguageCode,
                     })
                   }
                   disabled={isLoading}
                 >
-                  <SelectTrigger className='h-12 w-full rounded-xl px-3 transition-all duration-200 hover:border-violet-300 focus-visible:ring-violet-500/30'>
+                  <SelectTrigger className='h-11 w-full rounded-xl px-3 transition-all duration-200 hover:border-violet-300 focus-visible:ring-violet-500/30'>
                     <span className='flex min-w-0 items-center gap-3'>
                       <Image
                         src={currentLanguage.flag}
@@ -403,14 +518,13 @@ export default function SettingsPage() {
                         {tCommon(currentLanguage.labelKey)}
                       </span>
                     </span>
-                    <SelectValue className='sr-only' />
                   </SelectTrigger>
-                  <SelectContent align='start' className='min-w-56'>
+                  <SelectContent align='start' className='min-w-52'>
                     {languages.map(language => (
                       <SelectItem
                         key={language.code}
                         value={language.code}
-                        className='gap-3 py-2'
+                        className='gap-3 py-2.5'
                       >
                         <Image
                           src={language.flag}
@@ -419,7 +533,7 @@ export default function SettingsPage() {
                           height={20}
                           className='rounded-sm object-cover'
                         />
-                        <span className='flex flex-col'>
+                        <span className='flex items-center gap-2'>
                           <span className='font-medium'>
                             {tCommon(language.labelKey)}
                           </span>
@@ -432,9 +546,6 @@ export default function SettingsPage() {
                   </SelectContent>
                 </Select>
               </label>
-              <p className='text-muted-foreground mt-3 text-xs'>
-                {tSettings('keyboardHint')}
-              </p>
             </CardContent>
           </Card>
 
@@ -463,9 +574,9 @@ export default function SettingsPage() {
                 <Input
                   type='email'
                   placeholder='owner@example.com'
-                  value={recoveryEmailDraft ?? settings?.recoveryEmail ?? ''}
+                  value={effectiveSettings.recoveryEmail ?? ''}
                   onChange={event => {
-                    setRecoveryEmailDraft(event.target.value);
+                    handleDraftChange({ recoveryEmail: event.target.value });
                     setRecoveryEmailError('');
                   }}
                   aria-invalid={!!recoveryEmailError}
@@ -477,21 +588,13 @@ export default function SettingsPage() {
                   </p>
                 )}
               </label>
-              <Button
-                type='button'
-                variant='outline'
-                onClick={handleRecoveryEmailSave}
-                isLoading={isSaving}
-              >
-                {tSettings('saveRecoveryEmail')}
-              </Button>
               <ToggleRow
                 title={tSettings('twoFactorTitle')}
                 description={tSettings('twoFactorDescription')}
-                checked={settings?.twoFactorEnabled ?? false}
+                checked={effectiveSettings.twoFactorEnabled ?? false}
                 onChange={() => {
-                  if (settings?.twoFactorEnabled) {
-                    handleUpdate({ twoFactorEnabled: false });
+                  if (effectiveSettings.twoFactorEnabled) {
+                    handleDraftChange({ twoFactorEnabled: false });
                     return;
                   }
                   setIsTwoFactorDialogOpen(true);
@@ -516,9 +619,20 @@ export default function SettingsPage() {
                   type='button'
                   variant='surface'
                   className='border-white/20 bg-white/10 text-white hover:bg-white/20'
-                  onClick={handleSavedCue}
+                  onClick={handleSaveSettings}
+                  isLoading={isSaving}
+                  disabled={!hasUnsavedChanges || isSaving}
                 >
                   {saved ? tSettings('savedButton') : tSettings('saveButton')}
+                </Button>
+                <Button
+                  type='button'
+                  variant='ghost'
+                  className='text-white/80 hover:bg-white/10 hover:text-white'
+                  onClick={handleDiscardChanges}
+                  disabled={!hasUnsavedChanges || isSaving}
+                >
+                  {tSettings('discardButton')}
                 </Button>
               </div>
             </CardContent>
@@ -548,7 +662,7 @@ export default function SettingsPage() {
             <Button
               type='button'
               onClick={() => {
-                handleUpdate({ twoFactorEnabled: true });
+                handleDraftChange({ twoFactorEnabled: true });
                 setIsTwoFactorDialogOpen(false);
               }}
             >
