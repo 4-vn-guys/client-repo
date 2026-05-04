@@ -1,6 +1,7 @@
-import { Calendar, MapPin, Users, BarChart3, Settings, Bell } from 'lucide-react';
+import { Calendar, MapPin, Users, BarChart3, Settings, Bell, Package } from 'lucide-react';
 
 const ownerTimelinePathPattern = /^\/owner\/[^/]+\/timeline$/;
+const ownerProShopPathPattern = /^\/owner\/[^/]+\/pro-shop$/;
 
 export const ownerNavItems = [
   {
@@ -12,6 +13,13 @@ export const ownerNavItems = [
         href: '/owner/branches',
         icon: Calendar,
         isActive: (pathname: string) => ownerTimelinePathPattern.test(pathname),
+      },
+      {
+        labelKey: 'proShop',
+        href: '/owner/pro-shop',
+        icon: Package,
+        isActive: (pathname: string) =>
+          pathname === '/owner/pro-shop' || ownerProShopPathPattern.test(pathname),
       },
       { labelKey: 'members', href: '/owner/members', icon: Users },
       { labelKey: 'reports', href: '/owner/reports', icon: BarChart3 },

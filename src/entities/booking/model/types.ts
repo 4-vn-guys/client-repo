@@ -10,6 +10,7 @@ export interface Payment {
   amount: number;
   transactionDate: string;
   invoiceCode: string;
+  purpose?: 'full' | 'deposit' | 'balance';
   createdAt: string;
   updatedAt: string;
 }
@@ -38,12 +39,17 @@ export interface Booking {
   startTime: string;
   endTime: string;
   totalPrice: number;
+  depositAmount?: number;
+  balanceAmount?: number;
   note: string | null;
+  /** Add-on line items (rackets, consumables, etc.) when returned from API */
+  goods?: { name: string; quantity: number; unitPrice: number }[] | null;
   branchId: string;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
   payment?: Payment;
+  payments?: Payment[];
   user?: User;
   // Legacy support for mock data
   customerName?: string;

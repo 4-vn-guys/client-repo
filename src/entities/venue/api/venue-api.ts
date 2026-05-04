@@ -1,5 +1,11 @@
 import { axiosInstance } from '@/shared/lib/axios';
-import { Branch, CreateBranchDto, UploadedFile } from '../model/types';
+import {
+  Branch,
+  BranchDepositRevenueResponse,
+  CreateBranchDto,
+  UpdateBranchDto,
+  UploadedFile,
+} from '../model/types';
 
 /**
  * API response structure from backend
@@ -77,6 +83,46 @@ export const createBranch = async (data: CreateBranchDto): Promise<Branch> => {
 /**
  * Upload a file that can be attached to branch metadata, such as policy PDFs.
  */
+export const updateBranch = async (id: string, data: UpdateBranchDto): Promise<Branch> => {
+  try {
+    const response = await axiosInstance.patch<{
+      success: boolean;
+      data: Branch;
+      message?: string;
+    }>(`/branches/${id}`, data);
+
+    if (response.data.success) {
+      return response.data.data;
+    }
+
+    throw new Error(response.data.message || 'Failed to update branch');
+  } catch (error) {
+    console.error('Error updating branch:', error);
+    throw error;
+  }
+};
+
+export const fetchBranchDepositRevenue = async (
+  branchId: string,
+): Promise<BranchDepositRevenueResponse> => {
+  try {
+    const response = await axiosInstance.get<{
+      success: boolean;
+      data: BranchDepositRevenueResponse;
+      message?: string;
+    }>(`/branches/${branchId}/revenue-deposits`);
+
+    if (response.data.success) {
+      return response.data.data;
+    }
+
+    throw new Error(response.data.message || 'Failed to fetch deposit revenue');
+  } catch (error) {
+    console.error('Error fetching deposit revenue:', error);
+    throw error;
+  }
+};
+
 export const uploadBranchFile = async (file: File): Promise<UploadedFile> => {
   try {
     const formData = new FormData();

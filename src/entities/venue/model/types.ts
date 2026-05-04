@@ -13,6 +13,9 @@ export interface Branch {
   latitude?: number;
   longitude?: number;
   courts?: BranchCourt[];
+  depositEnabled?: boolean;
+  depositType?: 'percent' | 'fixed';
+  depositValue?: number;
 }
 
 export interface BranchCourt {
@@ -37,6 +40,44 @@ export type CreateBranchDto = {
   policy?: string;
   policyFileId?: string;
   hotline?: string;
+  depositEnabled?: boolean;
+  depositType?: 'percent' | 'fixed';
+  depositValue?: number;
+};
+
+export type UpdateBranchDto = Partial<
+  Pick<
+    CreateBranchDto,
+    | 'name'
+    | 'address'
+    | 'latitude'
+    | 'longitude'
+    | 'openTime'
+    | 'closeTime'
+    | 'policy'
+    | 'policyFileId'
+    | 'hotline'
+    | 'depositEnabled'
+    | 'depositType'
+    | 'depositValue'
+  >
+>;
+
+export type BranchDepositRevenueResponse = {
+  branchId: string;
+  policy: {
+    depositEnabled: boolean;
+    depositType: 'percent' | 'fixed';
+    depositValue: number;
+  };
+  summary: {
+    depositsCollected: number;
+    balanceCollected: number;
+    fullCollected: number;
+    pendingDeposits: number;
+    pendingBalance: number;
+    pendingFull: number;
+  };
 };
 
 export type UploadedFile = {

@@ -28,6 +28,7 @@ interface BookingDetailApi {
     statusPayment: string;
     note: string | null;
     user?: { username: string };
+    goods?: { name: string; quantity: number; unitPrice: number }[] | null;
   };
 }
 
@@ -93,6 +94,7 @@ export const fetchBookingsByBranchId = async (
             endTime: detail.endTime,
             totalPrice: detail.booking.totalPrice ?? detail.price ?? 0,
             note: detail.booking.note,
+            goods: detail.booking.goods ?? null,
             branchId: court.branchId,
             createdAt: '',
             updatedAt: '',

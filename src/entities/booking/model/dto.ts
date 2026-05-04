@@ -1,4 +1,15 @@
 /**
+ * Add-on item (goods/services) attached to a booking
+ */
+export interface BookingGoodLine {
+  /** Pro Shop catalog id — when set, stock is reserved until cancel/pickup */
+  productId?: string;
+  name: string;
+  quantity: number;
+  unitPrice: number;
+}
+
+/**
  * Detail item for create booking - each court slot in the booking
  */
 export interface CreateBookingDetailDto {
@@ -22,6 +33,7 @@ export interface CreateBookingDto {
   status?: 'pending' | 'confirmed' | 'cancelled' | 'maintenance';
   statusPayment?: 'paid' | 'unpaid';
   totalPrice?: number;
+  goods?: BookingGoodLine[];
 }
 
 /**
@@ -36,6 +48,7 @@ export interface UpdateBookingDto {
   note?: string;
   status?: 'pending' | 'confirmed' | 'cancelled' | 'maintenance';
   statusPayment?: 'paid' | 'unpaid';
+  goods?: BookingGoodLine[] | null;
 }
 
 /**
@@ -50,11 +63,6 @@ export interface BookingFormData {
   startHour: number; // Hour in 24-hour format (0-23)
   duration: number; // Duration in hours
   note: string;
-  extras?: {
-    rackets: boolean;
-    shoes: boolean;
-    water: boolean;
-  };
 }
 
 /**

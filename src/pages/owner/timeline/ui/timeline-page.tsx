@@ -1,11 +1,13 @@
 'use client';
 
-import { MapPin, AlertCircle } from 'lucide-react';
+import { useState } from 'react';
+import { MapPin, AlertCircle, ShoppingBasket } from 'lucide-react';
 import { TimelineHeader } from '@/widgets/owner/header';
 import { TimelineGrid } from '@/widgets/owner/';
 import { DateNavigation } from '@/features/owner/filter-by-day';
 import { NewBookingButton } from '@/features/owner/create-booking';
 import { BookingDialog } from '@/features/owner/booking-form';
+import { QuickOrderSidebar } from '@/features/owner/quick-order';
 import { CourtManagementPanel } from '@/features/owner/court-management';
 import { Button } from '@/shared/ui/button';
 import Link from 'next/link';
@@ -19,6 +21,8 @@ interface TimelinePageProps {
 
 export function TimelinePageContent({ venueId }: TimelinePageProps) {
   const tTimeline = useTranslations('OwnerTimelinePage');
+  const tQuickOrder = useTranslations('QuickOrder');
+  const [quickOrderOpen, setQuickOrderOpen] = useState(false);
   const {
     selectedDate,
     setSelectedDate,
@@ -92,6 +96,15 @@ export function TimelinePageContent({ venueId }: TimelinePageProps) {
                 {tTimeline('bookSelected', { count: selectedSlots.length })}
               </Button>
             )}
+            <Button
+              type='button'
+              variant='outline'
+              className='gap-2'
+              onClick={() => setQuickOrderOpen(true)}
+            >
+              <ShoppingBasket className='size-4' />
+              {tQuickOrder('openButton')}
+            </Button>
             <NewBookingButton onClick={handleNewBooking} />
           </div>
         }
@@ -99,6 +112,7 @@ export function TimelinePageContent({ venueId }: TimelinePageProps) {
       <TimelineGrid
         courts={courts}
         bookings={allBookings}
+        selectedDate={selectedDate}
         onCellClick={handleCellClick}
         onBookingClick={handleBookingClick}
         isSlotSelected={isSlotSelected}
@@ -108,6 +122,13 @@ export function TimelinePageContent({ venueId }: TimelinePageProps) {
       <CourtManagementPanel
         branchId={branchId}
         initialCourts={venue.courts ?? courts}
+      />
+
+      <QuickOrderSidebar
+        branchId={branchId}
+        open={quickOrderOpen}
+        onOpenChange={setQuickOrderOpen}
+        onRequestCourtBooking={handleNewBooking}
       />
 
       <BookingDialog
@@ -120,6 +141,11 @@ export function TimelinePageContent({ venueId }: TimelinePageProps) {
         initialData={bookingDialogData}
         onSubmit={handleBookingSubmit}
         isLoading={isSubmitting}
+        depositPolicy={{
+          depositEnabled: Boolean(venue.depositEnabled),
+          depositType: (venue.depositType as 'percent' | 'fixed') || 'percent',
+          depositValue: Number(venue.depositValue ?? 0),
+        }}
       />
     </div>
   );

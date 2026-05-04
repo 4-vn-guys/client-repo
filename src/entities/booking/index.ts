@@ -19,6 +19,7 @@ export type {
   UserBookingsQuery,
 } from './model/types';
 export type {
+  BookingGoodLine,
   CreateBookingDto,
   CreateBookingDetailDto,
   UpdateBookingDto,

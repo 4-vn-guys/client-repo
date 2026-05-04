@@ -1,5 +1,7 @@
 'use client';
 
+import { cn } from '@/shared/lib/utils';
+
 interface TimeInputProps {
   hour: string;
   minute: string;
@@ -30,7 +32,12 @@ export function TimeInput({
         <select
           value={hour}
           onChange={e => onHourChange(e.target.value)}
-          className='flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-violet-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800'
+          className={cn(
+            'flex-1 rounded-md border bg-white px-3 py-2 focus:ring-2 focus:outline-none dark:bg-gray-800',
+            error
+              ? 'border-destructive focus:border-destructive focus:ring-destructive/30'
+              : 'border-gray-300 focus:border-transparent focus:ring-violet-500 dark:border-gray-600',
+          )}
         >
           {hours.map(h => (
             <option key={h} value={h}>
@@ -45,7 +52,12 @@ export function TimeInput({
         <select
           value={minute}
           onChange={e => onMinuteChange(e.target.value)}
-          className='flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-violet-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800'
+          className={cn(
+            'flex-1 rounded-md border bg-white px-3 py-2 focus:ring-2 focus:outline-none dark:bg-gray-800',
+            error
+              ? 'border-destructive focus:border-destructive focus:ring-destructive/30'
+              : 'border-gray-300 focus:border-transparent focus:ring-violet-500 dark:border-gray-600',
+          )}
         >
           {minutes.map(m => (
             <option key={m} value={m}>

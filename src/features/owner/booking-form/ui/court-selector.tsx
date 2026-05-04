@@ -20,7 +20,12 @@ export function CourtSelector({
   const tBookingForm = useTranslations('BookingForm');
 
   return (
-    <div className='space-y-2'>
+    <div
+      className={cn(
+        'space-y-2 rounded-md',
+        error && 'border-destructive bg-destructive/5 border p-3',
+      )}
+    >
       <label className='text-sm font-medium'>{tBookingForm('court')}</label>
       <div className='flex flex-wrap gap-2'>
         {courts.map(court => (

@@ -138,8 +138,8 @@ export function EnhancedTimeInputs({
         </div>
       </div>
 
-      {/* Validation Message */}
-      {!isValid && (
+      {/* Validation Message (avoid duplicating Zod message shown on end time) */}
+      {!isValid && !endTimeError && (
         <p className='text-destructive text-sm'>
           {tBookingForm('endTimeAfterStart')}
         </p>

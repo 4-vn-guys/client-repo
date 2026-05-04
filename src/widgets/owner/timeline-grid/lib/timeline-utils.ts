@@ -7,6 +7,12 @@ export const TIMELINE_CONFIG = {
   intervalMinutes: 60, // 1-hour intervals
 };
 
+/** Matches Tailwind `w-32` / `md:w-40` on court label column */
+export const TIMELINE_LABEL_WIDTH = {
+  sm: 128,
+  md: 160,
+} as const;
+
 export function generateTimeSlots(startHour = 6, endHour = 23): string[] {
   const slots: string[] = [];
   for (let hour = startHour; hour <= endHour; hour++) {
@@ -41,4 +47,30 @@ export function calculateBookingPosition(
   const width = durationIntervals * slotWidth;
 
   return { left, width };
+}
+
+/**
+ * Horizontal offset (px) for the "current time" marker within the time columns only
+ * (excluding the court label). Returns null if now is outside the visible timeline window.
+ */
+export function getNowOffsetWithinTimeline(
+  now: Date,
+  slotWidth: number,
+  intervalMinutes: number = TIMELINE_CONFIG.intervalMinutes,
+): number | null {
+  const totalSeconds =
+    now.getHours() * 3600 +
+    now.getMinutes() * 60 +
+    now.getSeconds() +
+    now.getMilliseconds() / 1000;
+  const minuteFloat = totalSeconds / 60;
+
+  const gridStart = TIMELINE_CONFIG.startHour * 60;
+  const gridEnd = (TIMELINE_CONFIG.endHour + 1) * 60;
+
+  if (minuteFloat < gridStart || minuteFloat >= gridEnd) {
+    return null;
+  }
+
+  return ((minuteFloat - gridStart) / intervalMinutes) * slotWidth;
 }

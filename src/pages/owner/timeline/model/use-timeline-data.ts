@@ -8,12 +8,38 @@ import {
   fetchBookingsByBranchId,
   createBooking,
   updateBooking,
+  type BookingGoodLine,
   type CreateBookingDto,
   type UpdateBookingDto,
   type Booking,
 } from '@/entities/booking';
 import { formatDateToYYYYMMDD } from '@/shared/lib/utils';
 import toast from 'react-hot-toast';
+import { isAxiosError } from 'axios';
+
+function bookingMutationErrorMessage(error: unknown, fallback: string): string {
+  if (isAxiosError(error) && error.response?.status === 409) {
+    return 'This time slot is no longer available';
+  }
+  const data =
+    error &&
+    typeof error === 'object' &&
+    'response' in error &&
+    error.response &&
+    typeof error.response === 'object' &&
+    'data' in error.response
+      ? (error.response as { data?: unknown }).data
+      : undefined;
+  if (
+    data &&
+    typeof data === 'object' &&
+    'message' in data &&
+    typeof (data as { message: unknown }).message === 'string'
+  ) {
+    return (data as { message: string }).message;
+  }
+  return fallback;
+}
 
 /**
  * Custom hook for timeline data fetching and state management
@@ -47,6 +73,7 @@ export function useTimelineData(venueId: string) {
         status?: 'pending' | 'confirmed' | 'cancelled' | 'maintenance';
         statusPayment?: 'paid' | 'unpaid';
         totalPrice?: number;
+        goods?: BookingGoodLine[];
         /** Pre-selected details from grid multi-select (courtId + slotIndex per slot) */
         details?: Array<{ courtId: string; slotIndex: number }>;
       }
@@ -102,8 +129,9 @@ export function useTimelineData(venueId: string) {
     },
     onError: (error: unknown) => {
       console.error('Error creating booking:', error);
-      const message = error && typeof error === 'object' && 'response' in error && error.response && typeof error.response === 'object' && 'data' in error.response && error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data && typeof error.response.data.message === 'string' ? error.response.data.message : 'Failed to create booking';
-      toast.error(message);
+      toast.error(
+        bookingMutationErrorMessage(error, 'Failed to create booking'),
+      );
     },
   });
 
@@ -119,8 +147,9 @@ export function useTimelineData(venueId: string) {
     },
     onError: (error: unknown) => {
       console.error('Error updating booking:', error);
-      const message = error && typeof error === 'object' && 'response' in error && error.response && typeof error.response === 'object' && 'data' in error.response && error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data && typeof error.response.data.message === 'string' ? error.response.data.message : 'Failed to update booking';
-      toast.error(message);
+      toast.error(
+        bookingMutationErrorMessage(error, 'Failed to update booking'),
+      );
     },
   });
 
@@ -175,6 +204,7 @@ export function useTimelineData(venueId: string) {
       status: booking.status as 'pending' | 'confirmed' | 'cancelled' | 'maintenance',
       statusPayment: booking.statusPayment as 'paid' | 'unpaid',
       totalPrice: booking.totalPrice,
+      goods: booking.goods ?? undefined,
     });
     setBookingDialogOpen(true);
   }, []);
