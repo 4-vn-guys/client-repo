@@ -118,6 +118,7 @@ function Button({
   iconPlacement = 'left',
   isLoading = false,
   colorPattern,
+  children,
   ...props
 }: React.ComponentProps<'button'> &
   VariantProps<typeof buttonVariants> & {
@@ -132,15 +133,36 @@ function Button({
     if (iconPlacement !== position || !icon) return null;
     return isLoading ? <Spinner /> : <span className='size-4'>{icon}</span>;
   };
+
+  const leftIcon = renderIcon('left');
+  const rightIcon = renderIcon('right');
+  const hasIcons = leftIcon || rightIcon;
+
   return (
     <Comp
       data-slot='button'
       className={cn(buttonVariants({ variant, size, className, colorPattern }))}
       {...props}
     >
-      {renderIcon('left')}
-      {props.children}
-      {renderIcon('right')}
+      {asChild ? (
+        hasIcons ? (
+          // Slot requires exactly one child; wrap in a span when icons are present
+          <span className='inline-flex items-center gap-2'>
+            {leftIcon}
+            {children}
+            {rightIcon}
+          </span>
+        ) : (
+          // Slot merges props onto its single child — pass children directly, no Fragment
+          children
+        )
+      ) : (
+        <>
+          {leftIcon}
+          {children}
+          {rightIcon}
+        </>
+      )}
     </Comp>
   );
 }
