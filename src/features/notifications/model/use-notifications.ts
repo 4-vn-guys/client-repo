@@ -8,7 +8,10 @@ import {
 import type { UserNotification } from './types';
 
 export const notificationsQueryKey = ['notifications'] as const;
-export const unreadNotificationsQueryKey = ['notifications', 'unread-count'] as const;
+export const unreadNotificationsQueryKey = [
+  'notifications',
+  'unread-count',
+] as const;
 
 export const useNotifications = () => {
   const queryClient = useQueryClient();
@@ -32,7 +35,9 @@ export const useNotifications = () => {
         notificationsQueryKey,
         current =>
           current?.map(item =>
-            updated && item.id === updated.id ? { ...item, readAt: updated.readAt } : item
+            updated && item.id === updated.id
+              ? { ...item, readAt: updated.readAt }
+              : item
           ) ?? []
       );
       queryClient.invalidateQueries({ queryKey: unreadNotificationsQueryKey });
@@ -45,7 +50,8 @@ export const useNotifications = () => {
       const now = new Date().toISOString();
       queryClient.setQueryData<UserNotification[]>(
         notificationsQueryKey,
-        current => current?.map(item => ({ ...item, readAt: item.readAt ?? now })) ?? []
+        current =>
+          current?.map(item => ({ ...item, readAt: item.readAt ?? now })) ?? []
       );
       queryClient.setQueryData(unreadNotificationsQueryKey, 0);
       queryClient.invalidateQueries({ queryKey: unreadNotificationsQueryKey });

@@ -13,9 +13,7 @@ export async function Footer() {
             <div className='text-primary mb-4 text-2xl font-bold'>
               {tCommon('brandName')}
             </div>
-            <p className='text-gray-400'>
-              {tFooter('description')}
-            </p>
+            <p className='text-gray-400'>{tFooter('description')}</p>
           </div>
           <div>
             <h3 className='mb-4 font-bold'>{tFooter('sportsTitle')}</h3>

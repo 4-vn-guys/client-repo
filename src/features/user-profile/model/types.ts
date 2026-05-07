@@ -3,10 +3,10 @@
  * Types for user profile menu items and actions
  */
 
-export type UserProfileAction = 
-  | 'view-profile' 
-  | 'edit-profile' 
-  | 'settings' 
+export type UserProfileAction =
+  | 'view-profile'
+  | 'edit-profile'
+  | 'settings'
   | 'logout';
 
 export interface UserProfileMenuItem {

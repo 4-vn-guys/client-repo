@@ -4,7 +4,12 @@ import Link from 'next/link';
 import { LanguageSwitcher } from '@/src/features/language-switch';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { Button } from '@/src/shared/ui';
-import { LayoutDashboard, LogIn, LogOut, MousePointerClick } from 'lucide-react';
+import {
+  LayoutDashboard,
+  LogIn,
+  LogOut,
+  MousePointerClick,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Fragment, useMemo } from 'react';
 

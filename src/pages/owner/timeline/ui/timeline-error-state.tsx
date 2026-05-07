@@ -15,9 +15,7 @@ export async function TimelineErrorState() {
       <div className='bg-destructive/10 mb-4 rounded-full p-4'>
         <AlertCircle className='text-destructive h-8 w-8' />
       </div>
-      <h2 className='mb-2 text-2xl font-bold'>
-        {tTimeline('venueNotFound')}
-      </h2>
+      <h2 className='mb-2 text-2xl font-bold'>{tTimeline('venueNotFound')}</h2>
       <p className='text-muted-foreground mb-6 max-w-md'>
         {tTimeline('venueNotFoundDescription')}
       </p>

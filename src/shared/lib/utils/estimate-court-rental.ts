@@ -26,12 +26,12 @@ export function estimateCourtRental({
 }: EstimateCourtRentalParams): number {
   if (isMultiSlotMode && initialDetails?.length) {
     return initialDetails.reduce((sum, d) => {
-      const court = courts.find((c) => c.id === d.courtId);
+      const court = courts.find(c => c.id === d.courtId);
       return sum + (court?.defaultHourlyRate ?? 0);
     }, 0);
   }
   if (!courtId) return 0;
-  const court = courts.find((c) => c.id === courtId);
+  const court = courts.find(c => c.id === courtId);
   const rate = court?.defaultHourlyRate ?? 0;
   const sh = parseInt(startHour, 10);
   const sm = parseInt(startMinute, 10);
@@ -44,7 +44,7 @@ export function estimateCourtRental({
 }
 
 export function sumGoodsSubtotal(
-  lines: Array<{ quantity: number; unitPrice: number }>,
+  lines: Array<{ quantity: number; unitPrice: number }>
 ): number {
   return lines.reduce((s, l) => s + l.quantity * l.unitPrice, 0);
 }

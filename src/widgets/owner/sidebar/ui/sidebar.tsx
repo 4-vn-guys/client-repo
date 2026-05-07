@@ -9,15 +9,17 @@ import { SidebarNavItem } from './sidebar-nav-item';
 import { UserProfileButton } from '@/features/user-profile';
 import { Separator } from '@/shared/ui/separator';
 import { cn } from '@/shared/lib/utils';
-import { useAuthStore } from '@/src/shared/store';
+import { useAuthStore } from '@/shared/store';
 import { useTranslations } from 'next-intl';
 import { useNotifications } from '@/features/notifications';
+import { useFeatureAccess } from '@/features/authorization/model/use-feature-access';
 
 export function OwnerSidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useAuthStore();
   const tSidebar = useTranslations('OwnerSidebar');
   const { unreadCount } = useNotifications();
+  const { hasFeature } = useFeatureAccess();
 
   return (
     <>
@@ -62,14 +64,20 @@ export function OwnerSidebar() {
                 {tSidebar(section.sectionKey)}
               </p>
               <div className='space-y-1'>
-                {section.items.map(item => (
-                  <SidebarNavItem
-                    key={item.labelKey}
-                    {...item}
-                    label={tSidebar(item.labelKey)}
-                    onClick={() => setIsOpen(false)}
-                  />
-                ))}
+                {section.items
+                  .filter(item =>
+                    hasFeature((item as { featureKey?: string }).featureKey)
+                  )
+                  .map(item => (
+                    <SidebarNavItem
+                      key={item.labelKey}
+                      href={item.href}
+                      icon={item.icon}
+                      isActive={item.isActive}
+                      label={tSidebar(item.labelKey)}
+                      onClick={() => setIsOpen(false)}
+                    />
+                  ))}
               </div>
             </div>
           ))}

@@ -43,24 +43,30 @@ export function ProductCard({
   return (
     <div
       className={cn(
-        'flex flex-col rounded-xl border border-border/80 bg-card p-4 shadow-sm transition-shadow hover:shadow-md',
+        'border-border/80 bg-card flex flex-col rounded-xl border p-4 shadow-sm transition-shadow hover:shadow-md',
         variant === 'compact' && 'p-3',
-        className,
+        className
       )}
     >
       <div className='flex items-start justify-between gap-2'>
         <div className='min-w-0'>
-          <p className='font-semibold leading-snug text-foreground'>{product.name}</p>
+          <p className='text-foreground leading-snug font-semibold'>
+            {product.name}
+          </p>
           {product.sku ? (
             <p className='text-muted-foreground mt-0.5 text-xs tabular-nums'>
               {t('skuLine', { sku: product.sku })}
             </p>
           ) : null}
           {product.description ? (
-            <p className='text-muted-foreground mt-1 text-xs leading-relaxed'>{product.description}</p>
+            <p className='text-muted-foreground mt-1 text-xs leading-relaxed'>
+              {product.description}
+            </p>
           ) : null}
         </div>
-        <span className='text-primary shrink-0 text-sm font-bold tabular-nums'>{priceLabel}</span>
+        <span className='text-primary shrink-0 text-sm font-bold tabular-nums'>
+          {priceLabel}
+        </span>
       </div>
 
       {available !== undefined ? (
@@ -72,10 +78,12 @@ export function ProductCard({
                 ? 'bg-destructive/15 text-destructive'
                 : product.lowStock
                   ? 'bg-amber-500/15 text-amber-800 dark:text-amber-200'
-                  : 'bg-muted text-muted-foreground',
+                  : 'bg-muted text-muted-foreground'
             )}
           >
-            {available <= 0 ? t('outOfStock') : t('availableShort', { count: available })}
+            {available <= 0
+              ? t('outOfStock')
+              : t('availableShort', { count: available })}
           </span>
           {product.stockReserved != null && product.stockReserved > 0 ? (
             <span className='text-muted-foreground text-xs'>
@@ -98,7 +106,12 @@ export function ProductCard({
           </Button>
         ) : null}
         {onEdit ? (
-          <Button type='button' size='sm' variant='subtle' onClick={() => onEdit(product)}>
+          <Button
+            type='button'
+            size='sm'
+            variant='subtle'
+            onClick={() => onEdit(product)}
+          >
             {t('editProduct')}
           </Button>
         ) : null}
@@ -116,7 +129,12 @@ export function ProductCard({
           </Button>
         ) : null}
         {onAdjustStock ? (
-          <Button type='button' size='sm' variant='outline' onClick={() => onAdjustStock(product)}>
+          <Button
+            type='button'
+            size='sm'
+            variant='outline'
+            onClick={() => onAdjustStock(product)}
+          >
             {t('adjustStock')}
           </Button>
         ) : null}

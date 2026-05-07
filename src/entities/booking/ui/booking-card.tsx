@@ -43,13 +43,19 @@ export function BookingCard({
   const locale = useLocale();
   const tTimeline = useTranslations('OwnerTimelinePage');
   const tBookingForm = useTranslations('BookingForm');
-  const colors = bookingStatusColors[status as BookingStatus] ?? bookingStatusColors[BOOKING_STATUS.PENDING as BookingStatus];
+  const colors =
+    bookingStatusColors[status as BookingStatus] ??
+    bookingStatusColors[BOOKING_STATUS.PENDING as BookingStatus];
 
   const statusIcon = useMemo(() => {
-    if (status === BOOKING_STATUS.CONFIRMED) return <CheckCircle2 className='size-3.5' />;
-    if (status === BOOKING_STATUS.CANCELLED) return <Settings className='size-3.5' />;
-    if (status === BOOKING_STATUS.PENDING) return <Clock className='size-3.5' />;
-    if (status === BOOKING_STATUS.MAINTENANCE) return <Settings className='size-3.5' />;
+    if (status === BOOKING_STATUS.CONFIRMED)
+      return <CheckCircle2 className='size-3.5' />;
+    if (status === BOOKING_STATUS.CANCELLED)
+      return <Settings className='size-3.5' />;
+    if (status === BOOKING_STATUS.PENDING)
+      return <Clock className='size-3.5' />;
+    if (status === BOOKING_STATUS.MAINTENANCE)
+      return <Settings className='size-3.5' />;
     return null;
   }, [status]);
 
@@ -66,7 +72,8 @@ export function BookingCard({
   const getStatusLabel = (status: BookingStatus) => {
     if (status === BOOKING_STATUS.CONFIRMED) return tBookingForm('confirmed');
     if (status === BOOKING_STATUS.CANCELLED) return tBookingForm('cancelled');
-    if (status === BOOKING_STATUS.MAINTENANCE) return tBookingForm('maintenance');
+    if (status === BOOKING_STATUS.MAINTENANCE)
+      return tBookingForm('maintenance');
     return tBookingForm('pending');
   };
 

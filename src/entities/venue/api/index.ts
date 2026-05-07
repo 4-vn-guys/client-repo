@@ -1,5 +1,6 @@
 export {
   fetchBranches,
+  fetchPublicBranches,
   fetchBranchById,
   createBranch,
   updateBranch,

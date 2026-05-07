@@ -156,12 +156,7 @@ export default function SettingsPage() {
   const tOwnerPages = useTranslations('OwnerPages');
   const tSettings = useTranslations('OwnerSettingsPage');
   const { setTheme } = useTheme();
-  const {
-    settings,
-    isLoading,
-    isSaving,
-    updateSettings,
-  } = useUserSettings();
+  const { settings, isLoading, isSaving, updateSettings } = useUserSettings();
   const [draftSettings, setDraftSettings] = useState<UpdateUserSettingsDto>({});
   const [saved, setSaved] = useState(false);
   const [isAutoSaving, setIsAutoSaving] = useState(false);
@@ -171,7 +166,9 @@ export default function SettingsPage() {
   const [twoFactorSetupQr, setTwoFactorSetupQr] = useState<string | null>(null);
   const [twoFactorSetupCode, setTwoFactorSetupCode] = useState('');
   const [twoFactorDisableCode, setTwoFactorDisableCode] = useState('');
-  const [twoFactorBackupCodes, setTwoFactorBackupCodes] = useState<string[]>([]);
+  const [twoFactorBackupCodes, setTwoFactorBackupCodes] = useState<string[]>(
+    []
+  );
   const [isTwoFactorSubmitting, setIsTwoFactorSubmitting] = useState(false);
   const autoSaveTimerRef = useRef<number | null>(null);
   const savedSettings = useMemo(() => toEditableSettings(settings), [settings]);
@@ -261,7 +258,9 @@ export default function SettingsPage() {
     if (!twoFactorSetupCode.trim()) return;
     try {
       setIsTwoFactorSubmitting(true);
-      const response = await authApi.verifyTwoFactorSetup(twoFactorSetupCode.trim());
+      const response = await authApi.verifyTwoFactorSetup(
+        twoFactorSetupCode.trim()
+      );
       setTwoFactorBackupCodes(response?.data?.backupCodes ?? []);
       handleDraftChange({ twoFactorEnabled: true });
       await updateSettings({ twoFactorEnabled: true });
@@ -315,7 +314,9 @@ export default function SettingsPage() {
       if (effectiveSettings.notifPush !== savedSettings.notifPush) {
         patch.notifPush = effectiveSettings.notifPush;
       }
-      if (effectiveSettings.twoFactorEnabled !== savedSettings.twoFactorEnabled) {
+      if (
+        effectiveSettings.twoFactorEnabled !== savedSettings.twoFactorEnabled
+      ) {
         patch.twoFactorEnabled = effectiveSettings.twoFactorEnabled;
       }
 
@@ -355,9 +356,10 @@ export default function SettingsPage() {
     handleSavedCue();
   };
 
-  const currentLanguage = languages.find(
-    language => language.code === effectiveSettings.languageCode
-  ) ?? languages[1];
+  const currentLanguage =
+    languages.find(
+      language => language.code === effectiveSettings.languageCode
+    ) ?? languages[1];
 
   const hasUnsavedChanges = settings
     ? JSON.stringify({
@@ -539,7 +541,9 @@ export default function SettingsPage() {
                         type='button'
                         onClick={() => handleThemePreview(option.value)}
                         onFocus={() => handleThemeHoverPreview(option.value)}
-                        onMouseEnter={() => handleThemeHoverPreview(option.value)}
+                        onMouseEnter={() =>
+                          handleThemeHoverPreview(option.value)
+                        }
                         onMouseLeave={handleThemeHoverLeave}
                         onBlur={handleThemeHoverLeave}
                         disabled={isLoading}
@@ -716,7 +720,8 @@ export default function SettingsPage() {
                   <SelectTrigger
                     className={cn(
                       'h-11 w-full rounded-xl px-3 transition-all duration-200 hover:border-violet-300 focus-visible:ring-violet-500/30',
-                      hasChangedSetting('languageCode') && 'ring-2 ring-violet-200'
+                      hasChangedSetting('languageCode') &&
+                        'ring-2 ring-violet-200'
                     )}
                   >
                     <span className='flex min-w-0 items-center gap-3'>
@@ -795,7 +800,8 @@ export default function SettingsPage() {
                   aria-invalid={!!recoveryEmailError}
                   className={cn(
                     'h-11 rounded-xl transition-all duration-200 hover:border-violet-300 focus-visible:ring-violet-500/30',
-                    hasChangedSetting('recoveryEmail') && 'ring-2 ring-violet-200'
+                    hasChangedSetting('recoveryEmail') &&
+                      'ring-2 ring-violet-200'
                   )}
                 />
                 {recoveryEmailError && (
@@ -819,7 +825,6 @@ export default function SettingsPage() {
               />
             </CardContent>
           </Card>
-
         </div>
       </div>
 
@@ -853,7 +858,10 @@ export default function SettingsPage() {
               onClick={handleSaveSettings}
               isLoading={isSaving}
               disabled={
-                !hasUnsavedChanges || isSaving || isAutoSaving || hasInvalidRecoveryEmail
+                !hasUnsavedChanges ||
+                isSaving ||
+                isAutoSaving ||
+                hasInvalidRecoveryEmail
               }
             >
               {saved ? tSettings('savedButton') : tSettings('saveButton')}
@@ -897,7 +905,9 @@ export default function SettingsPage() {
                   />
                   <Input
                     value={twoFactorSetupCode}
-                    onChange={event => setTwoFactorSetupCode(event.target.value)}
+                    onChange={event =>
+                      setTwoFactorSetupCode(event.target.value)
+                    }
                     placeholder={tSettings('twoFactorCodePlaceholder')}
                   />
                   <Button

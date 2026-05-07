@@ -53,7 +53,7 @@ export interface UpdateBookingDto {
 
 /**
  * Booking form data type
- */ 
+ */
 export interface BookingFormData {
   courtId: string;
   bookingTitle: string;

@@ -1,4 +1,5 @@
 import { ProShopDashboard } from '@/pages/owner/pro-shop/ui/pro-shop-dashboard';
+import { FeatureGate } from '@/features/authorization/ui/feature-gate';
 
 export default async function OwnerVenueProShopPage({
   params,
@@ -6,5 +7,9 @@ export default async function OwnerVenueProShopPage({
   params: Promise<{ venueId: string }>;
 }) {
   const { venueId } = await params;
-  return <ProShopDashboard branchId={venueId} />;
+  return (
+    <FeatureGate featureKey='pro_shop'>
+      <ProShopDashboard branchId={venueId} />
+    </FeatureGate>
+  );
 }

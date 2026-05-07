@@ -7,7 +7,7 @@ import { formatDateToYYYYMMDD } from '@/shared/lib/utils';
 /**
  * Role-aware hook for fetching bookings
  * Branches based on role to fetch appropriate data
- * 
+ *
  * @param query - Discriminated union query based on role
  * @returns Query result with courts and bookings
  */

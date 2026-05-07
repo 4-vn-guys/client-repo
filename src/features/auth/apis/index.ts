@@ -82,7 +82,9 @@ export const authApi = {
     return response.data;
   },
   verifyTwoFactorSetup: async (code: string) => {
-    const response = await axiosInstance.post('/auth/2fa/verify-setup', { code });
+    const response = await axiosInstance.post('/auth/2fa/verify-setup', {
+      code,
+    });
     return response.data;
   },
   disableTwoFactor: async (code: string) => {

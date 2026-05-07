@@ -85,8 +85,13 @@ export const CourtRow = memo(function CourtRow({
 
             return (
               <BookingCard
-                key={booking.slotId ?? `${booking.id}-${booking.courtId}-${booking.startTime}`}
-                customerName={booking.customerName ?? tTimeline('unknownCustomer')}
+                key={
+                  booking.slotId ??
+                  `${booking.id}-${booking.courtId}-${booking.startTime}`
+                }
+                customerName={
+                  booking.customerName ?? tTimeline('unknownCustomer')
+                }
                 duration={booking.duration ?? 1}
                 price={booking.price ?? 0}
                 status={booking.status}

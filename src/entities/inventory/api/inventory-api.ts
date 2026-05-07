@@ -7,7 +7,9 @@ export type PatchStockPayload = {
   note?: string;
 };
 
-export async function patchInventoryStock(payload: PatchStockPayload): Promise<unknown> {
+export async function patchInventoryStock(
+  payload: PatchStockPayload
+): Promise<unknown> {
   const response = await axiosInstance.patch<{
     success: boolean;
     data: unknown;

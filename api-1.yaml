@@ -20,12 +20,12 @@ paths:
     get:
       operationId: getIndex
       responses:
-        "200": {}
+        '200': {}
   /api/v1/health/:
     get:
       operationId: getApiV1Health
       responses:
-        "200": {}
+        '200': {}
   /api/v1/users/{id}:
     get:
       parameters:
@@ -42,7 +42,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200": {}
+        '200': {}
     delete:
       parameters:
         - schema:
@@ -58,7 +58,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200": {}
+        '200': {}
   /api/v1/users/:
     get:
       parameters:
@@ -102,7 +102,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200": {}
+        '200': {}
     post:
       parameters: []
       operationId: postApiV1Users
@@ -130,7 +130,8 @@ paths:
                   minLength: 8
                   maxLength: 16
                   pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
-                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                  error:
+                    Password must be 8-16 characters long, include uppercase and lowercase
                     letters, a number, and a special character
                   type: string
                 userName:
@@ -152,7 +153,8 @@ paths:
                   minLength: 8
                   maxLength: 16
                   pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
-                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                  error:
+                    Password must be 8-16 characters long, include uppercase and lowercase
                     letters, a number, and a special character
                   type: string
                 userName:
@@ -174,14 +176,15 @@ paths:
                   minLength: 8
                   maxLength: 16
                   pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
-                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                  error:
+                    Password must be 8-16 characters long, include uppercase and lowercase
                     letters, a number, and a special character
                   type: string
                 userName:
                   maxLength: 50
                   type: string
       responses:
-        "200": {}
+        '200': {}
   /api/v1/auth/login/email:
     post:
       parameters: []
@@ -207,7 +210,8 @@ paths:
                   minLength: 8
                   maxLength: 16
                   pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
-                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                  error:
+                    Password must be 8-16 characters long, include uppercase and lowercase
                     letters, a number, and a special character
                   type: string
               additionalProperties: false
@@ -226,7 +230,8 @@ paths:
                   minLength: 8
                   maxLength: 16
                   pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
-                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                  error:
+                    Password must be 8-16 characters long, include uppercase and lowercase
                     letters, a number, and a special character
                   type: string
               additionalProperties: false
@@ -245,12 +250,13 @@ paths:
                   minLength: 8
                   maxLength: 16
                   pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
-                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                  error:
+                    Password must be 8-16 characters long, include uppercase and lowercase
                     letters, a number, and a special character
                   type: string
               additionalProperties: false
       responses:
-        "200": {}
+        '200': {}
   /api/v1/auth/login/google:
     post:
       parameters: []
@@ -272,7 +278,7 @@ paths:
                   type: string
               additionalProperties: false
       responses:
-        "200": {}
+        '200': {}
   /api/v1/auth/login/phone-number:
     post:
       parameters: []
@@ -298,7 +304,8 @@ paths:
                   minLength: 8
                   maxLength: 16
                   pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
-                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                  error:
+                    Password must be 8-16 characters long, include uppercase and lowercase
                     letters, a number, and a special character
                   type: string
           multipart/form-data:
@@ -316,7 +323,8 @@ paths:
                   minLength: 8
                   maxLength: 16
                   pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
-                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                  error:
+                    Password must be 8-16 characters long, include uppercase and lowercase
                     letters, a number, and a special character
                   type: string
           text/plain:
@@ -334,11 +342,12 @@ paths:
                   minLength: 8
                   maxLength: 16
                   pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
-                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                  error:
+                    Password must be 8-16 characters long, include uppercase and lowercase
                     letters, a number, and a special character
                   type: string
       responses:
-        "200": {}
+        '200': {}
   /api/v1/auth/refresh-token:
     post:
       parameters: []
@@ -377,7 +386,7 @@ paths:
                   maxLength: 255
                   type: string
       responses:
-        "200": {}
+        '200': {}
   /api/v1/auth/register:
     post:
       parameters: []
@@ -407,7 +416,8 @@ paths:
                   minLength: 8
                   maxLength: 16
                   pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
-                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                  error:
+                    Password must be 8-16 characters long, include uppercase and lowercase
                     letters, a number, and a special character
                   type: string
                 userName:
@@ -435,7 +445,8 @@ paths:
                   minLength: 8
                   maxLength: 16
                   pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
-                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                  error:
+                    Password must be 8-16 characters long, include uppercase and lowercase
                     letters, a number, and a special character
                   type: string
                 userName:
@@ -463,7 +474,8 @@ paths:
                   minLength: 8
                   maxLength: 16
                   pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
-                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                  error:
+                    Password must be 8-16 characters long, include uppercase and lowercase
                     letters, a number, and a special character
                   type: string
                 userName:
@@ -473,7 +485,7 @@ paths:
                   error: Username must be between 5 and 50 characters and cannot be empty
                   type: string
       responses:
-        "200": {}
+        '200': {}
   /api/v1/auth/me:
     get:
       operationId: getApiV1AuthMe
@@ -483,7 +495,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200": {}
+        '200': {}
     patch:
       parameters: []
       operationId: patchApiV1AuthMe
@@ -538,7 +550,7 @@ paths:
                   error: Phone number must start with '0' or '+84' followed by 9 digits
                   type: string
       responses:
-        "200": {}
+        '200': {}
   /api/v1/auth/change-password:
     put:
       parameters: []
@@ -563,14 +575,16 @@ paths:
                   minLength: 8
                   maxLength: 16
                   pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
-                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                  error:
+                    Password must be 8-16 characters long, include uppercase and lowercase
                     letters, a number, and a special character
                   type: string
                 newPassword:
                   minLength: 8
                   maxLength: 16
                   pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
-                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                  error:
+                    Password must be 8-16 characters long, include uppercase and lowercase
                     letters, a number, and a special character
                   type: string
                 refreshToken:
@@ -587,14 +601,16 @@ paths:
                   minLength: 8
                   maxLength: 16
                   pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
-                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                  error:
+                    Password must be 8-16 characters long, include uppercase and lowercase
                     letters, a number, and a special character
                   type: string
                 newPassword:
                   minLength: 8
                   maxLength: 16
                   pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
-                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                  error:
+                    Password must be 8-16 characters long, include uppercase and lowercase
                     letters, a number, and a special character
                   type: string
                 refreshToken:
@@ -611,20 +627,22 @@ paths:
                   minLength: 8
                   maxLength: 16
                   pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
-                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                  error:
+                    Password must be 8-16 characters long, include uppercase and lowercase
                     letters, a number, and a special character
                   type: string
                 newPassword:
                   minLength: 8
                   maxLength: 16
                   pattern: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$
-                  error: Password must be 8-16 characters long, include uppercase and lowercase
+                  error:
+                    Password must be 8-16 characters long, include uppercase and lowercase
                     letters, a number, and a special character
                   type: string
                 refreshToken:
                   type: string
       responses:
-        "200": {}
+        '200': {}
   /api/v1/branches/:
     get:
       parameters:
@@ -664,7 +682,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200": {}
+        '200': {}
     post:
       parameters: []
       operationId: postApiV1Branches
@@ -863,7 +881,7 @@ paths:
                     format: uuid
                     type: string
       responses:
-        "200": {}
+        '200': {}
   /api/v1/branches/{id}:
     get:
       parameters:
@@ -881,7 +899,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200": {}
+        '200': {}
     patch:
       parameters:
         - schema:
@@ -1051,7 +1069,7 @@ paths:
                   error: Must be a valid UUID
                   type: string
       responses:
-        "200": {}
+        '200': {}
     delete:
       parameters:
         - schema:
@@ -1068,7 +1086,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200": {}
+        '200': {}
   /api/v1/branches/owner:
     get:
       parameters:
@@ -1101,7 +1119,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200": {}
+        '200': {}
   /api/v1/files/:
     post:
       parameters: []
@@ -1152,7 +1170,7 @@ paths:
                   error: File must not exceed 10MB
                   format: binary
       responses:
-        "200": {}
+        '200': {}
   /api/v1/bookings/:
     post:
       parameters: []
@@ -1269,7 +1287,7 @@ paths:
                   error: Note must not exceed 500 characters
                   type: string
       responses:
-        "200": {}
+        '200': {}
     get:
       parameters:
         - schema:
@@ -1317,7 +1335,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200": {}
+        '200': {}
   /api/v1/bookings/branch/{branchId}:
     get:
       parameters:
@@ -1345,7 +1363,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200": {}
+        '200': {}
   /api/v1/bookings/court/{courtId}:
     get:
       parameters:
@@ -1373,7 +1391,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200": {}
+        '200': {}
   /api/v1/bookings/my-bookings:
     get:
       parameters:
@@ -1416,7 +1434,7 @@ paths:
       summary: Get list booking of user
       description: Get list booking of user
       responses:
-        "200": {}
+        '200': {}
   /api/v1/bookings/{id}:
     get:
       parameters:
@@ -1434,7 +1452,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200": {}
+        '200': {}
     patch:
       parameters:
         - schema:
@@ -1598,7 +1616,7 @@ paths:
                       type: string
               additionalProperties: false
       responses:
-        "200": {}
+        '200': {}
     delete:
       parameters:
         - schema:
@@ -1615,4 +1633,4 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200": {}
+        '200': {}

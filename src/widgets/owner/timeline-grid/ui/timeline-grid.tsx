@@ -1,19 +1,16 @@
 'use client';
 
-import {
-  memo,
-  useMemo,
-  useCallback,
-  useRef,
-  useLayoutEffect,
-} from 'react';
+import { memo, useMemo, useCallback, useRef, useLayoutEffect } from 'react';
 import type { Court } from '@/entities/court';
 import type { Booking } from '@/entities/booking';
 import { TimeHeader } from './time-header';
 import { CourtRow } from './court-row';
 import { TimelineLoadingSkeleton } from '@/src/pages/owner/timeline/ui/timeline-loading-skeleton';
 import { formatDateToYYYYMMDD } from '@/shared/lib/utils';
-import { useLiveNow, useTimelineNowIndicator } from '../lib/use-timeline-now-indicator';
+import {
+  useLiveNow,
+  useTimelineNowIndicator,
+} from '../lib/use-timeline-now-indicator';
 import { useTranslations } from 'next-intl';
 
 interface TimelineGridProps {
@@ -46,7 +43,7 @@ export const TimelineGrid = memo(function TimelineGrid({
   const bookingsByCourtId = useMemo(() => {
     const map = new Map<string, Booking[]>();
 
-    bookings.forEach((booking) => {
+    bookings.forEach(booking => {
       const courtBookings = map.get(booking.courtId) || [];
       courtBookings.push(booking);
       map.set(booking.courtId, courtBookings);
@@ -59,7 +56,7 @@ export const TimelineGrid = memo(function TimelineGrid({
     (courtId: string): Booking[] => {
       return bookingsByCourtId.get(courtId) || [];
     },
-    [bookingsByCourtId],
+    [bookingsByCourtId]
   );
 
   useLayoutEffect(() => {
@@ -87,7 +84,7 @@ export const TimelineGrid = memo(function TimelineGrid({
         <div className='sticky top-0 z-30 border-b border-red-200/80 bg-red-50 px-3 py-2.5 shadow-sm backdrop-blur-[2px] dark:border-red-900/50 dark:bg-red-950/90'>
           <time
             dateTime={now.toISOString()}
-            className='font-mono text-sm font-semibold tabular-nums tracking-tight text-red-800 md:text-base dark:text-red-100'
+            className='font-mono text-sm font-semibold tracking-tight text-red-800 tabular-nums md:text-base dark:text-red-100'
           >
             {tTimeline('currentTimeBanner', { time: timeLabel })}
           </time>
@@ -105,14 +102,14 @@ export const TimelineGrid = memo(function TimelineGrid({
               }}
               aria-hidden
             >
-              <div className='size-2.5 shrink-0 rounded-full border-2 border-red-600 bg-background shadow-md dark:border-red-500' />
+              <div className='bg-background size-2.5 shrink-0 rounded-full border-2 border-red-600 shadow-md dark:border-red-500' />
               <div className='min-h-0 w-px flex-1 bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.65)] dark:bg-red-500' />
             </div>
           )}
 
           <TimeHeader />
           <div className='divide-y'>
-            {courts.map((court) => (
+            {courts.map(court => (
               <MemoizedCourtRow
                 key={court.id}
                 court={court}

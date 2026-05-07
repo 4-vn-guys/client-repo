@@ -87,12 +87,16 @@ export const CourtRow = memo(function CourtRow({
             // For desktop, we'll use CSS to scale proportionally
             const desktopScale = 80 / 60; // desktop width / mobile width
 
-            const slotKey = booking.slotId ?? `${booking.id}-${booking.courtId}-${booking.startTime}`;
+            const slotKey =
+              booking.slotId ??
+              `${booking.id}-${booking.courtId}-${booking.startTime}`;
 
             return (
               <BookingCard
                 key={slotKey}
-                customerName={booking.customerName ?? tTimeline('unknownCustomer')}
+                customerName={
+                  booking.customerName ?? tTimeline('unknownCustomer')
+                }
                 duration={booking.duration ?? 1}
                 price={booking.price ?? 0}
                 status={booking.status}

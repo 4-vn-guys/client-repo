@@ -16,6 +16,8 @@ export interface Branch {
   depositEnabled?: boolean;
   depositType?: 'percent' | 'fixed';
   depositValue?: number;
+  /** Null/undefined = use server default minutes for deposit transfer window */
+  depositHoldMinutes?: number | null;
 }
 
 export interface BranchCourt {
@@ -43,6 +45,7 @@ export type CreateBranchDto = {
   depositEnabled?: boolean;
   depositType?: 'percent' | 'fixed';
   depositValue?: number;
+  depositHoldMinutes?: number | null;
 };
 
 export type UpdateBranchDto = Partial<
@@ -60,6 +63,7 @@ export type UpdateBranchDto = Partial<
     | 'depositEnabled'
     | 'depositType'
     | 'depositValue'
+    | 'depositHoldMinutes'
   >
 >;
 
@@ -69,6 +73,8 @@ export type BranchDepositRevenueResponse = {
     depositEnabled: boolean;
     depositType: 'percent' | 'fixed';
     depositValue: number;
+    depositHoldMinutes: number | null;
+    effectiveDepositHoldMinutes: number;
   };
   summary: {
     depositsCollected: number;

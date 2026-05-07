@@ -95,24 +95,37 @@ export function EditProductDialog({
         <DialogHeader>
           <DialogTitle>{t('editProductTitle')}</DialogTitle>
         </DialogHeader>
-        <p className='text-muted-foreground text-xs leading-relaxed'>{t('editProductHint')}</p>
+        <p className='text-muted-foreground text-xs leading-relaxed'>
+          {t('editProductHint')}
+        </p>
 
         <Field>
           <FieldLabel>{t('fieldName')}</FieldLabel>
-          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('fieldNamePlaceholder')} />
+          <Input
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder={t('fieldNamePlaceholder')}
+          />
         </Field>
         <Field>
           <FieldLabel>{t('fieldSku')}</FieldLabel>
-          <Input value={sku} onChange={(e) => setSku(e.target.value)} placeholder={t('fieldSkuPlaceholder')} />
+          <Input
+            value={sku}
+            onChange={e => setSku(e.target.value)}
+            placeholder={t('fieldSkuPlaceholder')}
+          />
         </Field>
         <Field>
           <FieldLabel>{t('fieldCategory')}</FieldLabel>
-          <Select value={category} onValueChange={(v) => setCategory(v as ProductCategory)}>
+          <Select
+            value={category}
+            onValueChange={v => setCategory(v as ProductCategory)}
+          >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {CATEGORIES.map((c) => (
+              {CATEGORIES.map(c => (
                 <SelectItem key={c} value={c}>
                   {tQ(c)}
                 </SelectItem>
@@ -127,15 +140,23 @@ export function EditProductDialog({
             min={0}
             step='0.01'
             value={unitPrice}
-            onChange={(e) => setUnitPrice(e.target.value)}
+            onChange={e => setUnitPrice(e.target.value)}
           />
         </Field>
 
         <DialogFooter>
-          <Button type='button' variant='outline' onClick={() => onOpenChange(false)}>
+          <Button
+            type='button'
+            variant='outline'
+            onClick={() => onOpenChange(false)}
+          >
             {t('cancel')}
           </Button>
-          <Button type='button' onClick={submit} disabled={mutation.isPending || !product}>
+          <Button
+            type='button'
+            onClick={submit}
+            disabled={mutation.isPending || !product}
+          >
             {mutation.isPending ? t('saving') : t('saveProduct')}
           </Button>
         </DialogFooter>

@@ -22,13 +22,16 @@ import { SPORTS } from '@/src/entities/sport';
 import { Search } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 
 export function SearchBar() {
   const tCommon = useTranslations('Common');
   const tSearchBar = useTranslations('HomePage.SearchBar');
+  const router = useRouter();
 
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [searchText, setSearchText] = useState('');
 
   return (
     <Card className='shadow-accent-foreground mx-auto max-w-2xl space-y-4 rounded-2xl bg-white shadow-2xl'>
@@ -77,6 +80,8 @@ export function SearchBar() {
               placeholder={tSearchBar('locationPlaceholder')}
               className='text-primary h-full border-0 px-4 py-6 text-sm shadow-xs'
               aria-label={tSearchBar('searchLocationAria')}
+              value={searchText}
+              onChange={event => setSearchText(event.target.value)}
             />
           </div>
           {/* Date & Time */}
@@ -134,6 +139,17 @@ export function SearchBar() {
           icon={<Search />}
           iconPlacement='left'
           size='xl'
+          onClick={() => {
+            const params = new URLSearchParams();
+            if (searchText.trim()) {
+              params.set('search', searchText.trim());
+            }
+            if (date) {
+              params.set('date', date.toISOString().slice(0, 10));
+            }
+            const query = params.toString();
+            router.push(query ? `/find-court?${query}` : '/find-court');
+          }}
         >
           {tCommon('searchLabel')}
         </Button>

@@ -54,9 +54,8 @@ export const useUserSettings = () => {
     onMutate: async patch => {
       await queryClient.cancelQueries({ queryKey: userSettingsQueryKey });
 
-      const previousSettings = queryClient.getQueryData<UserSettings>(
-        userSettingsQueryKey
-      );
+      const previousSettings =
+        queryClient.getQueryData<UserSettings>(userSettingsQueryKey);
 
       if (previousSettings) {
         const optimisticSettings = { ...previousSettings, ...patch };

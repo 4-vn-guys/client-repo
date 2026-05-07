@@ -2,6 +2,8 @@ export type DepositPolicyInput = {
   depositEnabled: boolean;
   depositType: 'percent' | 'fixed';
   depositValue: number;
+  /** Minutes for player deposit window; omit when unknown */
+  depositHoldMinutes?: number | null;
 };
 
 function round2(n: number): number {
@@ -10,7 +12,7 @@ function round2(n: number): number {
 
 export function computeDepositAmount(
   policy: DepositPolicyInput | null | undefined,
-  totalPrice: number,
+  totalPrice: number
 ): { deposit: number; balance: number } {
   if (!policy?.depositEnabled || totalPrice <= 0) {
     return { deposit: 0, balance: round2(totalPrice) };

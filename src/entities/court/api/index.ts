@@ -17,7 +17,9 @@ export type CreateCourtDto = {
 
 export type UpdateCourtDto = Partial<Omit<CreateCourtDto, 'branchId'>>;
 
-export const fetchCourtsByBranchId = async (branchId: string): Promise<Court[]> => {
+export const fetchCourtsByBranchId = async (
+  branchId: string
+): Promise<Court[]> => {
   const response = await axiosInstance.get<ApiResponse<Court[]>>(
     `/courts/branch/${branchId}`
   );
@@ -30,7 +32,10 @@ export const fetchCourtsByBranchId = async (branchId: string): Promise<Court[]> 
 };
 
 export const createCourt = async (data: CreateCourtDto): Promise<Court> => {
-  const response = await axiosInstance.post<ApiResponse<Court>>('/courts/', data);
+  const response = await axiosInstance.post<ApiResponse<Court>>(
+    '/courts/',
+    data
+  );
 
   if (!response.data.success) {
     throw new Error(response.data.message || 'Failed to create court');
@@ -56,7 +61,9 @@ export const updateCourt = async (
 };
 
 export const deleteCourt = async (id: string): Promise<void> => {
-  const response = await axiosInstance.delete<ApiResponse<null>>(`/courts/${id}`);
+  const response = await axiosInstance.delete<ApiResponse<null>>(
+    `/courts/${id}`
+  );
 
   if (!response.data.success) {
     throw new Error(response.data.message || 'Failed to delete court');

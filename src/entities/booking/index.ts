@@ -24,7 +24,12 @@ export type {
   CreateBookingDetailDto,
   UpdateBookingDto,
 } from './model/dto';
-export type { BookingFilters, BookingStatus, BookingPaymentStatus, PaginatedResponse } from './model/filters';
+export type {
+  BookingFilters,
+  BookingStatus,
+  BookingPaymentStatus,
+  PaginatedResponse,
+} from './model/filters';
 
 // Validation
 export { useBookingFormSchema } from './model/validation';

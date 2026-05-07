@@ -91,7 +91,10 @@ export const API_STATUS_PAYMENT_MAP: Record<string, BookingPaymentStatus> = {
 export const toApiStatus = (
   s: BookingStatus
 ): 'Pending' | 'Confirmed' | 'Cancelled' | 'Maintenance' => {
-  const map: Record<BookingStatus, 'Pending' | 'Confirmed' | 'Cancelled' | 'Maintenance'> = {
+  const map: Record<
+    BookingStatus,
+    'Pending' | 'Confirmed' | 'Cancelled' | 'Maintenance'
+  > = {
     pending: 'Pending',
     confirmed: 'Confirmed',
     cancelled: 'Cancelled',

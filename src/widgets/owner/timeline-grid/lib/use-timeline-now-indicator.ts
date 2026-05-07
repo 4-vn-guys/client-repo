@@ -33,8 +33,14 @@ export function useTimelineDimensions() {
     const apply = () => {
       setDims(
         mq.matches
-          ? { labelWidth: TIMELINE_LABEL_WIDTH.md, slotWidth: TIMELINE_CONFIG.slotWidth }
-          : { labelWidth: TIMELINE_LABEL_WIDTH.sm, slotWidth: TIMELINE_CONFIG.mobileSlotWidth },
+          ? {
+              labelWidth: TIMELINE_LABEL_WIDTH.md,
+              slotWidth: TIMELINE_CONFIG.slotWidth,
+            }
+          : {
+              labelWidth: TIMELINE_LABEL_WIDTH.sm,
+              slotWidth: TIMELINE_CONFIG.mobileSlotWidth,
+            }
       );
     };
     apply();
@@ -48,7 +54,7 @@ export function useTimelineDimensions() {
 export function useTimelineNowIndicator(selectedDate: Date, now: Date) {
   const viewingToday = useMemo(
     () => formatDateToYYYYMMDD(selectedDate) === formatDateToYYYYMMDD(now),
-    [selectedDate, now],
+    [selectedDate, now]
   );
 
   const dims = useTimelineDimensions();

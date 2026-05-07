@@ -1,1 +1,4 @@
-export { QuickOrderSidebar, type QuickOrderMode } from './ui/quick-order-sidebar';
+export {
+  QuickOrderSidebar,
+  type QuickOrderMode,
+} from './ui/quick-order-sidebar';

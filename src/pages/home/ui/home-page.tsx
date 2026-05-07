@@ -246,9 +246,7 @@ export async function HomePage() {
           <h2 className='mb-4 text-3xl font-bold md:text-4xl'>
             {tHomePage('ctaTitle')}
           </h2>
-          <p className='mb-8 text-xl'>
-            {tHomePage('ctaDescription')}
-          </p>
+          <p className='mb-8 text-xl'>{tHomePage('ctaDescription')}</p>
           <div className='flex flex-col justify-center gap-4 sm:flex-row'>
             <Button size='lg' className='px-8 py-4'>
               {tHomePage('findCourtsNearMe')}

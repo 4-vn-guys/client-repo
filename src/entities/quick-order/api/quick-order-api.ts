@@ -1,6 +1,10 @@
 import axios from 'axios';
 import { axiosInstance } from '@/shared/lib/axios';
-import type { CatalogProduct, GoodsOrder, ProductCategory } from '../model/types';
+import type {
+  CatalogProduct,
+  GoodsOrder,
+  ProductCategory,
+} from '../model/types';
 
 type ApiOk<T> = { success: boolean; data: T; message?: string };
 
@@ -35,9 +39,11 @@ export type ProShopImportResult = {
   errors: Array<{ row: number; message: string }>;
 };
 
-export async function fetchBranchProducts(branchId: string): Promise<CatalogProduct[]> {
+export async function fetchBranchProducts(
+  branchId: string
+): Promise<CatalogProduct[]> {
   const response = await axiosInstance.get<ApiOk<CatalogProduct[]>>(
-    `/products/branch/${branchId}`,
+    `/products/branch/${branchId}`
   );
   if (!response.data.success || !response.data.data) {
     throw new Error(response.data.message || 'Failed to load catalog');
@@ -45,36 +51,49 @@ export async function fetchBranchProducts(branchId: string): Promise<CatalogProd
   return response.data.data;
 }
 
-export async function createBranchProduct(payload: CreateBranchProductPayload): Promise<CatalogProduct> {
-  const response = await axiosInstance.post<ApiOk<CatalogProduct>>('/products', payload);
+export async function createBranchProduct(
+  payload: CreateBranchProductPayload
+): Promise<CatalogProduct> {
+  const response = await axiosInstance.post<ApiOk<CatalogProduct>>(
+    '/products',
+    payload
+  );
   if (!response.data.success || response.data.data === undefined) {
     throw new Error(response.data.message || 'Failed to create product');
   }
   return response.data.data;
 }
 
-export async function updateBranchProduct(payload: UpdateBranchProductPayload): Promise<CatalogProduct> {
+export async function updateBranchProduct(
+  payload: UpdateBranchProductPayload
+): Promise<CatalogProduct> {
   const { productId, ...body } = payload;
-  const response = await axiosInstance.patch<ApiOk<CatalogProduct>>(`/products/${productId}`, body);
+  const response = await axiosInstance.patch<ApiOk<CatalogProduct>>(
+    `/products/${productId}`,
+    body
+  );
   if (!response.data.success || response.data.data === undefined) {
     throw new Error(response.data.message || 'Failed to update product');
   }
   return response.data.data;
 }
 
-export async function deleteBranchProduct(payload: DeleteBranchProductPayload): Promise<void> {
+export async function deleteBranchProduct(
+  payload: DeleteBranchProductPayload
+): Promise<void> {
   const { productId, branchId } = payload;
   try {
-    const response = await axiosInstance.delete<ApiOk<{ id: string; deactivated: true }>>(
-      `/products/${productId}`,
-      { data: { branchId } },
-    );
+    const response = await axiosInstance.delete<
+      ApiOk<{ id: string; deactivated: true }>
+    >(`/products/${productId}`, { data: { branchId } });
     if (!response.data.success) {
       throw new Error(response.data.message || 'Failed to remove product');
     }
   } catch (e) {
     if (axios.isAxiosError(e)) {
-      const d = e.response?.data as { error?: { message?: string }; message?: string } | undefined;
+      const d = e.response?.data as
+        | { error?: { message?: string }; message?: string }
+        | undefined;
       const msg = d?.error?.message ?? d?.message;
       if (msg) throw new Error(msg);
     }
@@ -82,10 +101,15 @@ export async function deleteBranchProduct(payload: DeleteBranchProductPayload): 
   }
 }
 
-export async function downloadProShopImportTemplate(branchId: string): Promise<void> {
-  const response = await axiosInstance.get(`/products/branch/${branchId}/import-template`, {
-    responseType: 'blob',
-  });
+export async function downloadProShopImportTemplate(
+  branchId: string
+): Promise<void> {
+  const response = await axiosInstance.get(
+    `/products/branch/${branchId}/import-template`,
+    {
+      responseType: 'blob',
+    }
+  );
   const blob =
     response.data instanceof Blob
       ? response.data
@@ -100,7 +124,10 @@ export async function downloadProShopImportTemplate(branchId: string): Promise<v
   URL.revokeObjectURL(url);
 }
 
-export async function importProShopExcel(branchId: string, file: File): Promise<ProShopImportResult> {
+export async function importProShopExcel(
+  branchId: string,
+  file: File
+): Promise<ProShopImportResult> {
   const formData = new FormData();
   formData.append('file', file);
   const response = await axiosInstance.post<ApiOk<ProShopImportResult>>(
@@ -108,7 +135,7 @@ export async function importProShopExcel(branchId: string, file: File): Promise<
     formData,
     {
       headers: { 'Content-Type': 'multipart/form-data' },
-    },
+    }
   );
   if (!response.data.success || response.data.data === undefined) {
     throw new Error(response.data.message || 'Import failed');
@@ -125,17 +152,24 @@ export type CreateGoodsOrderPayload = {
   statusPayment?: 'paid' | 'unpaid';
 };
 
-export async function createGoodsOrder(payload: CreateGoodsOrderPayload): Promise<GoodsOrder> {
-  const response = await axiosInstance.post<ApiOk<GoodsOrder>>('/goods-orders/', payload);
+export async function createGoodsOrder(
+  payload: CreateGoodsOrderPayload
+): Promise<GoodsOrder> {
+  const response = await axiosInstance.post<ApiOk<GoodsOrder>>(
+    '/goods-orders/',
+    payload
+  );
   if (!response.data.success || !response.data.data) {
     throw new Error(response.data.message || 'Failed to create order');
   }
   return response.data.data;
 }
 
-export async function fetchGoodsOrdersByBranch(branchId: string): Promise<GoodsOrder[]> {
+export async function fetchGoodsOrdersByBranch(
+  branchId: string
+): Promise<GoodsOrder[]> {
   const response = await axiosInstance.get<ApiOk<GoodsOrder[]>>(
-    `/goods-orders/branch/${branchId}`,
+    `/goods-orders/branch/${branchId}`
   );
   if (!response.data.success || !response.data.data) {
     throw new Error(response.data.message || 'Failed to load orders');

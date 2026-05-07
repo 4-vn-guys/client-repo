@@ -24,6 +24,12 @@ export const useAuth = () => {
     setLoading,
   } = useAuthStore();
 
+  const getPostLoginPath = (role?: string) => {
+    if (role === 'admin') return '/admin';
+    if (role === 'owner') return '/owner/branches';
+    return '/find-court';
+  };
+
   /**
    * Login with credentials
    */
@@ -83,7 +89,7 @@ export const useAuth = () => {
           );
 
           toast.success('Login successful!');
-          router.push('/owner/branches');
+          router.push(getPostLoginPath(role));
           return { success: true };
         }
       } else {
@@ -92,10 +98,35 @@ export const useAuth = () => {
       }
     } catch (error) {
       // Handle nested error structure: { success: false, error: { message: "..." } }
-      const message = 
-        (error && typeof error === 'object' && 'response' in error && error.response && typeof error.response === 'object' && 'data' in error.response && error.response.data && typeof error.response.data === 'object' && 'error' in error.response.data && error.response.data.error && typeof error.response.data.error === 'object' && 'message' in error.response.data.error && typeof error.response.data.error.message === 'string' ? error.response.data.error.message : null) ||
-        (error && typeof error === 'object' && 'response' in error && error.response && typeof error.response === 'object' && 'data' in error.response && error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data && typeof error.response.data.message === 'string' ? error.response.data.message : null) ||
-        "Login failed";
+      const message =
+        (error &&
+        typeof error === 'object' &&
+        'response' in error &&
+        error.response &&
+        typeof error.response === 'object' &&
+        'data' in error.response &&
+        error.response.data &&
+        typeof error.response.data === 'object' &&
+        'error' in error.response.data &&
+        error.response.data.error &&
+        typeof error.response.data.error === 'object' &&
+        'message' in error.response.data.error &&
+        typeof error.response.data.error.message === 'string'
+          ? error.response.data.error.message
+          : null) ||
+        (error &&
+        typeof error === 'object' &&
+        'response' in error &&
+        error.response &&
+        typeof error.response === 'object' &&
+        'data' in error.response &&
+        error.response.data &&
+        typeof error.response.data === 'object' &&
+        'message' in error.response.data &&
+        typeof error.response.data.message === 'string'
+          ? error.response.data.message
+          : null) ||
+        'Login failed';
       toast.error(message);
       return { success: false, error: message };
     } finally {
@@ -151,7 +182,7 @@ export const useAuth = () => {
       );
 
       toast.success('2FA verified. Login successful!');
-      router.push('/owner/branches');
+      router.push(getPostLoginPath(role));
       return { success: true };
     } catch (error) {
       const message =
@@ -169,8 +200,7 @@ export const useAuth = () => {
         'message' in error.response.data.error &&
         typeof error.response.data.error.message === 'string'
           ? error.response.data.error.message
-          : null) ||
-        '2FA verification failed';
+          : null) || '2FA verification failed';
       toast.error(message);
       return { success: false, error: message };
     } finally {
@@ -228,7 +258,7 @@ export const useAuth = () => {
           );
 
           toast.success('Login successful!');
-          router.push('/owner/branches');
+          router.push(getPostLoginPath(role));
           return { success: true };
         }
       }

@@ -67,9 +67,7 @@ export function PerformanceCard({
                 rating === 'poor' && 'bg-red-500'
               )}
             />
-            <span className='text-xs capitalize'>
-              {ratingLabel}
-            </span>
+            <span className='text-xs capitalize'>{ratingLabel}</span>
           </div>
         </div>
       </CardContent>

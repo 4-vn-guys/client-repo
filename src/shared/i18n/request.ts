@@ -11,9 +11,10 @@ export const isLocale = (locale: string): locale is Locale =>
 export default getRequestConfig(async () => {
   const store = await cookies();
   const preferredLocale = store.get('locale')?.value;
-  const locale = preferredLocale && isLocale(preferredLocale)
-    ? preferredLocale
-    : defaultLocale;
+  const locale =
+    preferredLocale && isLocale(preferredLocale)
+      ? preferredLocale
+      : defaultLocale;
 
   return {
     locale,

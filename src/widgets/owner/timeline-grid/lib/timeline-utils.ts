@@ -56,7 +56,7 @@ export function calculateBookingPosition(
 export function getNowOffsetWithinTimeline(
   now: Date,
   slotWidth: number,
-  intervalMinutes: number = TIMELINE_CONFIG.intervalMinutes,
+  intervalMinutes: number = TIMELINE_CONFIG.intervalMinutes
 ): number | null {
   const totalSeconds =
     now.getHours() * 3600 +

@@ -511,7 +511,11 @@
     "saving": "Đang lưu…",
     "policySaved": "Đã lưu cài đặt cọc",
     "policySaveFailed": "Không thể lưu cài đặt cọc",
-    "invalidDepositValue": "Nhập số hợp lệ cho mức cọc"
+    "invalidDepositValue": "Nhập số hợp lệ cho mức cọc",
+    "depositHoldMinutesLabel": "Thời gian chờ thanh toán cọc (phút)",
+    "depositHoldMinutesHint": "Thời gian người chơi phải chuyển khoản cọc trước khi hết hạn. Để trống để dùng mặc định máy chủ (DEPOSIT_HOLD_MINUTES). Cho phép: 5–1440.",
+    "depositHoldEffective": "Thời gian đang áp dụng: {minutes} phút",
+    "invalidDepositHoldMinutes": "Nhập số nguyên từ 5 đến 1440, hoặc để trống để dùng mặc định"
   },
   "CourtManagement": {
     "title": "Sân của chi nhánh",

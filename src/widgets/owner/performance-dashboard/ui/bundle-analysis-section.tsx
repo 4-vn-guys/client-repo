@@ -26,9 +26,7 @@ export function BundleAnalysisSection() {
     <div className='space-y-4'>
       <div className='flex items-center gap-2'>
         <Package className='text-primary h-5 w-5' />
-        <h2 className='text-2xl font-bold'>
-          {tPerformance('bundleAnalysis')}
-        </h2>
+        <h2 className='text-2xl font-bold'>{tPerformance('bundleAnalysis')}</h2>
       </div>
       <p className='text-muted-foreground text-sm'>
         {tPerformance('bundleDescription')}

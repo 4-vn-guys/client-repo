@@ -35,7 +35,11 @@ interface AddProductDialogProps {
   branchId: string;
 }
 
-export function AddProductDialog({ open, onOpenChange, branchId }: AddProductDialogProps) {
+export function AddProductDialog({
+  open,
+  onOpenChange,
+  branchId,
+}: AddProductDialogProps) {
   const t = useTranslations('ProShopPage');
   const tQ = useTranslations('QuickOrder.category');
   const qc = useQueryClient();
@@ -54,7 +58,8 @@ export function AddProductDialog({ open, onOpenChange, branchId }: AddProductDia
   };
 
   const mutation = useMutation({
-    mutationFn: (payload: CreateBranchProductPayload) => createBranchProduct(payload),
+    mutationFn: (payload: CreateBranchProductPayload) =>
+      createBranchProduct(payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['branch-products', branchId] });
       toast.success(t('productCreated'));
@@ -92,7 +97,7 @@ export function AddProductDialog({ open, onOpenChange, branchId }: AddProductDia
   return (
     <Dialog
       open={open}
-      onOpenChange={(o) => {
+      onOpenChange={o => {
         if (!o) reset();
         onOpenChange(o);
       }}
@@ -101,24 +106,37 @@ export function AddProductDialog({ open, onOpenChange, branchId }: AddProductDia
         <DialogHeader>
           <DialogTitle>{t('addProductTitle')}</DialogTitle>
         </DialogHeader>
-        <p className='text-muted-foreground text-xs leading-relaxed'>{t('addProductHint')}</p>
+        <p className='text-muted-foreground text-xs leading-relaxed'>
+          {t('addProductHint')}
+        </p>
 
         <Field>
           <FieldLabel>{t('fieldName')}</FieldLabel>
-          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('fieldNamePlaceholder')} />
+          <Input
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder={t('fieldNamePlaceholder')}
+          />
         </Field>
         <Field>
           <FieldLabel>{t('fieldSku')}</FieldLabel>
-          <Input value={sku} onChange={(e) => setSku(e.target.value)} placeholder={t('fieldSkuPlaceholder')} />
+          <Input
+            value={sku}
+            onChange={e => setSku(e.target.value)}
+            placeholder={t('fieldSkuPlaceholder')}
+          />
         </Field>
         <Field>
           <FieldLabel>{t('fieldCategory')}</FieldLabel>
-          <Select value={category} onValueChange={(v) => setCategory(v as ProductCategory)}>
+          <Select
+            value={category}
+            onValueChange={v => setCategory(v as ProductCategory)}
+          >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {CATEGORIES.map((c) => (
+              {CATEGORIES.map(c => (
                 <SelectItem key={c} value={c}>
                   {tQ(c)}
                 </SelectItem>
@@ -133,7 +151,7 @@ export function AddProductDialog({ open, onOpenChange, branchId }: AddProductDia
             min={0}
             step='0.01'
             value={unitPrice}
-            onChange={(e) => setUnitPrice(e.target.value)}
+            onChange={e => setUnitPrice(e.target.value)}
           />
         </Field>
         <Field>
@@ -143,12 +161,16 @@ export function AddProductDialog({ open, onOpenChange, branchId }: AddProductDia
             min={0}
             step={1}
             value={initialStock}
-            onChange={(e) => setInitialStock(e.target.value)}
+            onChange={e => setInitialStock(e.target.value)}
           />
         </Field>
 
         <DialogFooter>
-          <Button type='button' variant='outline' onClick={() => onOpenChange(false)}>
+          <Button
+            type='button'
+            variant='outline'
+            onClick={() => onOpenChange(false)}
+          >
             {t('cancel')}
           </Button>
           <Button type='button' onClick={submit} disabled={mutation.isPending}>

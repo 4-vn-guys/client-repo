@@ -62,7 +62,9 @@ export function CourtManagementPanel({
   const invalidateBranchData = () => {
     queryClient.invalidateQueries({ queryKey: ['courts', 'branch', branchId] });
     queryClient.invalidateQueries({ queryKey: ['branch', branchId] });
-    queryClient.invalidateQueries({ queryKey: ['bookings', 'branch', branchId] });
+    queryClient.invalidateQueries({
+      queryKey: ['bookings', 'branch', branchId],
+    });
   };
 
   const createCourtMutation = useMutation({
@@ -84,8 +86,7 @@ export function CourtManagementPanel({
     }: {
       id: string;
       data: Parameters<typeof updateCourt>[1];
-    }) =>
-      updateCourt(id, data),
+    }) => updateCourt(id, data),
     onSuccess: () => {
       invalidateBranchData();
       setForm(initialCourtForm);
@@ -152,13 +153,11 @@ export function CourtManagementPanel({
     <Card className='border-border/60 bg-card/80'>
       <CardHeader className='gap-1'>
         <CardTitle>{tCourtManagement('title')}</CardTitle>
-        <CardDescription>
-          {tCourtManagement('description')}
-        </CardDescription>
+        <CardDescription>{tCourtManagement('description')}</CardDescription>
       </CardHeader>
       <CardContent className='space-y-5'>
         <form
-          className='grid gap-3 rounded-lg border border-border/60 bg-muted/20 p-4 md:grid-cols-[1.3fr_1fr_1fr_auto_auto]'
+          className='border-border/60 bg-muted/20 grid gap-3 rounded-lg border p-4 md:grid-cols-[1.3fr_1fr_1fr_auto_auto]'
           onSubmit={handleSubmit}
         >
           <Field>
@@ -225,7 +224,7 @@ export function CourtManagementPanel({
                   isActive: event.target.checked,
                 }))
               }
-              className='h-9 w-4 accent-primary'
+              className='accent-primary h-9 w-4'
             />
           </Field>
           <div className='flex items-end gap-2'>
@@ -233,7 +232,11 @@ export function CourtManagementPanel({
               {editingCourtId ? tCommon('save') : tCommon('add')}
             </Button>
             {editingCourtId && (
-              <Button type='button' variant='outline' onClick={handleCancelEdit}>
+              <Button
+                type='button'
+                variant='outline'
+                onClick={handleCancelEdit}
+              >
                 {tCommon('cancel')}
               </Button>
             )}
@@ -241,7 +244,7 @@ export function CourtManagementPanel({
         </form>
 
         {courts.length === 0 ? (
-          <div className='rounded-lg border border-dashed border-border/70 p-6 text-center text-sm text-muted-foreground'>
+          <div className='border-border/70 text-muted-foreground rounded-lg border border-dashed p-6 text-center text-sm'>
             {tCourtManagement('empty')}
           </div>
         ) : (
@@ -249,18 +252,18 @@ export function CourtManagementPanel({
             {courts.map(court => (
               <div
                 key={court.id}
-                className='rounded-lg border border-border/60 bg-background/80 p-4 shadow-sm'
+                className='border-border/60 bg-background/80 rounded-lg border p-4 shadow-sm'
               >
                 <div className='flex items-start justify-between gap-3'>
                   <div>
                     <h3 className='font-semibold'>{court.name}</h3>
-                    <p className='text-sm text-muted-foreground'>
+                    <p className='text-muted-foreground text-sm'>
                       {court.surfaceType} ·{' '}
                       {tCourtManagement('ratePerHour', {
                         rate: court.defaultHourlyRate.toLocaleString(),
                       })}
                     </p>
-                    <p className='mt-1 text-xs text-muted-foreground'>
+                    <p className='text-muted-foreground mt-1 text-xs'>
                       {court.isActive ? tCommon('active') : tCommon('inactive')}
                     </p>
                   </div>

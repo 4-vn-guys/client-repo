@@ -35,7 +35,10 @@ export function LocationPickerInner({
   const locale = useLocale();
   const tLocation = useTranslations('Components.LocationPicker');
 
-  const updateCoordinates = (lngLat: mapboxgl.LngLatLike, shouldFly = false) => {
+  const updateCoordinates = (
+    lngLat: mapboxgl.LngLatLike,
+    shouldFly = false
+  ) => {
     const coordinates = mapboxgl.LngLat.convert(lngLat);
 
     markerRef.current?.setLngLat(coordinates);

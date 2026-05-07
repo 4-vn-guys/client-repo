@@ -46,9 +46,7 @@ export function WebVitalsSection() {
     <div className='space-y-4'>
       <div className='flex items-center gap-2'>
         <Zap className='text-primary h-5 w-5' />
-        <h2 className='text-2xl font-bold'>
-          {tPerformance('coreWebVitals')}
-        </h2>
+        <h2 className='text-2xl font-bold'>{tPerformance('coreWebVitals')}</h2>
       </div>
       <p className='text-muted-foreground text-sm'>
         {tPerformance('webVitalsDescription')}
@@ -102,13 +100,11 @@ export function WebVitalsSection() {
           </li>
           <li>
             • FCP: &lt;1.8s ({tPerformance('good')}), 1.8-3s (
-            {tPerformance('needsImprovement')}), &gt;3s (
-            {tPerformance('poor')})
+            {tPerformance('needsImprovement')}), &gt;3s ({tPerformance('poor')})
           </li>
           <li>
             • LCP: &lt;2.5s ({tPerformance('good')}), 2.5-4s (
-            {tPerformance('needsImprovement')}), &gt;4s (
-            {tPerformance('poor')})
+            {tPerformance('needsImprovement')}), &gt;4s ({tPerformance('poor')})
           </li>
           <li>
             • TTFB: &lt;800ms ({tPerformance('good')}), 800-1800ms (

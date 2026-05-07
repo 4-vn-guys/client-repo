@@ -23,7 +23,7 @@ export function CourtSelector({
     <div
       className={cn(
         'space-y-2 rounded-md',
-        error && 'border-destructive bg-destructive/5 border p-3',
+        error && 'border-destructive bg-destructive/5 border p-3'
       )}
     >
       <label className='text-sm font-medium'>{tBookingForm('court')}</label>

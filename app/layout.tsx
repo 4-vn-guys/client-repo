@@ -22,7 +22,9 @@ const openSansMono = Open_Sans({
 /** Absolute site URL for Open Graph / Twitter image resolution (set in env for prod or non-default dev port). */
 const metadataBaseUrl =
   process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+  (process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : 'http://localhost:3000');
 
 export const metadata: Metadata = {
   metadataBase: new URL(metadataBaseUrl),

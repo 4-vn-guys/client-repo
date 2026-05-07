@@ -18,6 +18,20 @@ interface BranchApiResponse {
   timestamp: string;
 }
 
+interface BranchPaginationResponse {
+  success: boolean;
+  data: {
+    docs: Branch[];
+    page?: number;
+    perPage?: number;
+    total?: number;
+    totalPages?: number;
+  };
+  message: string;
+  statusCode: number;
+  timestamp: string;
+}
+
 /**
  * Fetch all branches owned by the current user
  */
@@ -33,6 +47,30 @@ export const fetchBranches = async (): Promise<Branch[]> => {
     throw new Error(response.data.message || 'Failed to fetch branches');
   } catch (error) {
     console.error('Error fetching branches:', error);
+    throw error;
+  }
+};
+
+export const fetchPublicBranches = async (params?: {
+  page?: number;
+  perPage?: number;
+  search?: string;
+}): Promise<Branch[]> => {
+  try {
+    const response = await axiosInstance.get<BranchPaginationResponse>(
+      '/branches',
+      {
+        params,
+      }
+    );
+
+    if (response.data.success) {
+      return response.data.data.docs ?? [];
+    }
+
+    throw new Error(response.data.message || 'Failed to fetch public branches');
+  } catch (error) {
+    console.error('Error fetching public branches:', error);
     throw error;
   }
 };
@@ -83,7 +121,10 @@ export const createBranch = async (data: CreateBranchDto): Promise<Branch> => {
 /**
  * Upload a file that can be attached to branch metadata, such as policy PDFs.
  */
-export const updateBranch = async (id: string, data: UpdateBranchDto): Promise<Branch> => {
+export const updateBranch = async (
+  id: string,
+  data: UpdateBranchDto
+): Promise<Branch> => {
   try {
     const response = await axiosInstance.patch<{
       success: boolean;
@@ -103,7 +144,7 @@ export const updateBranch = async (id: string, data: UpdateBranchDto): Promise<B
 };
 
 export const fetchBranchDepositRevenue = async (
-  branchId: string,
+  branchId: string
 ): Promise<BranchDepositRevenueResponse> => {
   try {
     const response = await axiosInstance.get<{

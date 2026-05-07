@@ -3,7 +3,11 @@
  * Types and utilities for filtering booking lists
  */
 
-export type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'maintenance';
+export type BookingStatus =
+  | 'pending'
+  | 'confirmed'
+  | 'cancelled'
+  | 'maintenance';
 export type BookingPaymentStatus = 'unpaid' | 'paid' | 'refunded';
 
 /**
@@ -33,7 +37,9 @@ export interface PaginatedResponse<T> {
 /**
  * Default filter values
  */
-export const DEFAULT_BOOKING_FILTERS: Required<Omit<BookingFilters, 'status' | 'statusPayment' | 'search'>> = {
+export const DEFAULT_BOOKING_FILTERS: Required<
+  Omit<BookingFilters, 'status' | 'statusPayment' | 'search'>
+> = {
   page: 1,
   limit: 20,
 };

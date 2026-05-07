@@ -75,8 +75,8 @@ export function LanguageSwitcher({
           isSettings
             ? 'h-32 w-full flex-col justify-center gap-3 border-violet-200 bg-violet-50/60 p-3 hover:-translate-y-0.5 hover:border-violet-300 hover:bg-violet-50 hover:shadow-lg hover:shadow-violet-500/10'
             : isSidebar
-            ? 'h-auto w-full justify-between px-3 py-2.5'
-            : 'h-10 min-w-28 rounded-full px-3',
+              ? 'h-auto w-full justify-between px-3 py-2.5'
+              : 'h-10 min-w-28 rounded-full px-3',
           className
         )}
       >

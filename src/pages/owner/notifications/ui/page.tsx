@@ -3,13 +3,26 @@
 import { Bell, CheckCheck, CheckCircle2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useNotifications } from '@/features/notifications';
-import { Badge, Button, Card, CardContent, CardHeader, CardTitle } from '@/shared/ui';
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/shared/ui';
 import { cn } from '@/shared/lib/utils';
 
 export default function OwnerNotificationsPage() {
   const t = useTranslations('OwnerNotificationsPage');
-  const { notifications, unreadCount, isLoadingNotifications, markRead, markAllRead, isMarkingRead } =
-    useNotifications();
+  const {
+    notifications,
+    unreadCount,
+    isLoadingNotifications,
+    markRead,
+    markAllRead,
+    isMarkingRead,
+  } = useNotifications();
 
   return (
     <div className='container mx-auto max-w-4xl space-y-5 pt-6 pb-20'>
@@ -21,11 +34,15 @@ export default function OwnerNotificationsPage() {
             </div>
             <div>
               <CardTitle>{t('title')}</CardTitle>
-              <p className='text-muted-foreground text-sm'>{t('description')}</p>
+              <p className='text-muted-foreground text-sm'>
+                {t('description')}
+              </p>
             </div>
           </div>
           <div className='flex items-center gap-2'>
-            <Badge variant='secondary'>{t('unreadCount', { count: unreadCount })}</Badge>
+            <Badge variant='secondary'>
+              {t('unreadCount', { count: unreadCount })}
+            </Badge>
             <Button
               type='button'
               size='sm'
@@ -51,7 +68,9 @@ export default function OwnerNotificationsPage() {
                   key={item.id}
                   className={cn(
                     'rounded-2xl border p-4 transition-colors',
-                    isRead ? 'border-slate-200 bg-slate-50' : 'border-violet-200 bg-violet-50/40'
+                    isRead
+                      ? 'border-slate-200 bg-slate-50'
+                      : 'border-violet-200 bg-violet-50/40'
                   )}
                 >
                   <div className='flex items-start justify-between gap-3'>

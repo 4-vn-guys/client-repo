@@ -53,10 +53,12 @@ function slotKey(slot: SelectedSlot): string {
 }
 
 export function useTimelineData(venueId: string) {
-  const user = useAuthStore((s) => s.user);
+  const user = useAuthStore(s => s.user);
   const isOwnerRole = user?.role === 'owner';
   const now = new Date();
-  const [selectedDate, setSelectedDate] = useState(new Date(now.getFullYear(), now.getMonth(), now.getDate()));
+  const [selectedDate, setSelectedDate] = useState(
+    new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  );
   const [selectedSlots, setSelectedSlots] = useState<SelectedSlot[]>([]);
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
   const [bookingDialogData, setBookingDialogData] = useState<
@@ -130,7 +132,7 @@ export function useTimelineData(venueId: string) {
     onError: (error: unknown) => {
       console.error('Error creating booking:', error);
       toast.error(
-        bookingMutationErrorMessage(error, 'Failed to create booking'),
+        bookingMutationErrorMessage(error, 'Failed to create booking')
       );
     },
   });
@@ -148,7 +150,7 @@ export function useTimelineData(venueId: string) {
     onError: (error: unknown) => {
       console.error('Error updating booking:', error);
       toast.error(
-        bookingMutationErrorMessage(error, 'Failed to update booking'),
+        bookingMutationErrorMessage(error, 'Failed to update booking')
       );
     },
   });
@@ -162,10 +164,10 @@ export function useTimelineData(venueId: string) {
 
   // Toggle slot selection (multi-select for booking)
   const handleCellClick = useCallback((courtId: string, slotIndex: number) => {
-    setSelectedSlots((prev) => {
+    setSelectedSlots(prev => {
       const key = `${courtId}:${slotIndex}`;
-      const has = prev.some((s) => slotKey(s) === key);
-      if (has) return prev.filter((s) => slotKey(s) !== key);
+      const has = prev.some(s => slotKey(s) === key);
+      if (has) return prev.filter(s => slotKey(s) !== key);
       return [...prev, { courtId, slotIndex }];
     });
   }, []);
@@ -173,7 +175,9 @@ export function useTimelineData(venueId: string) {
   // Check if a slot is selected
   const isSlotSelected = useCallback(
     (courtId: string, slotIndex: number) =>
-      selectedSlots.some((s) => s.courtId === courtId && s.slotIndex === slotIndex),
+      selectedSlots.some(
+        s => s.courtId === courtId && s.slotIndex === slotIndex
+      ),
     [selectedSlots]
   );
 
@@ -181,7 +185,10 @@ export function useTimelineData(venueId: string) {
   const handleBookingFromSelection = useCallback(() => {
     if (selectedSlots.length === 0) return;
     setBookingDialogData({
-      details: selectedSlots.map((s) => ({ courtId: s.courtId, slotIndex: s.slotIndex })),
+      details: selectedSlots.map(s => ({
+        courtId: s.courtId,
+        slotIndex: s.slotIndex,
+      })),
     });
     setBookingDialogOpen(true);
   }, [selectedSlots]);
@@ -201,7 +208,11 @@ export function useTimelineData(venueId: string) {
       startMinute: startDate.getMinutes().toString().padStart(2, '0'),
       endHour: endDate.getHours(),
       endMinute: endDate.getMinutes().toString().padStart(2, '0'),
-      status: booking.status as 'pending' | 'confirmed' | 'cancelled' | 'maintenance',
+      status: booking.status as
+        | 'pending'
+        | 'confirmed'
+        | 'cancelled'
+        | 'maintenance',
       statusPayment: booking.statusPayment as 'paid' | 'unpaid',
       totalPrice: booking.totalPrice,
       goods: booking.goods ?? undefined,

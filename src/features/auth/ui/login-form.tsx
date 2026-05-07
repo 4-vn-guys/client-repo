@@ -169,7 +169,10 @@ export function LoginForm({
     if (!twoFactorToken || !twoFactorCode.trim()) {
       return;
     }
-    const result = await verifyTwoFactorLogin(twoFactorToken, twoFactorCode.trim());
+    const result = await verifyTwoFactorLogin(
+      twoFactorToken,
+      twoFactorCode.trim()
+    );
     setSubmitMessage(
       result?.success
         ? { type: 'success', text: tLoginPage('loginSuccess') }

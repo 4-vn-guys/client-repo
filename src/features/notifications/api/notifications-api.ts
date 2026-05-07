@@ -23,9 +23,9 @@ export const fetchUnreadCount = async (): Promise<number> => {
 export const markNotificationRead = async (
   id: string
 ): Promise<UserNotification | null> => {
-  const response = await axiosInstance.patch<ApiResponse<UserNotification | null>>(
-    `/notifications/${id}/read`
-  );
+  const response = await axiosInstance.patch<
+    ApiResponse<UserNotification | null>
+  >(`/notifications/${id}/read`);
   return response.data.data;
 };
 
@@ -64,7 +64,8 @@ export const registerWebPushSubscription = async (): Promise<boolean> => {
     return false;
   }
 
-  const registration = await navigator.serviceWorker.register('/service-worker.js');
+  const registration =
+    await navigator.serviceWorker.register('/service-worker.js');
   const subscription = await registration.pushManager.subscribe({
     userVisibleOnly: true,
     applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),

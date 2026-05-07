@@ -34,7 +34,7 @@ export function SidebarNavItem({
         'group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 focus-visible:ring-3 focus-visible:ring-violet-500/30 focus-visible:outline-none',
         isActive
           ? 'bg-primary text-primary-foreground shadow-lg shadow-violet-500/20'
-          : 'text-muted-foreground hover:translate-x-0.5 hover:bg-accent hover:text-foreground'
+          : 'text-muted-foreground hover:bg-accent hover:text-foreground hover:translate-x-0.5'
       )}
     >
       {isActive && (

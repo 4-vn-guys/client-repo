@@ -36,7 +36,7 @@ export function TimeInput({
             'flex-1 rounded-md border bg-white px-3 py-2 focus:ring-2 focus:outline-none dark:bg-gray-800',
             error
               ? 'border-destructive focus:border-destructive focus:ring-destructive/30'
-              : 'border-gray-300 focus:border-transparent focus:ring-violet-500 dark:border-gray-600',
+              : 'border-gray-300 focus:border-transparent focus:ring-violet-500 dark:border-gray-600'
           )}
         >
           {hours.map(h => (
@@ -56,7 +56,7 @@ export function TimeInput({
             'flex-1 rounded-md border bg-white px-3 py-2 focus:ring-2 focus:outline-none dark:bg-gray-800',
             error
               ? 'border-destructive focus:border-destructive focus:ring-destructive/30'
-              : 'border-gray-300 focus:border-transparent focus:ring-violet-500 dark:border-gray-600',
+              : 'border-gray-300 focus:border-transparent focus:ring-violet-500 dark:border-gray-600'
           )}
         >
           {minutes.map(m => (

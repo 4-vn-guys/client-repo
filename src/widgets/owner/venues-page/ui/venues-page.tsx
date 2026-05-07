@@ -1,10 +1,14 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { BranchHeader } from '@/pages/owner/venues/ui/venue-header';
 import { BranchesList } from '@/pages/owner/venues/ui/venues-list';
-import { createBranch, fetchBranches, uploadBranchFile } from '@/entities/venue';
+import {
+  createBranch,
+  fetchBranches,
+  uploadBranchFile,
+} from '@/entities/venue';
 import { Button } from '@/shared/ui/button';
 import {
   Dialog,
@@ -41,6 +45,8 @@ const initialBranchForm: BranchFormState = {
   hotline: '',
   policyFile: null,
 };
+
+const roundCoordinate = (value: number) => Number(value.toFixed(6));
 
 const mapboxAccessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
@@ -86,8 +92,52 @@ export function VenuesPage() {
   });
 
   const handleAddBranch = () => {
+    if (typeof navigator !== 'undefined' && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const latitude = roundCoordinate(position.coords.latitude);
+          const longitude = roundCoordinate(position.coords.longitude);
+          setForm(current => ({
+            ...current,
+            latitude: String(latitude),
+            longitude: String(longitude),
+          }));
+        },
+        () => {
+          // Silent fallback to default coordinates.
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 8000,
+        }
+      );
+    }
     setIsCreateOpen(true);
   };
+
+  useEffect(() => {
+    if (!isCreateOpen) return;
+    if (typeof navigator === 'undefined' || !navigator.geolocation) return;
+
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        const latitude = roundCoordinate(position.coords.latitude);
+        const longitude = roundCoordinate(position.coords.longitude);
+        setForm(current => ({
+          ...current,
+          latitude: String(latitude),
+          longitude: String(longitude),
+        }));
+      },
+      () => {
+        // Silent fallback to default coordinates.
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 8000,
+      }
+    );
+  }, [isCreateOpen]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

@@ -71,22 +71,26 @@ export function BookingForm({
   const tCommon = useTranslations('Common');
   const tBookingForm = useTranslations('BookingForm');
   const locale = useLocale();
-  const isMultiSlotMode =
-    !isEditMode &&
-    !!initialData?.details?.length;
-  const { bookingFormSchema } = useBookingFormSchema(isOwnerRole, isMultiSlotMode);
+  const isMultiSlotMode = !isEditMode && !!initialData?.details?.length;
+  const { bookingFormSchema } = useBookingFormSchema(
+    isOwnerRole,
+    isMultiSlotMode
+  );
 
   const editBaselineCourtRental = useMemo(() => {
     if (!isEditMode || initialData?.totalPrice === undefined) return null;
     const rawGoods = initialData?.goods ?? [];
-    const goodsPortion = rawGoods.reduce((s, g) => s + g.quantity * g.unitPrice, 0);
+    const goodsPortion = rawGoods.reduce(
+      (s, g) => s + g.quantity * g.unitPrice,
+      0
+    );
     return Math.max(0, initialData.totalPrice - goodsPortion);
   }, [isEditMode, initialData?.totalPrice, initialData?.goods]);
 
   const initialGoodsRows: GoodLineForm[] = useMemo(() => {
     const g = initialData?.goods;
     if (!g?.length) return [];
-    return g.map((line) => ({
+    return g.map(line => ({
       id: crypto.randomUUID(),
       ...(line.productId ? { productId: line.productId } : {}),
       name: line.name,
@@ -101,8 +105,14 @@ export function BookingForm({
       bookingTitle: initialData?.bookingTitle || '',
       customerName: initialData?.customerName || '',
       type: 'walk-in' as 'walk-in' | 'reservation',
-      status: (initialData?.status || 'pending') as 'pending' | 'confirmed' | 'cancelled' | 'maintenance',
-      statusPayment: (initialData?.statusPayment || 'unpaid') as 'paid' | 'unpaid',
+      status: (initialData?.status || 'pending') as
+        | 'pending'
+        | 'confirmed'
+        | 'cancelled'
+        | 'maintenance',
+      statusPayment: (initialData?.statusPayment || 'unpaid') as
+        | 'paid'
+        | 'unpaid',
       totalPrice: initialData?.totalPrice || 0,
       startHour: initialData?.startHour?.toString().padStart(2, '0') || '14',
       startMinute: initialData?.startMinute || '00',
@@ -117,8 +127,17 @@ export function BookingForm({
       onSubmit: bookingFormSchema as never,
     },
     onSubmitInvalid: ({ formApi }) => {
-      const touch = (name: 'bookingTitle' | 'startHour' | 'startMinute' | 'endHour' | 'endMinute' | 'customerName' | 'courtId') => {
-        formApi.setFieldMeta(name, (prev) => ({ ...prev, isTouched: true }));
+      const touch = (
+        name:
+          | 'bookingTitle'
+          | 'startHour'
+          | 'startMinute'
+          | 'endHour'
+          | 'endMinute'
+          | 'customerName'
+          | 'courtId'
+      ) => {
+        formApi.setFieldMeta(name, prev => ({ ...prev, isTouched: true }));
       };
       touch('bookingTitle');
       touch('startHour');
@@ -147,7 +166,9 @@ export function BookingForm({
           0
         );
 
-        const goodsPayload = isOwnerRole ? toGoodsPayload(value.goods as GoodLineForm[]) : [];
+        const goodsPayload = isOwnerRole
+          ? toGoodsPayload(value.goods as GoodLineForm[])
+          : [];
         const courtRentAmount =
           isOwnerRole && isEditMode && editBaselineCourtRental !== null
             ? editBaselineCourtRental
@@ -163,8 +184,12 @@ export function BookingForm({
                   endMinute: value.endMinute,
                 })
               : 0;
-        const goodsSubtotalAmount = isOwnerRole ? sumGoodsSubtotal(goodsPayload) : 0;
-        const combinedTotal = isOwnerRole ? courtRentAmount + goodsSubtotalAmount : 0;
+        const goodsSubtotalAmount = isOwnerRole
+          ? sumGoodsSubtotal(goodsPayload)
+          : 0;
+        const combinedTotal = isOwnerRole
+          ? courtRentAmount + goodsSubtotalAmount
+          : 0;
 
         // Different DTO based on edit mode
         if (isEditMode) {
@@ -184,20 +209,24 @@ export function BookingForm({
           await onSubmit(updateDto);
         } else {
           // Create booking - new API shape with details array
-          const details: { courtId: string; startTime: string; endTime: string }[] =
+          const details: {
+            courtId: string;
+            startTime: string;
+            endTime: string;
+          }[] =
             isMultiSlotMode && initialData?.details?.length
               ? initialData.details.map(({ courtId, slotIndex }) => {
-                const startHour = gridColumnToHour(slotIndex);
-                const startDt = new Date(selectedDate);
-                startDt.setHours(startHour, 0, 0, 0);
-                const endDt = new Date(selectedDate);
-                endDt.setHours(startHour + 1, 0, 0, 0);
-                return {
-                  courtId,
-                  startTime: startDt.toISOString(),
-                  endTime: endDt.toISOString(),
-                };
-              })
+                  const startHour = gridColumnToHour(slotIndex);
+                  const startDt = new Date(selectedDate);
+                  startDt.setHours(startHour, 0, 0, 0);
+                  const endDt = new Date(selectedDate);
+                  endDt.setHours(startHour + 1, 0, 0, 0);
+                  return {
+                    courtId,
+                    startTime: startDt.toISOString(),
+                    endTime: endDt.toISOString(),
+                  };
+                })
               : value.courtId
                 ? [
                     {
@@ -276,8 +305,8 @@ export function BookingForm({
                           message:
                             (typeof e === 'string'
                               ? e
-                              : (e as unknown as { message?: string }).message) ||
-                            tCommon('error'),
+                              : (e as unknown as { message?: string })
+                                  .message) || tCommon('error'),
                         })) as Array<{ message?: string }>
                       }
                     />
@@ -304,7 +333,11 @@ export function BookingForm({
                     value={field.state.value}
                     onChange={e =>
                       field.handleChange(
-                        e.target.value as 'pending' | 'confirmed' | 'cancelled' | 'maintenance'
+                        e.target.value as
+                          | 'pending'
+                          | 'confirmed'
+                          | 'cancelled'
+                          | 'maintenance'
                       )
                     }
                     className='w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-violet-500 focus:outline-none'
@@ -334,9 +367,7 @@ export function BookingForm({
                     id={field.name}
                     value={field.state.value}
                     onChange={e =>
-                      field.handleChange(
-                        e.target.value as 'paid' | 'unpaid'
-                      )
+                      field.handleChange(e.target.value as 'paid' | 'unpaid')
                     }
                     className='w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-violet-500 focus:outline-none'
                   >
@@ -362,13 +393,13 @@ export function BookingForm({
 
         {isMultiSlotMode ? (
           /* Multi-select from grid: show read-only summary */
-          <div className='rounded-md border bg-muted/30 p-3'>
-            <p className='mb-2 text-sm font-medium text-muted-foreground'>
+          <div className='bg-muted/30 rounded-md border p-3'>
+            <p className='text-muted-foreground mb-2 text-sm font-medium'>
               {tBookingForm('selectedSlots')}
             </p>
             <ul className='space-y-1 text-sm'>
               {initialData?.details?.map(({ courtId, slotIndex }) => {
-                const court = courts.find((c) => c.id === courtId);
+                const court = courts.find(c => c.id === courtId);
                 const startHour = gridColumnToHour(slotIndex);
                 const startStr = `${startHour.toString().padStart(2, '0')}:00`;
                 const endStr = `${(startHour + 1).toString().padStart(2, '0')}:00`;
@@ -429,8 +460,8 @@ export function BookingForm({
                           message:
                             (typeof e === 'string'
                               ? e
-                              : (e as unknown as { message?: string }).message) ||
-                            tCommon('error'),
+                              : (e as unknown as { message?: string })
+                                  .message) || tCommon('error'),
                         })) as Array<{ message?: string }>
                       }
                     />
@@ -466,14 +497,16 @@ export function BookingForm({
                             }}
                             startTimeError={
                               (startHourField.state.meta.isTouched ||
-                                startHourField.form.state.submissionAttempts > 0) &&
+                                startHourField.form.state.submissionAttempts >
+                                  0) &&
                               startHourField.state.meta.errors.length > 0
                                 ? String(startHourField.state.meta.errors[0])
                                 : undefined
                             }
                             endTimeError={
                               (endHourField.state.meta.isTouched ||
-                                endHourField.form.state.submissionAttempts > 0) &&
+                                endHourField.form.state.submissionAttempts >
+                                  0) &&
                               endHourField.state.meta.errors.length > 0
                                 ? String(endHourField.state.meta.errors[0])
                                 : undefined
@@ -490,8 +523,8 @@ export function BookingForm({
         )}
       </div>
 
-      <form.Subscribe selector={(state) => state.values}>
-        {(values) => {
+      <form.Subscribe selector={state => state.values}>
+        {values => {
           let courtRentDisplay = 0;
           if (isOwnerRole) {
             courtRentDisplay =
@@ -509,7 +542,7 @@ export function BookingForm({
                   });
           } else if (isMultiSlotMode && initialData?.details?.length) {
             courtRentDisplay = initialData.details.reduce((sum, d) => {
-              const court = courts.find((c) => c.id === d.courtId);
+              const court = courts.find(c => c.id === d.courtId);
               const rate = Number(court?.defaultHourlyRate ?? 0);
               return sum + rate;
             }, 0);
@@ -526,8 +559,12 @@ export function BookingForm({
             });
           }
 
-          const goodsPayloadLive = isOwnerRole ? toGoodsPayload(values.goods as GoodLineForm[]) : [];
-          const goodsSubtotalDisplay = isOwnerRole ? sumGoodsSubtotal(goodsPayloadLive) : 0;
+          const goodsPayloadLive = isOwnerRole
+            ? toGoodsPayload(values.goods as GoodLineForm[])
+            : [];
+          const goodsSubtotalDisplay = isOwnerRole
+            ? sumGoodsSubtotal(goodsPayloadLive)
+            : 0;
           const totalDisplay = courtRentDisplay + goodsSubtotalDisplay;
 
           const depositPreview =
@@ -562,39 +599,39 @@ export function BookingForm({
           return (
             <>
               {depositNotice ? (
-                <div className="mb-4 rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-950 dark:text-amber-100">
+                <div className='mb-4 rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-950 dark:text-amber-100'>
                   {depositNotice}
                 </div>
               ) : null}
-            <form.Field name='goods'>
-              {(goodsField) => (
-                <form.Field name='note'>
-                  {(noteField) => (
-                    <AdditionalServicesSection
-                      isOwnerRole={isOwnerRole}
-                      goods={goodsField.state.value as GoodLineForm[]}
-                      onGoodsChange={goodsField.handleChange}
-                      note={noteField.state.value}
-                      onNoteChange={noteField.handleChange}
-                      isLoading={isLoading}
-                      isEditMode={isEditMode}
-                      noteError={
-                        (noteField.state.meta.isTouched ||
-                          noteField.form.state.submissionAttempts > 0) &&
-                        noteField.state.meta.errors.length > 0
-                          ? String(noteField.state.meta.errors[0])
-                          : undefined
-                      }
-                      courtRental={courtRentDisplay}
-                      goodsSubtotal={goodsSubtotalDisplay}
-                      totalAmount={totalDisplay}
-                      locale={locale}
-                      branchId={branchId}
-                    />
-                  )}
-                </form.Field>
-              )}
-            </form.Field>
+              <form.Field name='goods'>
+                {goodsField => (
+                  <form.Field name='note'>
+                    {noteField => (
+                      <AdditionalServicesSection
+                        isOwnerRole={isOwnerRole}
+                        goods={goodsField.state.value as GoodLineForm[]}
+                        onGoodsChange={goodsField.handleChange}
+                        note={noteField.state.value}
+                        onNoteChange={noteField.handleChange}
+                        isLoading={isLoading}
+                        isEditMode={isEditMode}
+                        noteError={
+                          (noteField.state.meta.isTouched ||
+                            noteField.form.state.submissionAttempts > 0) &&
+                          noteField.state.meta.errors.length > 0
+                            ? String(noteField.state.meta.errors[0])
+                            : undefined
+                        }
+                        courtRental={courtRentDisplay}
+                        goodsSubtotal={goodsSubtotalDisplay}
+                        totalAmount={totalDisplay}
+                        locale={locale}
+                        branchId={branchId}
+                      />
+                    )}
+                  </form.Field>
+                )}
+              </form.Field>
             </>
           );
         }}

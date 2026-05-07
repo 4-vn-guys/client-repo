@@ -511,7 +511,11 @@
     "saving": "Saving…",
     "policySaved": "Deposit settings saved",
     "policySaveFailed": "Could not save deposit settings",
-    "invalidDepositValue": "Enter a valid number for the deposit value"
+    "invalidDepositValue": "Enter a valid number for the deposit value",
+    "depositHoldMinutesLabel": "Deposit payment window (minutes)",
+    "depositHoldMinutesHint": "Time players have to transfer the deposit before the hold expires. Leave empty to use the server default (see DEPOSIT_HOLD_MINUTES). Allowed range: 5–1440.",
+    "depositHoldEffective": "Currently applied window: {minutes} minutes",
+    "invalidDepositHoldMinutes": "Enter a whole number between 5 and 1440, or leave empty for the default"
   },
   "CourtManagement": {
     "title": "Branch Courts",

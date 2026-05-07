@@ -55,25 +55,37 @@ export const extractErrorMessage = (error: unknown): string => {
   if (error && typeof error === 'object' && 'response' in error) {
     const response = (error as { response: unknown }).response;
     if (response && typeof response === 'object' && 'data' in response) {
-      const data = (response as { data: unknown }).data as BackendError | undefined;
-      
+      const data = (response as { data: unknown }).data as
+        | BackendError
+        | undefined;
+
       // Try to extract from nested error structure
       if (data?.error?.message) {
         return data.error.message;
       }
-      
+
       // Fallback to direct message
-      if (data && typeof data === 'object' && 'message' in data && typeof data.message === 'string') {
+      if (
+        data &&
+        typeof data === 'object' &&
+        'message' in data &&
+        typeof data.message === 'string'
+      ) {
         return data.message;
       }
     }
   }
-  
+
   // Fallback to error message
-  if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string') {
+  if (
+    error &&
+    typeof error === 'object' &&
+    'message' in error &&
+    typeof error.message === 'string'
+  ) {
     return error.message;
   }
-  
+
   return 'Unexpected error';
 };
 
@@ -86,7 +98,9 @@ export const extractErrorCode = (error: unknown): string | null => {
   if (error && typeof error === 'object' && 'response' in error) {
     const response = (error as { response: unknown }).response;
     if (response && typeof response === 'object' && 'data' in response) {
-      const data = (response as { data: unknown }).data as BackendError | undefined;
+      const data = (response as { data: unknown }).data as
+        | BackendError
+        | undefined;
       return data?.error?.code || null;
     }
   }
@@ -141,11 +155,16 @@ export const parseBackendError = (error: unknown) => {
   let statusCode = 500;
   if (error && typeof error === 'object' && 'response' in error) {
     const response = (error as { response: unknown }).response;
-    if (response && typeof response === 'object' && 'status' in response && typeof response.status === 'number') {
+    if (
+      response &&
+      typeof response === 'object' &&
+      'status' in response &&
+      typeof response.status === 'number'
+    ) {
       statusCode = response.status;
     }
   }
-  
+
   return {
     message: extractErrorMessage(error),
     code: extractErrorCode(error),

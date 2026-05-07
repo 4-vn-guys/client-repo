@@ -50,29 +50,29 @@ export function TimelinePageContent({ venueId }: TimelinePageProps) {
 
   if (isError || !venue) {
     return (
-      <div className="flex min-h-[50vh] flex-col items-center justify-center p-4 text-center">
-        <div className="mb-4 rounded-full bg-destructive/10 p-4">
-          <AlertCircle className="h-8 w-8 text-destructive" />
+      <div className='flex min-h-[50vh] flex-col items-center justify-center p-4 text-center'>
+        <div className='bg-destructive/10 mb-4 rounded-full p-4'>
+          <AlertCircle className='text-destructive h-8 w-8' />
         </div>
-        <h2 className="mb-2 text-2xl font-bold">
+        <h2 className='mb-2 text-2xl font-bold'>
           {tTimeline('venueNotFound')}
         </h2>
-        <p className="mb-6 max-w-md text-muted-foreground">
+        <p className='text-muted-foreground mb-6 max-w-md'>
           {tTimeline('venueNotFoundDescription')}
         </p>
-        <Link href="/owner/branches">
-          <Button variant="outline">{tTimeline('backToBranches')}</Button>
+        <Link href='/owner/branches'>
+          <Button variant='outline'>{tTimeline('backToBranches')}</Button>
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4 p-4 animate-in fade-in duration-500 md:space-y-6 md:p-6">
-      <div className="flex flex-col gap-1 border-b border-border/40 pb-4">
-        <h1 className="text-2xl font-bold tracking-tight">{venue.name}</h1>
-        <div className="flex items-center text-sm text-muted-foreground">
-          <MapPin className="mr-1 h-4 w-4" />
+    <div className='animate-in fade-in space-y-4 p-4 duration-500 md:space-y-6 md:p-6'>
+      <div className='border-border/40 flex flex-col gap-1 border-b pb-4'>
+        <h1 className='text-2xl font-bold tracking-tight'>{venue.name}</h1>
+        <div className='text-muted-foreground flex items-center text-sm'>
+          <MapPin className='mr-1 h-4 w-4' />
           {venue.address}
         </div>
       </div>
@@ -80,18 +80,15 @@ export function TimelinePageContent({ venueId }: TimelinePageProps) {
       <TimelineHeader
         title={tTimeline('schedule')}
         dateNavigation={
-          <DateNavigation
-            date={selectedDate}
-            onDateChange={setSelectedDate}
-          />
+          <DateNavigation date={selectedDate} onDateChange={setSelectedDate} />
         }
         actions={
-          <div className="flex items-center gap-2">
+          <div className='flex items-center gap-2'>
             {selectedSlots.length > 0 && (
               <Button
-                variant="solid"
+                variant='solid'
                 onClick={handleBookingFromSelection}
-                className="bg-primary hover:bg-primary/90"
+                className='bg-primary hover:bg-primary/90'
               >
                 {tTimeline('bookSelected', { count: selectedSlots.length })}
               </Button>
@@ -145,6 +142,7 @@ export function TimelinePageContent({ venueId }: TimelinePageProps) {
           depositEnabled: Boolean(venue.depositEnabled),
           depositType: (venue.depositType as 'percent' | 'fixed') || 'percent',
           depositValue: Number(venue.depositValue ?? 0),
+          depositHoldMinutes: venue.depositHoldMinutes ?? null,
         }}
       />
     </div>

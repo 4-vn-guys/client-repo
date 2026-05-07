@@ -74,53 +74,62 @@ export const fetchBookingsByBranchId = async (
     return response.data.data.map((court: CourtApi) => {
       // API returns bookingDetails (each slot) with nested booking - normalize to bookings
       const rawBookings = court.bookingDetails ?? court.bookings ?? [];
-      const bookings: Booking[] = rawBookings.map((item: BookingDetailApi | Booking) => {
-        const isDetail = 'booking' in item && item.booking;
-        if (isDetail) {
-          const detail = item as BookingDetailApi;
-          const start = new Date(detail.startTime);
-          const end = new Date(detail.endTime);
+      const bookings: Booking[] = rawBookings.map(
+        (item: BookingDetailApi | Booking) => {
+          const isDetail = 'booking' in item && item.booking;
+          if (isDetail) {
+            const detail = item as BookingDetailApi;
+            const start = new Date(detail.startTime);
+            const end = new Date(detail.endTime);
+            const durationInHours =
+              (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+            return {
+              id: detail.booking.id,
+              slotId: detail.id,
+              courtId: detail.courtId,
+              userId: '',
+              status:
+                API_STATUS_MAP[detail.booking.status] ?? BOOKING_STATUS.PENDING,
+              bookingTitle: detail.booking.bookingTitle,
+              statusPayment:
+                API_STATUS_PAYMENT_MAP[detail.booking.statusPayment] ??
+                BOOKING_PAYMENT_STATUS.unpaid,
+              startTime: detail.startTime,
+              endTime: detail.endTime,
+              totalPrice: detail.booking.totalPrice ?? detail.price ?? 0,
+              note: detail.booking.note,
+              goods: detail.booking.goods ?? null,
+              branchId: court.branchId,
+              createdAt: '',
+              updatedAt: '',
+              deletedAt: null,
+              customerName:
+                detail.booking.userName ||
+                detail.booking.user?.username ||
+                'Unknown',
+              duration: durationInHours,
+              price: detail.price,
+            } as Booking;
+          }
+          // Legacy format: flat booking
+          const booking = item as Booking;
+          const start = new Date(booking.startTime);
+          const end = new Date(booking.endTime);
           const durationInHours =
             (end.getTime() - start.getTime()) / (1000 * 60 * 60);
           return {
-            id: detail.booking.id,
-            slotId: detail.id,
-            courtId: detail.courtId,
-            userId: '',
-            status: API_STATUS_MAP[detail.booking.status] ?? BOOKING_STATUS.PENDING,
-            bookingTitle: detail.booking.bookingTitle,
-            statusPayment: API_STATUS_PAYMENT_MAP[detail.booking.statusPayment] ?? BOOKING_PAYMENT_STATUS.unpaid,
-            startTime: detail.startTime,
-            endTime: detail.endTime,
-            totalPrice: detail.booking.totalPrice ?? detail.price ?? 0,
-            note: detail.booking.note,
-            goods: detail.booking.goods ?? null,
-            branchId: court.branchId,
-            createdAt: '',
-            updatedAt: '',
-            deletedAt: null,
+            ...booking,
+            status: API_STATUS_MAP[booking.status] ?? BOOKING_STATUS.PENDING,
+            statusPayment:
+              API_STATUS_PAYMENT_MAP[booking.statusPayment] ??
+              BOOKING_PAYMENT_STATUS.unpaid,
             customerName:
-              detail.booking.userName || detail.booking.user?.username || 'Unknown',
+              booking.user?.username || booking.bookingTitle || 'Unknown',
             duration: durationInHours,
-            price: detail.price,
+            price: booking.totalPrice ?? booking.price,
           } as Booking;
         }
-        // Legacy format: flat booking
-        const booking = item as Booking;
-        const start = new Date(booking.startTime);
-        const end = new Date(booking.endTime);
-        const durationInHours =
-          (end.getTime() - start.getTime()) / (1000 * 60 * 60);
-        return {
-          ...booking,
-          status: API_STATUS_MAP[booking.status] ?? BOOKING_STATUS.PENDING,
-          statusPayment: API_STATUS_PAYMENT_MAP[booking.statusPayment] ?? BOOKING_PAYMENT_STATUS.unpaid,
-          customerName:
-            booking.user?.username || booking.bookingTitle || 'Unknown',
-          duration: durationInHours,
-          price: booking.totalPrice ?? booking.price,
-        } as Booking;
-      });
+      );
 
       return {
         ...court,
@@ -172,11 +181,16 @@ export const updateBooking = async (id: string, data: UpdateBookingDto) => {
  * @param filters - Filter parameters (page, limit, status, statusPayment)
  * @returns Paginated list of bookings
  */
-export const fetchBookings = async (filters?: BookingFilters): Promise<PaginatedResponse<Booking>> => {
+export const fetchBookings = async (
+  filters?: BookingFilters
+): Promise<PaginatedResponse<Booking>> => {
   try {
-    const response = await axiosInstance.get<PaginatedResponse<Booking>>('/bookings/', {
-      params: filters,
-    });
+    const response = await axiosInstance.get<PaginatedResponse<Booking>>(
+      '/bookings/',
+      {
+        params: filters,
+      }
+    );
     return response.data;
   } catch (error) {
     console.error('Error fetching bookings:', error);
@@ -191,7 +205,9 @@ export const fetchBookings = async (filters?: BookingFilters): Promise<Paginated
  */
 export const fetchBookingById = async (id: string): Promise<Booking> => {
   try {
-    const response = await axiosInstance.get<{ data: Booking }>(`/bookings/${id}`);
+    const response = await axiosInstance.get<{ data: Booking }>(
+      `/bookings/${id}`
+    );
     return response.data.data;
   } catch (error) {
     console.error('Error fetching booking:', error);

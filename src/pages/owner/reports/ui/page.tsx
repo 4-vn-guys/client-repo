@@ -11,7 +11,13 @@ import {
 } from '@/entities/venue';
 import type { Branch } from '@/entities/venue';
 import { Button } from '@/shared/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/shared/ui/card';
 import { Field, FieldLabel } from '@/shared/ui/field';
 import { Input } from '@/shared/ui/input';
 import {
@@ -51,18 +57,28 @@ export default function ReportsPage() {
 
   const selectedBranch = useMemo(
     () => branches.find((b: Branch) => b.id === branchId),
-    [branches, branchId],
+    [branches, branchId]
   );
 
   const [depositEnabled, setDepositEnabled] = useState(false);
-  const [depositType, setDepositType] = useState<'percent' | 'fixed'>('percent');
+  const [depositType, setDepositType] = useState<'percent' | 'fixed'>(
+    'percent'
+  );
   const [depositValue, setDepositValue] = useState<string>('20');
+  const [depositHoldMinutes, setDepositHoldMinutes] = useState<string>('');
 
   useEffect(() => {
     if (!selectedBranch) return;
     setDepositEnabled(Boolean(selectedBranch.depositEnabled));
-    setDepositType((selectedBranch.depositType as 'percent' | 'fixed') || 'percent');
+    setDepositType(
+      (selectedBranch.depositType as 'percent' | 'fixed') || 'percent'
+    );
     setDepositValue(String(selectedBranch.depositValue ?? 0));
+    setDepositHoldMinutes(
+      selectedBranch.depositHoldMinutes != null
+        ? String(selectedBranch.depositHoldMinutes)
+        : ''
+    );
   }, [selectedBranch]);
 
   const revenueQuery = useQuery({
@@ -77,16 +93,28 @@ export default function ReportsPage() {
       if (Number.isNaN(num)) {
         throw new Error(t('invalidDepositValue'));
       }
+      const trimmedHold = depositHoldMinutes.trim();
+      let hold: number | null = null;
+      if (trimmedHold !== '') {
+        const h = Number(trimmedHold);
+        if (!Number.isInteger(h) || h < 5 || h > 1440) {
+          throw new Error(t('invalidDepositHoldMinutes'));
+        }
+        hold = h;
+      }
       return updateBranch(branchId, {
         depositEnabled,
         depositType,
         depositValue: num,
+        depositHoldMinutes: hold,
       });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['branches'] });
       queryClient.invalidateQueries({ queryKey: ['branch', branchId] });
-      queryClient.invalidateQueries({ queryKey: ['branch', branchId, 'revenue-deposits'] });
+      queryClient.invalidateQueries({
+        queryKey: ['branch', branchId, 'revenue-deposits'],
+      });
       toast.success(t('policySaved'));
     },
     onError: (e: Error) => {
@@ -97,10 +125,12 @@ export default function ReportsPage() {
   const s = revenueQuery.data?.summary;
 
   return (
-    <div className="container mx-auto max-w-4xl space-y-8 py-8">
+    <div className='container mx-auto max-w-4xl space-y-8 py-8'>
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">{tOwner('reports')}</h1>
-        <p className="text-muted-foreground mt-1 text-sm">{t('subtitle')}</p>
+        <h1 className='text-2xl font-semibold tracking-tight'>
+          {tOwner('reports')}
+        </h1>
+        <p className='text-muted-foreground mt-1 text-sm'>{t('subtitle')}</p>
       </div>
 
       <Card>
@@ -114,7 +144,7 @@ export default function ReportsPage() {
             onValueChange={setBranchId}
             disabled={loadingBranches || branches.length === 0}
           >
-            <SelectTrigger className="max-w-md">
+            <SelectTrigger className='max-w-md'>
               <SelectValue placeholder={t('selectBranch')} />
             </SelectTrigger>
             <SelectContent>
@@ -133,40 +163,40 @@ export default function ReportsPage() {
           <CardTitle>{t('revenueTitle')}</CardTitle>
           <CardDescription>{t('revenueDescription')}</CardDescription>
         </CardHeader>
-        <CardContent className="grid gap-4 sm:grid-cols-2">
-          <div className="rounded-lg border border-border/60 p-4">
-            <p className="text-muted-foreground text-xs font-medium uppercase">
+        <CardContent className='grid gap-4 sm:grid-cols-2'>
+          <div className='border-border/60 rounded-lg border p-4'>
+            <p className='text-muted-foreground text-xs font-medium uppercase'>
               {t('depositsCollected')}
             </p>
-            <p className="text-xl font-semibold">
+            <p className='text-xl font-semibold'>
               {s ? formatMoney(locale, s.depositsCollected) : '—'}
             </p>
           </div>
-          <div className="rounded-lg border border-border/60 p-4">
-            <p className="text-muted-foreground text-xs font-medium uppercase">
+          <div className='border-border/60 rounded-lg border p-4'>
+            <p className='text-muted-foreground text-xs font-medium uppercase'>
               {t('balanceCollected')}
             </p>
-            <p className="text-xl font-semibold">
+            <p className='text-xl font-semibold'>
               {s ? formatMoney(locale, s.balanceCollected) : '—'}
             </p>
           </div>
-          <div className="rounded-lg border border-border/60 p-4">
-            <p className="text-muted-foreground text-xs font-medium uppercase">
+          <div className='border-border/60 rounded-lg border p-4'>
+            <p className='text-muted-foreground text-xs font-medium uppercase'>
               {t('fullCollected')}
             </p>
-            <p className="text-xl font-semibold">
+            <p className='text-xl font-semibold'>
               {s ? formatMoney(locale, s.fullCollected) : '—'}
             </p>
           </div>
-          <div className="rounded-lg border border-border/60 p-4">
-            <p className="text-muted-foreground text-xs font-medium uppercase">
+          <div className='border-border/60 rounded-lg border p-4'>
+            <p className='text-muted-foreground text-xs font-medium uppercase'>
               {t('pendingTotal')}
             </p>
-            <p className="text-xl font-semibold">
+            <p className='text-xl font-semibold'>
               {s
                 ? formatMoney(
                     locale,
-                    s.pendingDeposits + s.pendingBalance + s.pendingFull,
+                    s.pendingDeposits + s.pendingBalance + s.pendingFull
                   )
                 : '—'}
             </p>
@@ -179,51 +209,77 @@ export default function ReportsPage() {
           <CardTitle>{t('depositPolicyTitle')}</CardTitle>
           <CardDescription>{t('depositPolicyDescription')}</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <label className="flex cursor-pointer items-center gap-2 text-sm">
+        <CardContent className='space-y-6'>
+          <label className='flex cursor-pointer items-center gap-2 text-sm'>
             <input
-              type="checkbox"
-              className="size-4 rounded border"
+              type='checkbox'
+              className='size-4 rounded border'
               checked={depositEnabled}
-              onChange={(e) => setDepositEnabled(e.target.checked)}
+              onChange={e => setDepositEnabled(e.target.checked)}
             />
             {t('enableDeposits')}
           </label>
 
-          <div className="grid max-w-md gap-4">
+          <div className='grid max-w-md gap-4'>
             <Field>
               <FieldLabel>{t('depositType')}</FieldLabel>
               <Select
                 value={depositType}
-                onValueChange={(v) => setDepositType(v as 'percent' | 'fixed')}
+                onValueChange={v => setDepositType(v as 'percent' | 'fixed')}
                 disabled={!depositEnabled}
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="percent">{t('typePercent')}</SelectItem>
-                  <SelectItem value="fixed">{t('typeFixed')}</SelectItem>
+                  <SelectItem value='percent'>{t('typePercent')}</SelectItem>
+                  <SelectItem value='fixed'>{t('typeFixed')}</SelectItem>
                 </SelectContent>
               </Select>
             </Field>
             <Field>
               <FieldLabel>
-                {depositType === 'percent' ? t('percentValue') : t('fixedValue')}
+                {depositType === 'percent'
+                  ? t('percentValue')
+                  : t('fixedValue')}
               </FieldLabel>
               <Input
-                type="number"
+                type='number'
                 min={0}
                 step={depositType === 'percent' ? 1 : 0.01}
                 value={depositValue}
-                onChange={(e) => setDepositValue(e.target.value)}
+                onChange={e => setDepositValue(e.target.value)}
                 disabled={!depositEnabled}
               />
+            </Field>
+            <Field>
+              <FieldLabel>{t('depositHoldMinutesLabel')}</FieldLabel>
+              <Input
+                type='number'
+                min={5}
+                max={1440}
+                step={1}
+                placeholder='30'
+                value={depositHoldMinutes}
+                onChange={e => setDepositHoldMinutes(e.target.value)}
+                disabled={!depositEnabled}
+              />
+              <p className='text-muted-foreground mt-1 text-xs'>
+                {t('depositHoldMinutesHint')}
+              </p>
+              {revenueQuery.data?.policy ? (
+                <p className='text-muted-foreground mt-1 text-xs'>
+                  {t('depositHoldEffective', {
+                    minutes:
+                      revenueQuery.data.policy.effectiveDepositHoldMinutes,
+                  })}
+                </p>
+              ) : null}
             </Field>
           </div>
 
           <Button
-            type="button"
+            type='button'
             onClick={() => savePolicy.mutate()}
             disabled={!branchId || savePolicy.isPending}
           >

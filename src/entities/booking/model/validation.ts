@@ -7,7 +7,10 @@ import z from 'zod';
  * @param requireCustomerName - When true (owner role), customer name is required. When false (user role), backend resolves user from auth.
  * @param isMultiSlotMode - When true, courtId is optional (slots come from grid selection). When false, courtId is required.
  */
-export function useBookingFormSchema(requireCustomerName = true, isMultiSlotMode = false) {
+export function useBookingFormSchema(
+  requireCustomerName = true,
+  isMultiSlotMode = false
+) {
   const bookingFormSchema = useMemo(() => {
     const base = z
       .object({
@@ -25,9 +28,7 @@ export function useBookingFormSchema(requireCustomerName = true, isMultiSlotMode
         status: z
           .enum(['pending', 'confirmed', 'cancelled', 'maintenance'])
           .default('pending'),
-        statusPayment: z
-          .enum(['paid', 'unpaid'])
-          .default('unpaid'),
+        statusPayment: z.enum(['paid', 'unpaid']).default('unpaid'),
         startHour: z
           .string()
           .regex(/^([0-1]?[0-9]|2[0-3])$/, { message: 'Invalid hour' }),
@@ -52,7 +53,7 @@ export function useBookingFormSchema(requireCustomerName = true, isMultiSlotMode
               name: z.string().max(200),
               quantity: z.number().min(1),
               unitPrice: z.number().min(0),
-            }),
+            })
           )
           .default([]),
       })
@@ -67,7 +68,7 @@ export function useBookingFormSchema(requireCustomerName = true, isMultiSlotMode
         {
           message: 'End time must be after start time',
           path: ['endHour'],
-        },
+        }
       );
 
     if (!requireCustomerName) {

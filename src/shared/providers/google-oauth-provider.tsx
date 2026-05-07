@@ -13,5 +13,7 @@ export function AppGoogleOAuthProvider({ children }: Props) {
     return <>{children}</>;
   }
 
-  return <GoogleOAuthProvider clientId={clientId}>{children}</GoogleOAuthProvider>;
+  return (
+    <GoogleOAuthProvider clientId={clientId}>{children}</GoogleOAuthProvider>
+  );
 }

@@ -15,8 +15,7 @@ export const applyLayoutSettings = (
 ) => {
   if (typeof document === 'undefined') return;
 
-  const compact =
-    settings.compactMode || settings.layoutDensity === 'compact';
+  const compact = settings.compactMode || settings.layoutDensity === 'compact';
   const spacing = compact ? compactSpacing : comfortableSpacing;
 
   document.documentElement.dataset.layoutDensity = settings.layoutDensity;
