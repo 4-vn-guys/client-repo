@@ -17,3 +17,4 @@ export * from './separator';
 export * from './spinner';
 export * from './tooltip';
 export * from './typography';
+export * from './stat-card';

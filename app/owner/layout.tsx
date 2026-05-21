@@ -9,13 +9,12 @@ export default function OwnerLayout({
 }) {
   return (
     <OwnerRouteGuard>
-      <div className='bg-background min-h-screen'>
+      <div
+        className='cc'
+        style={{ minHeight: '100vh', background: 'var(--cc-bg-2)' }}
+      >
         <OwnerSidebar />
-        <main className='min-h-screen md:ml-60'>
-          <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
-            {children}
-          </div>
-        </main>
+        <main className='min-h-screen md:ml-[232px]'>{children}</main>
       </div>
     </OwnerRouteGuard>
   );
