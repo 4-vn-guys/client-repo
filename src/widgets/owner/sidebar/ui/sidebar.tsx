@@ -12,6 +12,7 @@ import { useAuthStore } from '@/shared/store';
 import { useTranslations } from 'next-intl';
 import { useNotifications } from '@/features/notifications';
 import { useFeatureAccess } from '@/features/authorization/model/use-feature-access';
+import { VenueSwitcher, useActiveVenue } from '@/widgets/owner/venue-switcher';
 
 export function OwnerSidebar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,6 +20,20 @@ export function OwnerSidebar() {
   const tSidebar = useTranslations('OwnerSidebar');
   const { unreadCount } = useNotifications();
   const { hasFeature } = useFeatureAccess();
+  const { activeVenueId } = useActiveVenue();
+
+  const resolveHref = (labelKey: string, defaultHref: string): string => {
+    if (labelKey === 'schedule') {
+      return activeVenueId
+        ? `/owner/${activeVenueId}/timeline`
+        : '/owner/branches?picker=schedule';
+    }
+    if (labelKey === 'proShop' && activeVenueId) {
+      // Skip the branch-picker page when we already know the active venue.
+      return `/owner/${activeVenueId}/pro-shop`;
+    }
+    return defaultHref;
+  };
 
   return (
     <>
@@ -59,6 +74,8 @@ export function OwnerSidebar() {
           </span>
         </Link>
 
+        <VenueSwitcher />
+
         {ownerNavItems.map(section => (
           <div key={section.sectionKey}>
             <div className='nav-label'>{tSidebar(section.sectionKey)}</div>
@@ -67,7 +84,7 @@ export function OwnerSidebar() {
               .map(item => (
                 <SidebarNavItem
                   key={item.labelKey}
-                  href={item.href}
+                  href={resolveHref(item.labelKey, item.href)}
                   icon={item.icon}
                   isActive={item.isActive}
                   label={tSidebar(item.labelKey)}

@@ -16,6 +16,7 @@ const labelMap: Record<string, string> = {
   dashboard: 'Dashboard',
   users: 'Users',
   ownerGroups: 'Owner Groups',
+  tiers: 'Tier Presets',
   revenue: 'Revenue',
   overview: 'Overview',
   modules: 'Modules',

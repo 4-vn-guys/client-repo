@@ -1,279 +1,428 @@
 'use client';
 
+import { useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
+import { Plus, Trophy, Users } from 'lucide-react';
+
+import { Badge } from '@/shared/ui/badge';
+import { Button } from '@/shared/ui/button';
 import {
-  CCAvatar,
-  CCCard,
-  CCIcons,
-  CCPill,
-  CCStat,
-  OwnerPageBody,
-  OwnerPageHeader,
-} from '@/shared/ui/court-connect';
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/shared/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/shared/ui/dialog';
+import { Input } from '@/shared/ui/input';
+import { Label } from '@/shared/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/ui/select';
+import {
+  createTournament,
+  fetchBranchTournaments,
+  fetchTournamentRegistrations,
+  type CreateTournamentInput,
+  type Tournament,
+  type TournamentFormat,
+  type TournamentRegistration,
+  type TournamentStatus,
+} from '@/entities/tournament/api';
+import { useActiveVenue } from '@/widgets/owner/venue-switcher';
 
-type BracketBox = [string, string, [number, number]?];
-type Column = { col: string; boxes: BracketBox[] };
+const FORMAT_LABEL: Record<TournamentFormat, string> = {
+  single_elim: 'Single elimination',
+  double_elim: 'Double elimination',
+  round_robin: 'Round robin',
+};
 
-const COLUMNS: Column[] = [
-  {
-    col: 'Quarters',
-    boxes: [
-      ['Levi & Minh', 'Pham & Vu', [2, 0]],
-      ['Thomas & Jin', 'Hoa & Mai', [2, 1]],
-      ['You & Mai', 'Q & B', [1, 2]],
-      ['Tran & Khoa', 'Anh & Sang', [2, 1]],
-    ],
-  },
-  {
-    col: 'Semis',
-    boxes: [
-      ['Levi & Minh', 'Thomas & Jin'],
-      ['Q & B', 'Tran & Khoa'],
-    ],
-  },
-  { col: 'Final', boxes: [['—', '—']] },
-  { col: 'Champion', boxes: [] },
-];
+const STATUS_VARIANT: Record<TournamentStatus, 'outline' | 'secondary' | 'default' | 'destructive'> = {
+  draft: 'outline',
+  open: 'secondary',
+  live: 'default',
+  completed: 'outline',
+};
 
-const REGISTRATIONS = [
-  {
-    n: 'Nguyen & Pham',
-    s: 'Pro',
-    t: '2 min ago',
-    isNew: true,
-    tone: 'purple' as const,
-  },
-  { n: 'Le & Tran', s: 'Inter', t: '1h', tone: 'green' as const },
-  { n: 'Hoang & Vo', s: 'Pro', t: '3h', tone: 'amber' as const },
-  { n: 'Mai & Linh', s: 'Beg', t: 'yesterday', tone: 'blue' as const },
-];
+export function OwnerTournamentsPage() {
+  const { activeVenueId, activeVenue, isLoading: venueLoading } = useActiveVenue();
+  const [createOpen, setCreateOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
-const ALLOCATIONS = [
-  { c: 'Court A', m: 'SF1 · Sat 17:00', dur: '90m' },
-  { c: 'Court B', m: 'SF2 · Sat 18:00', dur: '90m' },
-  { c: 'Court C', m: 'Final · Sun 17:00', dur: '120m' },
-];
+  const listQuery = useQuery({
+    queryKey: ['owner-tournaments', activeVenueId],
+    queryFn: () => fetchBranchTournaments(activeVenueId as string),
+    enabled: !!activeVenueId,
+  });
 
-function BracketMatch({ box }: { box: BracketBox }) {
-  const [a, b, score] = box;
-  const aWin = score ? score[0] > score[1] : false;
-  const bWin = score ? score[1] > score[0] : false;
+  const tournaments = listQuery.data ?? [];
+
+  if (venueLoading) {
+    return <div className='text-muted-foreground p-8 text-sm'>Loading venue…</div>;
+  }
+  if (!activeVenueId) {
+    return (
+      <div className='p-8 text-sm'>No active venue. Pick one from the sidebar.</div>
+    );
+  }
+
   return (
-    <div
-      style={{
-        border: '1px solid var(--cc-line)',
-        borderRadius: 8,
-        padding: 8,
-        marginBottom: 12,
-        fontSize: 11.5,
-        background: '#fff',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          fontWeight: aWin ? 700 : 500,
-          color: aWin ? 'var(--cc-purple-600)' : 'var(--cc-ink-2)',
-        }}
-      >
-        <span>{a}</span>
-        {score && <span>{score[0]}</span>}
+    <div className='space-y-6 p-6'>
+      <div className='flex items-start justify-between gap-4'>
+        <div>
+          <h1 className='text-2xl font-bold tracking-tight'>Tournaments</h1>
+          <p className='text-muted-foreground mt-1 text-sm'>
+            Brackets, registrations, and court allocation for{' '}
+            <strong>{activeVenue?.name}</strong>.
+          </p>
+        </div>
+        <Button
+          icon={<Plus className='size-4' />}
+          onClick={() => setCreateOpen(true)}
+        >
+          New tournament
+        </Button>
       </div>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          fontWeight: bWin ? 700 : 500,
-          color: bWin ? 'var(--cc-purple-600)' : 'var(--cc-ink-3)',
-          marginTop: 3,
-        }}
-      >
-        <span>{b}</span>
-        {score && <span>{score[1]}</span>}
+
+      <div className='grid gap-6 lg:grid-cols-[1fr_1.2fr]'>
+        <Card className='gap-0 py-0'>
+          <CardHeader className='border-b'>
+            <CardTitle className='text-sm'>Tournaments</CardTitle>
+            <CardDescription>
+              {tournaments.length} total · click one to see registrations
+            </CardDescription>
+          </CardHeader>
+          <CardContent className='p-0'>
+            {listQuery.isLoading ? (
+              <div className='text-muted-foreground p-6 text-sm'>Loading…</div>
+            ) : listQuery.isError ? (
+              <div className='p-6 text-sm text-red-600'>
+                {(listQuery.error as Error).message}
+              </div>
+            ) : tournaments.length === 0 ? (
+              <div className='text-muted-foreground p-6 text-sm'>
+                No tournaments yet. Click <strong>New tournament</strong> to add one.
+              </div>
+            ) : (
+              <div className='divide-y'>
+                {tournaments.map(t => (
+                  <TournamentRow
+                    key={t.id}
+                    tournament={t}
+                    selected={selectedId === t.id}
+                    onSelect={() => setSelectedId(t.id)}
+                  />
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <RegistrationsPanel tournamentId={selectedId} tournaments={tournaments} />
+      </div>
+
+      <CreateTournamentDialog
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        branchId={activeVenueId}
+      />
+    </div>
+  );
+}
+
+function TournamentRow({
+  tournament,
+  selected,
+  onSelect,
+}: {
+  tournament: Tournament;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  return (
+    <button
+      type='button'
+      onClick={onSelect}
+      className={`flex w-full cursor-pointer items-start gap-3 p-4 text-left transition-colors ${
+        selected ? 'bg-muted/60' : 'hover:bg-muted/30'
+      }`}
+    >
+      <Trophy className='text-primary mt-0.5 size-4 shrink-0' />
+      <div className='min-w-0 flex-1'>
+        <div className='flex flex-wrap items-center gap-2'>
+          <span className='truncate font-semibold'>{tournament.name}</span>
+          <Badge variant={STATUS_VARIANT[tournament.status]} className='capitalize'>
+            {tournament.status}
+          </Badge>
+        </div>
+        <div className='text-muted-foreground mt-0.5 text-xs'>
+          {FORMAT_LABEL[tournament.format]} · capacity {tournament.capacity} ·{' '}
+          fee ${tournament.entryFee.toLocaleString()}
+        </div>
+        {tournament.startsAt && (
+          <div className='text-muted-foreground mt-0.5 text-xs'>
+            Starts {new Date(tournament.startsAt).toLocaleString()}
+          </div>
+        )}
+      </div>
+    </button>
+  );
+}
+
+function RegistrationsPanel({
+  tournamentId,
+  tournaments,
+}: {
+  tournamentId: string | null;
+  tournaments: Tournament[];
+}) {
+  const selected = tournaments.find(t => t.id === tournamentId) ?? null;
+
+  const regQuery = useQuery({
+    queryKey: ['tournament-registrations', tournamentId],
+    queryFn: () => fetchTournamentRegistrations(tournamentId as string),
+    enabled: !!tournamentId,
+  });
+
+  return (
+    <Card className='gap-0 py-0'>
+      <CardHeader className='border-b'>
+        <CardTitle className='text-sm'>
+          {selected ? `${selected.name} · registrations` : 'Registrations'}
+        </CardTitle>
+        <CardDescription>
+          {selected
+            ? `${regQuery.data?.length ?? 0} of ${selected.capacity} teams`
+            : 'Select a tournament to see registered teams'}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className='p-0'>
+        {!tournamentId ? (
+          <div className='text-muted-foreground p-6 text-sm'>
+            Pick a tournament on the left.
+          </div>
+        ) : regQuery.isLoading ? (
+          <div className='text-muted-foreground p-6 text-sm'>Loading…</div>
+        ) : regQuery.isError ? (
+          <div className='p-6 text-sm text-red-600'>
+            {(regQuery.error as Error).message}
+          </div>
+        ) : (regQuery.data?.length ?? 0) === 0 ? (
+          <div className='text-muted-foreground p-6 text-sm'>
+            No registrations yet.
+          </div>
+        ) : (
+          <div className='divide-y'>
+            {regQuery.data!.map(r => (
+              <RegistrationRow key={r.id} registration={r} />
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function RegistrationRow({ registration }: { registration: TournamentRegistration }) {
+  return (
+    <div className='flex items-start gap-3 p-4'>
+      <Users className='text-muted-foreground mt-0.5 size-4 shrink-0' />
+      <div className='min-w-0 flex-1'>
+        <div className='flex flex-wrap items-center gap-2'>
+          <span className='truncate font-semibold'>{registration.teamName}</span>
+          <Badge variant='secondary' className='capitalize'>
+            {registration.level}
+          </Badge>
+          {registration.status && (
+            <Badge variant='outline' className='capitalize'>
+              {registration.status}
+            </Badge>
+          )}
+        </div>
+        {registration.createdAt && (
+          <div className='text-muted-foreground mt-0.5 text-xs'>
+            Registered {new Date(registration.createdAt).toLocaleString()}
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-export function OwnerTournamentsPage() {
+function CreateTournamentDialog({
+  open,
+  onOpenChange,
+  branchId,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  branchId: string;
+}) {
   return (
-    <>
-      <OwnerPageHeader
-        title='Tournaments'
-        actions={
-          <button className='cc-btn cc-btn-primary'>
-            <CCIcons.plus size={14} /> Create event
-          </button>
-        }
-      />
-      <OwnerPageBody>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr 1fr',
-            gap: 12,
-            marginBottom: 18,
-          }}
-        >
-          <CCStat label='Active events' value='3' />
-          <CCStat label='Registrations' value='84' delta='9 new' />
-          <CCStat label='Entry-fee revenue' value='12.6M' />
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {open && (
+        <CreateTournamentDialogContent
+          branchId={branchId}
+          onOpenChange={onOpenChange}
+        />
+      )}
+    </Dialog>
+  );
+}
+
+function CreateTournamentDialogContent({
+  branchId,
+  onOpenChange,
+}: {
+  branchId: string;
+  onOpenChange: (v: boolean) => void;
+}) {
+  const qc = useQueryClient();
+  const [form, setForm] = useState<CreateTournamentInput>(() => ({
+    branchId,
+    name: '',
+    format: 'single_elim',
+    capacity: 16,
+    entryFee: 0,
+    startsAt: null,
+    endsAt: null,
+  }));
+
+  const mutation = useMutation({
+    mutationFn: createTournament,
+    onSuccess: () => {
+      toast.success('Tournament created');
+      qc.invalidateQueries({ queryKey: ['owner-tournaments', branchId] });
+      onOpenChange(false);
+    },
+    onError: (e: Error) => toast.error(e.message || 'Create failed'),
+  });
+
+  function toIsoOrNull(value: string): string | null {
+    if (!value) return null;
+    const d = new Date(value);
+    return Number.isNaN(d.valueOf()) ? null : d.toISOString();
+  }
+
+  return (
+    <DialogContent className='sm:max-w-md'>
+      <DialogHeader>
+        <DialogTitle>New tournament</DialogTitle>
+        <DialogDescription>
+          Sets up the tournament shell. Players register via the public listing.
+        </DialogDescription>
+      </DialogHeader>
+      <form
+        onSubmit={e => {
+          e.preventDefault();
+          if (mutation.isPending) return;
+          mutation.mutate(form);
+        }}
+        className='space-y-4'
+      >
+        <div className='space-y-1.5'>
+          <Label htmlFor='t-name'>Name</Label>
+          <Input
+            id='t-name'
+            required
+            minLength={2}
+            value={form.name}
+            onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+            placeholder='Spring Doubles Open'
+          />
         </div>
-
-        <div
-          style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: 18 }}
-        >
-          <CCCard style={{ padding: 18 }}>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                marginBottom: 10,
-              }}
-            >
-              <div>
-                <div
-                  className='cc-display'
-                  style={{ fontSize: 14, fontWeight: 700 }}
-                >
-                  May Open · Doubles
-                </div>
-                <div style={{ fontSize: 11.5, color: 'var(--cc-mute)' }}>
-                  16 teams · single elim · entry 200k
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: 6 }}>
-                <CCPill tone='amber'>Live · Round of 8</CCPill>
-                <button className='cc-btn cc-btn-sm'>Edit</button>
-              </div>
-            </div>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(4,1fr)',
-                gap: 16,
-                marginTop: 14,
-              }}
-            >
-              {COLUMNS.map(c => (
-                <div
-                  key={c.col}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-around',
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: 10.5,
-                      fontWeight: 700,
-                      color: 'var(--cc-mute)',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.08em',
-                      marginBottom: 6,
-                    }}
-                  >
-                    {c.col}
-                  </div>
-                  {c.boxes.length === 0 ? (
-                    <div
-                      style={{
-                        flex: 1,
-                        border: '1px dashed var(--cc-mute-2)',
-                        borderRadius: 8,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'var(--cc-mute)',
-                        fontSize: 11,
-                      }}
-                    >
-                      🏆 TBD
-                    </div>
-                  ) : (
-                    c.boxes.map((b, i) => <BracketMatch key={i} box={b} />)
-                  )}
-                </div>
-              ))}
-            </div>
-          </CCCard>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <CCCard style={{ padding: 14 }}>
-              <div
-                style={{ fontSize: 12.5, fontWeight: 700, marginBottom: 10 }}
-              >
-                Registrations
-              </div>
-              {REGISTRATIONS.map((r, i) => (
-                <div
-                  key={r.n}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                    padding: '7px 0',
-                    borderTop: i ? '1px solid var(--cc-line-2)' : 'none',
-                  }}
-                >
-                  <CCAvatar
-                    initials={r.n.split(' ')[0].slice(0, 2)}
-                    tone={r.tone}
-                  />
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 12.5, fontWeight: 600 }}>{r.n}</div>
-                    <div style={{ fontSize: 10.5, color: 'var(--cc-mute)' }}>
-                      {r.s} · {r.t}
-                    </div>
-                  </div>
-                  {r.isNew && <CCPill tone='green'>new</CCPill>}
-                </div>
-              ))}
-            </CCCard>
-
-            <CCCard style={{ padding: 14 }}>
-              <div
-                style={{ fontSize: 12.5, fontWeight: 700, marginBottom: 10 }}
-              >
-                Court allocation
-              </div>
-              <div
-                style={{
-                  fontSize: 11,
-                  color: 'var(--cc-mute)',
-                  marginBottom: 8,
-                }}
-              >
-                Auto-blocks reserved during matches
-              </div>
-              {ALLOCATIONS.map((a, i) => (
-                <div
-                  key={a.c}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                    padding: '7px 0',
-                    borderTop: i ? '1px solid var(--cc-line-2)' : 'none',
-                    fontSize: 12,
-                  }}
-                >
-                  <CCIcons.lock
-                    size={12}
-                    style={{ color: 'var(--cc-amber)' }}
-                  />
-                  <span style={{ fontWeight: 600 }}>{a.c}</span>
-                  <span style={{ color: 'var(--cc-ink-3)' }}>{a.m}</span>
-                  <span style={{ marginLeft: 'auto', color: 'var(--cc-mute)' }}>
-                    {a.dur}
-                  </span>
-                </div>
-              ))}
-            </CCCard>
+        <div className='space-y-1.5'>
+          <Label htmlFor='t-format'>Format</Label>
+          <Select
+            value={form.format}
+            onValueChange={v => setForm(f => ({ ...f, format: v as TournamentFormat }))}
+          >
+            <SelectTrigger id='t-format'>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='single_elim'>{FORMAT_LABEL.single_elim}</SelectItem>
+              <SelectItem value='double_elim'>{FORMAT_LABEL.double_elim}</SelectItem>
+              <SelectItem value='round_robin'>{FORMAT_LABEL.round_robin}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className='grid grid-cols-2 gap-3'>
+          <div className='space-y-1.5'>
+            <Label htmlFor='t-capacity'>Capacity</Label>
+            <Input
+              id='t-capacity'
+              type='number'
+              min={2}
+              max={256}
+              value={form.capacity}
+              onChange={e =>
+                setForm(f => ({ ...f, capacity: Number(e.target.value) }))
+              }
+            />
+          </div>
+          <div className='space-y-1.5'>
+            <Label htmlFor='t-fee'>Entry fee</Label>
+            <Input
+              id='t-fee'
+              type='number'
+              min={0}
+              step={1000}
+              value={form.entryFee}
+              onChange={e =>
+                setForm(f => ({ ...f, entryFee: Number(e.target.value) }))
+              }
+            />
           </div>
         </div>
-      </OwnerPageBody>
-    </>
+        <div className='grid grid-cols-2 gap-3'>
+          <div className='space-y-1.5'>
+            <Label htmlFor='t-starts'>Starts</Label>
+            <Input
+              id='t-starts'
+              type='datetime-local'
+              onChange={e =>
+                setForm(f => ({ ...f, startsAt: toIsoOrNull(e.target.value) }))
+              }
+            />
+          </div>
+          <div className='space-y-1.5'>
+            <Label htmlFor='t-ends'>Ends</Label>
+            <Input
+              id='t-ends'
+              type='datetime-local'
+              onChange={e =>
+                setForm(f => ({ ...f, endsAt: toIsoOrNull(e.target.value) }))
+              }
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button
+            type='button'
+            variant='outline'
+            onClick={() => onOpenChange(false)}
+            disabled={mutation.isPending}
+          >
+            Cancel
+          </Button>
+          <Button type='submit' isLoading={mutation.isPending}>
+            Create
+          </Button>
+        </DialogFooter>
+      </form>
+    </DialogContent>
   );
 }

@@ -6,6 +6,8 @@ export type OwnerGroup = {
   id: string;
   name: string;
   createdAt?: string;
+  tierId?: string | null;
+  priority?: number;
 };
 
 export async function fetchOwnerGroups(): Promise<OwnerGroup[]> {
@@ -78,5 +80,24 @@ export async function setOwnerGroupFeatures(
   if (!res.data.success)
     throw new Error(res.data.message || 'Failed to update group features');
   return res.data.data.enabledFeatures;
+}
+
+export type UpdateOwnerGroupSettingsInput = {
+  groupId: string;
+  tierId?: string | null;
+  priority?: number;
+};
+
+export async function updateOwnerGroupSettings({
+  groupId,
+  ...patch
+}: UpdateOwnerGroupSettingsInput): Promise<OwnerGroup> {
+  const res = await axiosInstance.patch<ApiResponse<OwnerGroup>>(
+    `/admin/owner-groups/${groupId}`,
+    patch
+  );
+  if (!res.data.success)
+    throw new Error(res.data.message || 'Failed to update group settings');
+  return res.data.data;
 }
 

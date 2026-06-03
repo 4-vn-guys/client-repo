@@ -312,7 +312,7 @@ export default function AdminSheetsPage() {
                   <tbody>
                     {rows.map((row, rowIndex) => (
                       <tr 
-                        key={row.id ?? rowIndex} 
+                        key={String(row.id ?? rowIndex)} 
                         className="hover:bg-muted/40 transition-colors border-b border-border/60 text-xs font-normal"
                       >
                         {/* Row numbering */}
