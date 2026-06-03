@@ -1,461 +1,326 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  CCCard,
-  CCIcons,
-  CCPill,
-  OwnerPageBody,
-  OwnerPageHeader,
-} from '@/shared/ui/court-connect';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
+import { Save } from 'lucide-react';
 
-function Field({
-  label,
-  value,
-  mono,
-  swatch,
-}: {
-  label: string;
-  value: string;
-  mono?: boolean;
-  swatch?: string;
-}) {
+import { Badge } from '@/shared/ui/badge';
+import { Button } from '@/shared/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/shared/ui/card';
+import { Input } from '@/shared/ui/input';
+import { Label } from '@/shared/ui/label';
+import {
+  fetchBranding,
+  updateBranding,
+  type BrandingConfig,
+} from '@/entities/branding/api';
+import { useActiveVenue } from '@/widgets/owner/venue-switcher';
+
+const HEX_RE = /^#[0-9A-Fa-f]{6}$/;
+
+type Draft = {
+  displayName: string;
+  subdomain: string;
+  primaryColor: string;
+  accentColor: string;
+  logoUrl: string;
+};
+
+function toDraft(config: BrandingConfig): Draft {
+  return {
+    displayName: config.displayName ?? '',
+    subdomain: config.subdomain ?? '',
+    primaryColor: config.primaryColor ?? '#7C3AED',
+    accentColor: config.accentColor ?? '#0EA5E9',
+    logoUrl: config.logoUrl ?? '',
+  };
+}
+
+export function OwnerBrandingPage() {
+  const { activeVenueId, activeVenue, isLoading: venueLoading } = useActiveVenue();
+
+  const brandingQuery = useQuery({
+    queryKey: ['owner-branding', activeVenueId],
+    queryFn: () => fetchBranding(activeVenueId as string),
+    enabled: !!activeVenueId,
+  });
+
+  if (venueLoading) {
+    return <div className='text-muted-foreground p-8 text-sm'>Loading venue…</div>;
+  }
+
+  if (!activeVenueId) {
+    return (
+      <div className='p-8 text-sm'>
+        No active venue. Pick one from the sidebar.
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <div
-        style={{
-          fontSize: 11.5,
-          fontWeight: 600,
-          color: 'var(--cc-ink-3)',
-          marginBottom: 4,
-        }}
-      >
-        {label}
+    <div className='space-y-6 p-6'>
+      <div>
+        <h1 className='text-2xl font-bold tracking-tight'>Branding</h1>
+        <p className='text-muted-foreground mt-1 text-sm'>
+          Customise the look of player-facing pages for{' '}
+          <strong>{activeVenue?.name}</strong>.
+        </p>
       </div>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          border: '1px solid var(--cc-line)',
-          borderRadius: 8,
-          padding: '7px 10px',
-          background: '#fff',
-        }}
-      >
-        {swatch && (
-          <span
-            style={{
-              width: 16,
-              height: 16,
-              borderRadius: 4,
-              background: swatch,
-              border: '1px solid rgba(0,0,0,.1)',
-            }}
-          />
-        )}
-        <span
-          style={{
-            fontSize: 12.5,
-            fontFamily: mono ? 'var(--cc-font-mono)' : 'inherit',
-            color: 'var(--cc-ink-2)',
-          }}
-        >
-          {value}
-        </span>
-      </div>
+
+      {brandingQuery.isLoading ? (
+        <div className='text-muted-foreground text-sm'>Loading branding…</div>
+      ) : brandingQuery.isError ? (
+        <div className='text-sm text-red-600'>
+          Failed to load branding · {(brandingQuery.error as Error).message}
+        </div>
+      ) : brandingQuery.data ? (
+        <BrandingForm
+          key={activeVenueId}
+          branchId={activeVenueId}
+          config={brandingQuery.data}
+          venueName={activeVenue?.name ?? null}
+        />
+      ) : null}
     </div>
   );
 }
 
-const TEMPLATE_TABS = [
-  'Booking confirmed',
-  'Cancellation',
-  'Slot re-listed',
-  'Match invite',
-] as const;
+function BrandingForm({
+  branchId,
+  config,
+  venueName,
+}: {
+  branchId: string;
+  config: BrandingConfig;
+  venueName: string | null;
+}) {
+  const qc = useQueryClient();
+  const [draft, setDraft] = useState<Draft>(() => toDraft(config));
 
-const CHANNELS = [
-  { l: 'Email', icon: <CCIcons.mail size={14} />, on: true },
-  { l: 'SMS', icon: <CCIcons.phone size={14} />, on: true },
-  { l: 'Push', icon: <CCIcons.bell size={14} />, on: true },
-  { l: 'Zalo', icon: <CCIcons.msg size={14} />, on: false },
-];
+  const mutation = useMutation({
+    mutationFn: updateBranding,
+    onSuccess: data => {
+      toast.success('Branding saved');
+      qc.setQueryData(['owner-branding', branchId], data);
+    },
+    onError: (e: Error) => toast.error(e.message || 'Save failed'),
+  });
 
-export function OwnerBrandingPage() {
-  const [activeTab, setActiveTab] = useState<string>(TEMPLATE_TABS[0]);
+  const dirty =
+    draft.displayName !== (config.displayName ?? '') ||
+    draft.subdomain !== (config.subdomain ?? '') ||
+    draft.primaryColor !== (config.primaryColor ?? '') ||
+    draft.accentColor !== (config.accentColor ?? '') ||
+    draft.logoUrl !== (config.logoUrl ?? '');
+
+  function handleSave() {
+    if (!HEX_RE.test(draft.primaryColor) || !HEX_RE.test(draft.accentColor)) {
+      toast.error('Colors must be #RRGGBB');
+      return;
+    }
+    mutation.mutate({
+      branchId,
+      displayName: draft.displayName.trim() || undefined,
+      subdomain: draft.subdomain.trim() || null,
+      primaryColor: draft.primaryColor,
+      accentColor: draft.accentColor,
+      logoUrl: draft.logoUrl.trim() || null,
+    });
+  }
 
   return (
     <>
-      <OwnerPageHeader title='Branding & comms' />
-      <OwnerPageBody>
-        <div
-          style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}
+      <div className='flex justify-end'>
+        <Button
+          icon={<Save className='size-4' />}
+          onClick={handleSave}
+          isLoading={mutation.isPending}
+          disabled={!dirty || mutation.isPending}
         >
-          <CCCard style={{ padding: 18 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>
-              Tenant branding
-            </div>
-            <div
-              style={{
-                fontSize: 11.5,
-                color: 'var(--cc-mute)',
-                marginBottom: 14,
-              }}
-            >
-              How TVC Badminton appears to your players & in emails.
-            </div>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: 12,
-              }}
-            >
-              <Field label='Display name' value='TVC Badminton DaNang' />
-              <Field label='Subdomain' value='tvc.courtconnect.app' mono />
-              <Field label='Primary color' value='#7C3AED' swatch='#7C3AED' />
-              <Field label='Accent color' value='#10B981' swatch='#10B981' />
-            </div>
+          Save
+        </Button>
+      </div>
 
-            <div style={{ marginTop: 14 }}>
-              <div
-                style={{
-                  fontSize: 11.5,
-                  fontWeight: 600,
-                  color: 'var(--cc-ink-3)',
-                  marginBottom: 6,
-                }}
-              >
-                Logo
-              </div>
-              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                <div
-                  style={{
-                    width: 64,
-                    height: 64,
-                    borderRadius: 12,
-                    background: 'linear-gradient(135deg,#a78bfa,#7c3aed)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#fff',
-                    fontWeight: 800,
-                    fontSize: 22,
-                  }}
-                >
-                  TVC
-                </div>
-                <div
-                  style={{
-                    flex: 1,
-                    padding: 12,
-                    border: '1px dashed var(--cc-mute-2)',
-                    borderRadius: 10,
-                    fontSize: 11.5,
-                    color: 'var(--cc-mute)',
-                    textAlign: 'center',
-                    fontFamily: 'var(--cc-font-mono)',
-                  }}
-                >
-                  Drop SVG / PNG · max 2MB
-                </div>
-              </div>
+      <div className='grid gap-6 lg:grid-cols-[2fr_1fr]'>
+        <Card>
+          <CardHeader>
+            <CardTitle>Identity</CardTitle>
+            <CardDescription>
+              Shown on receipts, emails, and the public booking page.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className='space-y-4'>
+            <div className='space-y-1.5'>
+              <Label htmlFor='b-displayname'>Display name</Label>
+              <Input
+                id='b-displayname'
+                value={draft.displayName}
+                onChange={e =>
+                  setDraft(d => ({ ...d, displayName: e.target.value }))
+                }
+                placeholder={venueName ?? ''}
+              />
             </div>
-
-            <div style={{ marginTop: 14 }}>
-              <div
-                style={{
-                  fontSize: 11.5,
-                  fontWeight: 600,
-                  color: 'var(--cc-ink-3)',
-                  marginBottom: 6,
-                }}
-              >
-                Player-app preview
-              </div>
-              <div
-                style={{
-                  border: '1px solid var(--cc-line)',
-                  borderRadius: 12,
-                  padding: 14,
-                  background: 'var(--cc-bg-2)',
-                }}
-              >
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    marginBottom: 10,
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 26,
-                      height: 26,
-                      borderRadius: 7,
-                      background: 'linear-gradient(135deg,#a78bfa,#7c3aed)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: '#fff',
-                      fontSize: 9,
-                      fontWeight: 700,
-                    }}
-                  >
-                    TVC
-                  </div>
-                  <span style={{ fontSize: 13, fontWeight: 700 }}>
-                    TVC Badminton
-                  </span>
-                  <CCPill tone='green' style={{ marginLeft: 'auto' }}>
-                    Open
-                  </CCPill>
-                </div>
-                <button
-                  style={{
-                    background: '#7C3AED',
-                    color: '#fff',
-                    border: 'none',
-                    padding: '8px 14px',
-                    borderRadius: 10,
-                    fontSize: 12,
-                    fontWeight: 600,
-                  }}
-                >
-                  Book a court
-                </button>
-              </div>
+            <div className='space-y-1.5'>
+              <Label htmlFor='b-subdomain'>Subdomain</Label>
+              <Input
+                id='b-subdomain'
+                value={draft.subdomain}
+                onChange={e =>
+                  setDraft(d => ({ ...d, subdomain: e.target.value }))
+                }
+                placeholder='tvc'
+              />
+              <p className='text-muted-foreground text-[11px]'>
+                Resolves to{' '}
+                <span className='font-mono'>
+                  {draft.subdomain || 'your-name'}.courtconnect.app
+                </span>
+              </p>
             </div>
-          </CCCard>
-
-          <CCCard style={{ padding: 18 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>
-              Email & SMS templates
-            </div>
-            <div
-              style={{
-                fontSize: 11.5,
-                color: 'var(--cc-mute)',
-                marginBottom: 14,
-              }}
-            >
-              Each tenant can override copy. Variables:{' '}
-              <span
-                className='cc-mono'
-                style={{
-                  background: 'var(--cc-bg-3)',
-                  padding: '0 4px',
-                  borderRadius: 4,
-                }}
-              >
-                {'{{name}}'}
-              </span>{' '}
-              <span
-                className='cc-mono'
-                style={{
-                  background: 'var(--cc-bg-3)',
-                  padding: '0 4px',
-                  borderRadius: 4,
-                }}
-              >
-                {'{{court}}'}
-              </span>
-            </div>
-
-            <div
-              style={{
-                display: 'flex',
-                gap: 4,
-                padding: 3,
-                background: 'var(--cc-bg-3)',
-                borderRadius: 10,
-                marginBottom: 12,
-              }}
-            >
-              {TEMPLATE_TABS.map(label => {
-                const active = activeTab === label;
-                return (
-                  <button
-                    key={label}
-                    onClick={() => setActiveTab(label)}
-                    style={{
-                      flex: 1,
-                      textAlign: 'center',
-                      padding: '6px 8px',
-                      borderRadius: 8,
-                      fontSize: 11.5,
-                      fontWeight: 600,
-                      background: active ? '#fff' : 'transparent',
-                      color: active
-                        ? 'var(--cc-purple-600)'
-                        : 'var(--cc-ink-3)',
-                      boxShadow: active ? 'var(--cc-shadow-sm)' : 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
-
-            <div style={{ display: 'flex', gap: 14, marginBottom: 14 }}>
-              {CHANNELS.map(c => (
-                <div
-                  key={c.l}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    padding: '6px 10px',
-                    borderRadius: 8,
-                    background: c.on ? 'var(--cc-purple-50)' : 'var(--cc-bg-3)',
-                    color: c.on ? 'var(--cc-purple-600)' : 'var(--cc-mute)',
-                    fontSize: 12,
-                    fontWeight: 600,
-                  }}
-                >
-                  {c.icon}
-                  {c.l}
-                  {c.on && <CCIcons.check size={12} stroke={2.5} />}
-                </div>
-              ))}
-            </div>
-
-            <Field
-              label='Subject (en)'
-              value='Booking confirmed · {{court}} · {{date}}'
-            />
-            <div style={{ marginTop: 12 }}>
-              <Field
-                label='Subject (vi)'
-                value='Đã đặt sân thành công · {{court}}'
+            <div className='space-y-1.5'>
+              <Label htmlFor='b-logo'>Logo URL</Label>
+              <Input
+                id='b-logo'
+                value={draft.logoUrl}
+                onChange={e =>
+                  setDraft(d => ({ ...d, logoUrl: e.target.value }))
+                }
+                placeholder='https://…/logo.png'
               />
             </div>
 
-            <div style={{ marginTop: 12 }}>
-              <div
-                style={{
-                  fontSize: 11.5,
-                  fontWeight: 600,
-                  color: 'var(--cc-ink-3)',
-                  marginBottom: 6,
-                }}
-              >
-                Body
+            <div className='grid grid-cols-2 gap-4'>
+              <div className='space-y-1.5'>
+                <Label htmlFor='b-primary'>Primary color</Label>
+                <div className='flex items-center gap-2'>
+                  <input
+                    id='b-primary'
+                    type='color'
+                    className='size-9 cursor-pointer rounded-md border'
+                    value={
+                      HEX_RE.test(draft.primaryColor)
+                        ? draft.primaryColor
+                        : '#7C3AED'
+                    }
+                    onChange={e =>
+                      setDraft(d => ({
+                        ...d,
+                        primaryColor: e.target.value.toUpperCase(),
+                      }))
+                    }
+                  />
+                  <Input
+                    value={draft.primaryColor}
+                    onChange={e =>
+                      setDraft(d => ({
+                        ...d,
+                        primaryColor: e.target.value.toUpperCase(),
+                      }))
+                    }
+                    className='font-mono'
+                  />
+                </div>
               </div>
-              <div
-                style={{
-                  border: '1px solid var(--cc-line)',
-                  borderRadius: 10,
-                  padding: 14,
-                  fontSize: 12.5,
-                  lineHeight: 1.55,
-                  background: '#fff',
-                }}
-              >
-                <div style={{ fontWeight: 600 }}>
-                  Hi{' '}
-                  <span
-                    style={{
-                      background: 'var(--cc-purple-50)',
-                      color: 'var(--cc-purple-600)',
-                      padding: '0 5px',
-                      borderRadius: 4,
-                      fontFamily: 'var(--cc-font-mono)',
-                      fontSize: 11.5,
-                    }}
-                  >
-                    {'{{name}}'}
-                  </span>
-                  ,
+              <div className='space-y-1.5'>
+                <Label htmlFor='b-accent'>Accent color</Label>
+                <div className='flex items-center gap-2'>
+                  <input
+                    id='b-accent'
+                    type='color'
+                    className='size-9 cursor-pointer rounded-md border'
+                    value={
+                      HEX_RE.test(draft.accentColor)
+                        ? draft.accentColor
+                        : '#0EA5E9'
+                    }
+                    onChange={e =>
+                      setDraft(d => ({
+                        ...d,
+                        accentColor: e.target.value.toUpperCase(),
+                      }))
+                    }
+                  />
+                  <Input
+                    value={draft.accentColor}
+                    onChange={e =>
+                      setDraft(d => ({
+                        ...d,
+                        accentColor: e.target.value.toUpperCase(),
+                      }))
+                    }
+                    className='font-mono'
+                  />
                 </div>
-                <p style={{ margin: '8px 0', color: 'var(--cc-ink-2)' }}>
-                  Your booking at <strong>TVC Badminton</strong> is confirmed
-                  for{' '}
-                  <span
-                    style={{
-                      background: 'var(--cc-purple-50)',
-                      color: 'var(--cc-purple-600)',
-                      padding: '0 5px',
-                      borderRadius: 4,
-                      fontFamily: 'var(--cc-font-mono)',
-                      fontSize: 11.5,
-                    }}
-                  >
-                    {'{{court}}'}
-                  </span>{' '}
-                  on{' '}
-                  <span
-                    style={{
-                      background: 'var(--cc-purple-50)',
-                      color: 'var(--cc-purple-600)',
-                      padding: '0 5px',
-                      borderRadius: 4,
-                      fontFamily: 'var(--cc-font-mono)',
-                      fontSize: 11.5,
-                    }}
-                  >
-                    {'{{date}}'}
-                  </span>
-                  .
-                </p>
-                <p style={{ margin: '8px 0', color: 'var(--cc-ink-2)' }}>
-                  Show this QR at the front desk.
-                </p>
-                <div
-                  style={{
-                    display: 'inline-block',
-                    padding: 10,
-                    border: '1px solid var(--cc-line)',
-                    borderRadius: 8,
-                  }}
-                >
-                  <svg width='60' height='60' viewBox='0 0 60 60'>
-                    <rect width='60' height='60' fill='#fff' />
-                    <rect x='6' y='6' width='14' height='14' fill='#0f1115' />
-                    <rect x='40' y='6' width='14' height='14' fill='#0f1115' />
-                    <rect x='6' y='40' width='14' height='14' fill='#0f1115' />
-                    <g fill='#0f1115'>
-                      <rect x='26' y='6' width='3' height='3' />
-                      <rect x='32' y='10' width='3' height='3' />
-                      <rect x='26' y='16' width='3' height='3' />
-                      <rect x='36' y='26' width='3' height='3' />
-                      <rect x='42' y='32' width='3' height='3' />
-                      <rect x='48' y='40' width='3' height='3' />
-                      <rect x='32' y='44' width='3' height='3' />
-                      <rect x='40' y='48' width='3' height='3' />
-                    </g>
-                  </svg>
-                </div>
-                <p
-                  style={{
-                    margin: '8px 0 0',
-                    color: 'var(--cc-mute)',
-                    fontSize: 11,
-                  }}
-                >
-                  — TVC Badminton · sent via Court Connect
-                </p>
               </div>
             </div>
+          </CardContent>
+        </Card>
 
-            <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-              <button className='cc-btn cc-btn-sm'>Send test</button>
-              <button className='cc-btn cc-btn-sm'>Reset to default</button>
-              <button
-                className='cc-btn cc-btn-sm cc-btn-primary'
-                style={{ marginLeft: 'auto' }}
-              >
-                Save template
-              </button>
+        <Card>
+          <CardHeader>
+            <CardTitle>Preview</CardTitle>
+            <CardDescription>
+              Live preview of how the brand renders on player-facing surfaces.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div
+              className='rounded-xl border p-4'
+              style={{
+                background: HEX_RE.test(draft.primaryColor)
+                  ? `linear-gradient(135deg, ${draft.primaryColor}, ${
+                      HEX_RE.test(draft.accentColor)
+                        ? draft.accentColor
+                        : '#0EA5E9'
+                    })`
+                  : '#7c3aed',
+                color: 'white',
+              }}
+            >
+              {draft.logoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={draft.logoUrl}
+                  alt=''
+                  className='mb-3 h-10 w-auto rounded-md bg-white/10 p-1'
+                />
+              ) : (
+                <div className='mb-3 inline-block rounded-md bg-white/10 px-2 py-1 text-[11px] font-bold tracking-wider uppercase'>
+                  Logo
+                </div>
+              )}
+              <div className='text-lg font-bold'>
+                {draft.displayName || venueName || 'Your venue'}
+              </div>
+              <div className='mt-1 text-xs opacity-80'>
+                {draft.subdomain || 'your-name'}.courtconnect.app
+              </div>
+              <div className='mt-3 flex gap-2'>
+                <Badge className='bg-white/15 text-white'>Open today</Badge>
+                <Badge className='bg-white/15 text-white'>Book now</Badge>
+              </div>
             </div>
-          </CCCard>
-        </div>
-      </OwnerPageBody>
+            {!HEX_RE.test(draft.primaryColor) && (
+              <p className='mt-2 text-xs text-red-600'>
+                Primary color must be a valid <code>#RRGGBB</code>.
+              </p>
+            )}
+            {!HEX_RE.test(draft.accentColor) && (
+              <p className='mt-2 text-xs text-red-600'>
+                Accent color must be a valid <code>#RRGGBB</code>.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </>
   );
 }

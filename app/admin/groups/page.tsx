@@ -27,8 +27,8 @@ export default function AdminOwnerGroupsPage() {
     onSuccess: group => {
       toast.success('Group created');
       setName('');
-      qc.setQueryData(['admin-owner-groups'], (prev?: any[]) =>
-        prev ? [group, ...prev] : [group]
+      qc.setQueryData(['admin-owner-groups'], (prev: unknown) =>
+        Array.isArray(prev) ? [group, ...prev] : [group]
       );
     },
     onError: (e: Error) => toast.error(e.message || 'Failed to create group'),
@@ -45,6 +45,9 @@ export default function AdminOwnerGroupsPage() {
             Create groups to manage shared module access for multiple owners.
           </p>
         </div>
+        <Button asChild variant='outline' size='sm'>
+          <Link href='/admin/groups/tiers'>Manage tiers</Link>
+        </Button>
       </div>
 
       <Card>

@@ -265,10 +265,9 @@
     "management": "Management",
     "branches": "Branches",
     "schedule": "Schedule",
-    "timelineView": "Timeline View",
     "yield": "Yield · Pricing",
     "tournaments": "Tournaments",
-    "members": "Members",
+    "members": "Team & coaches",
     "reports": "Reports",
     "proShop": "Pro Shop",
     "checkin": "Check-in",
@@ -277,7 +276,10 @@
     "settings": "Settings",
     "badgeAi": "AI",
     "defaultUser": "User",
-    "defaultOwner": "Owner"
+    "defaultOwner": "Owner",
+    "venueSwitcherLabel": "Active venue",
+    "venueSwitcherLoading": "Loading venues",
+    "venueSwitcherEmpty": "No venues"
   },
   "OwnerNotificationsPage": {
     "title": "Notifications",

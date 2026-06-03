@@ -1,5 +1,6 @@
 import type React from 'react';
 import { OwnerSidebar } from '@/widgets/owner/sidebar';
+import { ActiveVenueStrip } from '@/widgets/owner/venue-switcher';
 import { OwnerRouteGuard } from '@/features/authorization/ui/owner-route-guard';
 
 export default function OwnerLayout({
@@ -14,7 +15,10 @@ export default function OwnerLayout({
         style={{ minHeight: '100vh', background: 'var(--cc-bg-2)' }}
       >
         <OwnerSidebar />
-        <main className='min-h-screen md:ml-[232px]'>{children}</main>
+        <main className='min-h-screen md:ml-[232px]'>
+          <ActiveVenueStrip />
+          {children}
+        </main>
       </div>
     </OwnerRouteGuard>
   );

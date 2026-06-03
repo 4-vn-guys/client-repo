@@ -265,10 +265,9 @@
     "management": "Quản lý",
     "branches": "Chi nhánh",
     "schedule": "Lịch vận hành",
-    "timelineView": "Xem lịch",
     "yield": "Yield · Định giá",
     "tournaments": "Giải đấu",
-    "members": "Thành viên",
+    "members": "Nhân viên & HLV",
     "reports": "Báo cáo",
     "proShop": "Pro Shop",
     "checkin": "Check-in",
@@ -277,7 +276,10 @@
     "settings": "Cài đặt",
     "badgeAi": "AI",
     "defaultUser": "Người dùng",
-    "defaultOwner": "Chủ sân"
+    "defaultOwner": "Chủ sân",
+    "venueSwitcherLabel": "Chi nhánh đang chọn",
+    "venueSwitcherLoading": "Đang tải chi nhánh",
+    "venueSwitcherEmpty": "Chưa có chi nhánh"
   },
   "OwnerNotificationsPage": {
     "title": "Thông báo",

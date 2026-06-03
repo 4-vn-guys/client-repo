@@ -195,6 +195,51 @@ export async function fetchConcurrencyData(): Promise<{
   return res.data.data;
 }
 
+export type CatalogModule = {
+  id: string;
+  name: string;
+  category: string | null;
+  isEnterprise: boolean;
+};
+
+export type CatalogRole = {
+  id: string;
+  name: string;
+  isSystem: boolean;
+  inheritsFrom: string | null;
+};
+
+export type CatalogPermission = {
+  key: string;
+  groupName: string;
+  label: string;
+  requiredModule: string | null;
+};
+
+export async function fetchCatalogModules(): Promise<CatalogModule[]> {
+  const res = await axiosInstance.get<ApiResponse<CatalogModule[]>>(
+    '/admin/platform/catalog/modules',
+  );
+  if (!res.data.success) throw new Error(res.data.message || 'Failed to fetch modules');
+  return res.data.data;
+}
+
+export async function fetchCatalogRoles(): Promise<CatalogRole[]> {
+  const res = await axiosInstance.get<ApiResponse<CatalogRole[]>>(
+    '/admin/platform/catalog/roles',
+  );
+  if (!res.data.success) throw new Error(res.data.message || 'Failed to fetch roles');
+  return res.data.data;
+}
+
+export async function fetchCatalogPermissions(): Promise<CatalogPermission[]> {
+  const res = await axiosInstance.get<ApiResponse<CatalogPermission[]>>(
+    '/admin/platform/catalog/permissions',
+  );
+  if (!res.data.success) throw new Error(res.data.message || 'Failed to fetch permissions');
+  return res.data.data;
+}
+
 export type TableRowsData = {
   columns: string[];
   rows: Record<string, unknown>[];

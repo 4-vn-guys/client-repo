@@ -1,247 +1,202 @@
 'use client';
 
+import { useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
+import { QrCode, RefreshCcw, ScanLine } from 'lucide-react';
+
+import { Badge } from '@/shared/ui/badge';
+import { Button } from '@/shared/ui/button';
 import {
-  CCCard,
-  CCIcons,
-  OwnerPageBody,
-  OwnerPageHeader,
-} from '@/shared/ui/court-connect';
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/shared/ui/card';
+import { Input } from '@/shared/ui/input';
+import { Label } from '@/shared/ui/label';
+import {
+  fetchTodayCheckins,
+  resolveCheckinToken,
+  type Checkin,
+  type CheckinStatus,
+} from '@/entities/checkin/api';
+import { useActiveVenue } from '@/widgets/owner/venue-switcher';
 
-type CheckinStatus = 'in' | 'late' | 'no-show';
-
-type Entry = {
-  n: string;
-  c: string;
-  t: string;
-  s: CheckinStatus;
-  stat: string;
+const STATUS_VARIANT: Record<
+  CheckinStatus,
+  'default' | 'secondary' | 'destructive' | 'outline'
+> = {
+  in: 'default',
+  late: 'secondary',
+  no_show: 'destructive',
 };
 
-const ENTRIES: Entry[] = [
-  { n: 'Linh Pham', c: 'Court A', t: '14:13', s: 'in', stat: 'on time' },
-  { n: 'Mai Nguyen', c: 'Court B', t: '14:10', s: 'in', stat: 'early' },
-  { n: 'Friday Squad (4)', c: 'Court A', t: '14:02', s: 'in', stat: 'on time' },
-  { n: 'Hoa Truong', c: 'Court D', t: '13:45', s: 'late', stat: '15 min late' },
-  { n: 'Q. Tran', c: 'Court C', t: '13:30', s: 'in', stat: 'on time' },
-  {
-    n: 'Anonymous',
-    c: 'Court B',
-    t: '13:00',
-    s: 'no-show',
-    stat: 'no-show · re-listed',
-  },
-  { n: 'Coach Tu', c: 'Court B', t: '10:00', s: 'in', stat: 'coach' },
-];
-
-const STATUS_TINT: Record<CheckinStatus, { bg: string; fg: string }> = {
-  in: { bg: 'var(--cc-green-100)', fg: '#047857' },
-  late: { bg: 'var(--cc-amber-50)', fg: '#b45309' },
-  'no-show': { bg: 'var(--cc-red-50)', fg: '#b91c1c' },
+const STATUS_LABEL: Record<CheckinStatus, string> = {
+  in: 'on time',
+  late: 'late',
+  no_show: 'no-show',
 };
-
-function StatusIcon({ s }: { s: CheckinStatus }) {
-  if (s === 'in') return <CCIcons.check size={14} stroke={2.5} />;
-  if (s === 'late') return <CCIcons.clock size={14} />;
-  return <CCIcons.x size={14} />;
-}
 
 export function OwnerCheckinPage() {
-  return (
-    <>
-      <OwnerPageHeader title='Front desk · Check-in' />
-      <OwnerPageBody>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: 18,
-            minHeight: 520,
-          }}
-        >
-          <CCCard
-            style={{ padding: 22, display: 'flex', flexDirection: 'column' }}
-          >
-            <div
-              style={{
-                fontSize: 12,
-                fontWeight: 600,
-                color: 'var(--cc-mute)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-              }}
-            >
-              QR scanner · Cam 1
-            </div>
-            <div
-              className='cc-display'
-              style={{ fontSize: 22, fontWeight: 700, marginTop: 4 }}
-            >
-              Scan booking QR or member card
-            </div>
-            <div
-              style={{
-                flex: 1,
-                marginTop: 18,
-                position: 'relative',
-                background: '#0f1115',
-                borderRadius: 14,
-                overflow: 'hidden',
-                minHeight: 320,
-              }}
-            >
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  background:
-                    'radial-gradient(circle at center, #1f2937 0%, #0f1115 70%)',
-                }}
-              />
-              <svg
-                width='100%'
-                height='100%'
-                viewBox='0 0 400 400'
-                style={{ position: 'absolute', inset: 0 }}
-              >
-                <defs>
-                  <pattern
-                    id='qrp'
-                    width='14'
-                    height='14'
-                    patternUnits='userSpaceOnUse'
-                  >
-                    <rect width='14' height='14' fill='#fff' />
-                    <rect x='0' y='0' width='6' height='6' fill='#000' />
-                    <rect x='8' y='2' width='4' height='4' fill='#000' />
-                    <rect x='2' y='8' width='4' height='4' fill='#000' />
-                  </pattern>
-                </defs>
-                <rect
-                  x='120'
-                  y='120'
-                  width='160'
-                  height='160'
-                  fill='url(#qrp)'
-                  opacity='0.85'
-                />
-                {(
-                  [
-                    [110, 110, 1, 1],
-                    [290, 110, -1, 1],
-                    [110, 290, 1, -1],
-                    [290, 290, -1, -1],
-                  ] as const
-                ).map(([x, y, sx, sy], i) => (
-                  <path
-                    key={i}
-                    d={`M${x} ${y + sy * 22} L${x} ${y} L${x + sx * 22} ${y}`}
-                    stroke='#7c3aed'
-                    strokeWidth='4'
-                    fill='none'
-                    strokeLinecap='round'
-                  />
-                ))}
-                <rect
-                  x='120'
-                  y='195'
-                  width='160'
-                  height='3'
-                  fill='#10b981'
-                  opacity='0.9'
-                />
-              </svg>
-              <div
-                style={{
-                  position: 'absolute',
-                  bottom: 14,
-                  left: 14,
-                  right: 14,
-                  padding: '10px 14px',
-                  borderRadius: 10,
-                  background: 'rgba(16,185,129,.95)',
-                  color: '#fff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                }}
-              >
-                <CCIcons.check size={18} stroke={2.5} />
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 700 }}>
-                    Linh Pham · Court A · 14:00–15:30
-                  </div>
-                  <div style={{ fontSize: 11, opacity: 0.9 }}>
-                    Bronze member · paid · 1 racket rental
-                  </div>
-                </div>
-                <span style={{ fontSize: 11, fontWeight: 600 }}>0.6s</span>
-              </div>
-            </div>
-          </CCCard>
+  const { activeVenueId, activeVenue, isLoading: venueLoading } = useActiveVenue();
+  const qc = useQueryClient();
+  const [token, setToken] = useState('');
 
-          <CCCard style={{ padding: 0 }}>
-            <div
-              style={{
-                padding: '16px 18px',
-                borderBottom: '1px solid var(--cc-line-2)',
-              }}
-            >
-              <div style={{ fontSize: 14, fontWeight: 700 }}>
-                Today&apos;s check-ins
-              </div>
-              <div style={{ fontSize: 11.5, color: 'var(--cc-mute)' }}>
-                62 of 78 expected · 4 no-shows
-              </div>
-            </div>
-            <div style={{ padding: 4 }}>
-              {ENTRIES.map((r, i) => (
-                <div
-                  key={r.n + r.t}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 12,
-                    padding: '11px 14px',
-                    margin: 4,
-                    borderRadius: 10,
-                    background: i === 0 ? 'var(--cc-green-50)' : 'transparent',
-                  }}
-                >
-                  <span
-                    style={{
-                      width: 28,
-                      height: 28,
-                      borderRadius: 8,
-                      background: STATUS_TINT[r.s].bg,
-                      color: STATUS_TINT[r.s].fg,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <StatusIcon s={r.s} />
-                  </span>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 12.5, fontWeight: 600 }}>{r.n}</div>
-                    <div style={{ fontSize: 11, color: 'var(--cc-mute)' }}>
-                      {r.c} · {r.stat}
-                    </div>
-                  </div>
-                  <span
-                    style={{
-                      fontSize: 11,
-                      color: 'var(--cc-mute)',
-                      fontVariantNumeric: 'tabular-nums',
-                    }}
-                  >
-                    {r.t}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </CCCard>
+  const listQuery = useQuery({
+    queryKey: ['owner-checkins', activeVenueId],
+    queryFn: () => fetchTodayCheckins(activeVenueId as string),
+    enabled: !!activeVenueId,
+    refetchInterval: 30 * 1000, // light polling so newly resolved tokens appear
+  });
+
+  const resolveMutation = useMutation({
+    mutationFn: resolveCheckinToken,
+    onSuccess: data => {
+      toast.success(`Checked in · ${data.customerName} (${data.courtLabel})`);
+      setToken('');
+      qc.invalidateQueries({ queryKey: ['owner-checkins', activeVenueId] });
+    },
+    onError: (e: Error) => toast.error(e.message || 'Failed to resolve token'),
+  });
+
+  if (venueLoading) {
+    return <div className='text-muted-foreground p-8 text-sm'>Loading venue…</div>;
+  }
+  if (!activeVenueId) {
+    return (
+      <div className='p-8 text-sm'>No active venue. Pick one from the sidebar.</div>
+    );
+  }
+
+  const checkins = listQuery.data ?? [];
+
+  return (
+    <div className='space-y-6 p-6'>
+      <div className='flex items-start justify-between gap-4'>
+        <div>
+          <h1 className='text-2xl font-bold tracking-tight'>Check-in</h1>
+          <p className='text-muted-foreground mt-1 text-sm'>
+            Resolve booking QR tokens at the front desk for{' '}
+            <strong>{activeVenue?.name}</strong>.
+          </p>
         </div>
-      </OwnerPageBody>
-    </>
+        <Button
+          variant='outline'
+          icon={<RefreshCcw className='size-3.5' />}
+          onClick={() => listQuery.refetch()}
+          disabled={listQuery.isFetching}
+        >
+          Refresh
+        </Button>
+      </div>
+
+      <div className='grid gap-6 lg:grid-cols-[1fr_1.4fr]'>
+        <Card>
+          <CardHeader>
+            <CardTitle className='flex items-center gap-2 text-sm'>
+              <ScanLine className='size-4' /> Resolve QR token
+            </CardTitle>
+            <CardDescription>
+              Scan or paste the token from a player&apos;s booking confirmation.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form
+              onSubmit={e => {
+                e.preventDefault();
+                const trimmed = token.trim();
+                if (!trimmed) {
+                  toast.error('Token is required');
+                  return;
+                }
+                if (resolveMutation.isPending) return;
+                resolveMutation.mutate({ branchId: activeVenueId, token: trimmed });
+              }}
+              className='space-y-3'
+            >
+              <div className='space-y-1.5'>
+                <Label htmlFor='c-token'>Booking token</Label>
+                <Input
+                  id='c-token'
+                  value={token}
+                  onChange={e => setToken(e.target.value)}
+                  placeholder='Paste the QR token here'
+                  autoComplete='off'
+                  autoFocus
+                />
+              </div>
+              <Button
+                type='submit'
+                isLoading={resolveMutation.isPending}
+                icon={<QrCode className='size-3.5' />}
+                className='w-full'
+              >
+                Resolve & check in
+              </Button>
+            </form>
+            <p className='text-muted-foreground mt-3 text-[11px]'>
+              A successful resolve records the check-in and marks the booking detail
+              as <span className='font-mono'>in / late</span> based on time vs slot.
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className='gap-0 py-0'>
+          <CardHeader className='border-b'>
+            <CardTitle className='text-sm'>Today&apos;s check-ins</CardTitle>
+            <CardDescription>
+              {checkins.length} entries · auto-refreshes every 30s
+            </CardDescription>
+          </CardHeader>
+          <CardContent className='p-0'>
+            {listQuery.isLoading ? (
+              <div className='text-muted-foreground p-6 text-sm'>Loading…</div>
+            ) : listQuery.isError ? (
+              <div className='p-6 text-sm text-red-600'>
+                {(listQuery.error as Error).message}
+              </div>
+            ) : checkins.length === 0 ? (
+              <div className='text-muted-foreground p-6 text-sm'>
+                No check-ins yet today.
+              </div>
+            ) : (
+              <div className='divide-y'>
+                {checkins.map(c => (
+                  <CheckinRow key={c.id} checkin={c} />
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function CheckinRow({ checkin }: { checkin: Checkin }) {
+  const time = new Date(checkin.checkedInAt).toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+  return (
+    <div className='flex items-start gap-3 p-4'>
+      <div className='bg-muted text-muted-foreground flex size-9 shrink-0 items-center justify-center rounded-full font-mono text-[11px]'>
+        {time}
+      </div>
+      <div className='min-w-0 flex-1'>
+        <div className='flex flex-wrap items-center gap-2'>
+          <span className='truncate font-semibold'>{checkin.customerName}</span>
+          <Badge variant='outline'>{checkin.courtLabel}</Badge>
+          <Badge variant={STATUS_VARIANT[checkin.status]} className='capitalize'>
+            {STATUS_LABEL[checkin.status]}
+          </Badge>
+        </div>
+        {checkin.note && (
+          <div className='text-muted-foreground mt-1 text-xs'>{checkin.note}</div>
+        )}
+      </div>
+    </div>
   );
 }

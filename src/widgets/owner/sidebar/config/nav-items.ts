@@ -3,7 +3,6 @@ import {
   Bell,
   BarChart3,
   Calendar,
-  CalendarClock,
   MapPin,
   Package,
   QrCode,
@@ -14,7 +13,7 @@ import {
   Zap,
 } from 'lucide-react';
 
-const ownerTimelinePathPattern = /^\/owner\/[^/]+\/timeline$/;
+export const ownerTimelinePathPattern = /^\/owner\/[^/]+\/timeline$/;
 const ownerProShopPathPattern = /^\/owner\/[^/]+\/pro-shop$/;
 
 export type OwnerNavItem = {
@@ -36,11 +35,10 @@ export const ownerNavItems: OwnerNavSection[] = [
     sectionKey: 'management',
     items: [
       { labelKey: 'branches', href: '/owner/branches', icon: MapPin },
-      { labelKey: 'schedule', href: '/owner/schedule', icon: Calendar },
       {
-        labelKey: 'timelineView',
-        href: '/owner/branches',
-        icon: CalendarClock,
+        labelKey: 'schedule',
+        href: '/owner/branches?picker=schedule',
+        icon: Calendar,
         isActive: (pathname: string) => ownerTimelinePathPattern.test(pathname),
       },
       {
@@ -48,9 +46,21 @@ export const ownerNavItems: OwnerNavSection[] = [
         href: '/owner/yield',
         icon: Zap,
         badgeKey: 'badgeAi',
+        featureKey: 'yield',
       },
-      { labelKey: 'tournaments', href: '/owner/tournaments', icon: Trophy },
-      { labelKey: 'members', href: '/owner/members', icon: Users },
+      {
+        labelKey: 'tournaments',
+        href: '/owner/tournaments',
+        icon: Trophy,
+        featureKey: 'tournament',
+      },
+      {
+        // "Team & coaches" — branch staff manager. Backed by
+        // `/branches/:id/staff` which is open to all owners; no module gate.
+        labelKey: 'members',
+        href: '/owner/members',
+        icon: Users,
+      },
       {
         labelKey: 'proShop',
         href: '/owner/pro-shop',

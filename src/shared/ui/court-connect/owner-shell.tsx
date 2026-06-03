@@ -15,8 +15,11 @@ export const ownerNav: CCNavSection[] = [
         icon: <CCIcons.pin size={16} />,
       },
       {
+        // Routes to the branches list; users pick a venue and land on its
+        // timeline. The active OwnerSidebar resolves to a deeper link
+        // (`/owner/{branchId}/timeline`) when branches are loaded.
         label: 'Schedule',
-        href: '/owner/schedule',
+        href: '/owner/branches',
         icon: <CCIcons.cal size={16} />,
       },
       {
