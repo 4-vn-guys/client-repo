@@ -6,10 +6,30 @@ import { Menu, X } from 'lucide-react';
 
 import { adminNavItems } from '../config';
 import { SidebarNavItem } from '@/widgets/owner/sidebar/ui/sidebar-nav-item';
-import { Separator } from '@/shared/ui/separator';
 import { cn } from '@/shared/lib/utils';
+import { Badge } from '@/shared/ui/badge';
+
 import { useAuthStore } from '@/shared/store';
 import { UserProfileButton } from '@/features/user-profile';
+
+const labelMap: Record<string, string> = {
+  dashboard: 'Dashboard',
+  users: 'Users',
+  ownerGroups: 'Owner Groups',
+  revenue: 'Revenue',
+  overview: 'Overview',
+  modules: 'Modules',
+  'RBAC matrix': 'RBAC Matrix',
+  'audit logs': 'Audit Logs',
+  billing: 'Billing',
+  concurrency: 'Concurrency',
+  'data sheets': 'Data Sheets',
+};
+
+const sectionMap: Record<string, string> = {
+  admin: 'Admin Console',
+  platform: 'Platform Operations',
+};
 
 export function AdminSidebar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -34,44 +54,55 @@ export function AdminSidebar() {
 
       <aside
         className={cn(
-          'bg-sidebar fixed top-0 left-0 z-40 flex h-screen w-60 flex-col border-r transition-transform duration-300',
-          'md:translate-x-0',
+          'cc-sidebar fixed top-0 left-0 z-40 h-screen transition-transform duration-300 md:translate-x-0',
           isOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
-        <div className='flex h-14 items-center px-4'>
-          <Link href='/admin' className='flex items-center gap-1'>
-            <span className='text-primary text-xl font-bold'>Court</span>
-            <span className='text-xl font-bold text-emerald-500'>Connect</span>
-            <span className='text-muted-foreground ml-2 text-xs font-medium uppercase'>
-              Admin
-            </span>
-          </Link>
-        </div>
+        <Link
+          href='/admin'
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '4px 10px 8px',
+            textDecoration: 'none',
+          }}
+        >
+          <span className='cc-wordmark' style={{ fontSize: 18 }}>
+            <span className='court'>Court</span>{' '}
+            <span className='connect'>Connect</span>
+          </span>
+          <Badge variant="secondary" className="text-[9px] px-1.5 py-0 uppercase tracking-widest font-extrabold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 border-none rounded">
+            Admin
+          </Badge>
+        </Link>
 
-        <nav className='flex-1 space-y-6 overflow-y-auto px-3 py-4'>
-          {adminNavItems.map(section => (
-            <div key={section.sectionKey}>
-              <p className='text-muted-foreground mb-2 px-3 text-xs font-medium tracking-wider uppercase'>
-                {section.sectionKey}
-              </p>
-              <div className='space-y-1'>
-                {section.items.map(item => (
-                  <SidebarNavItem
-                    key={item.labelKey}
-                    href={item.href}
-                    icon={item.icon}
-                    label={item.labelKey}
-                    onClick={() => setIsOpen(false)}
-                  />
-                ))}
-              </div>
+        {adminNavItems.map(section => (
+          <div key={section.sectionKey}>
+            <div className='nav-label'>
+              {sectionMap[section.sectionKey] || section.sectionKey}
             </div>
-          ))}
-        </nav>
+            {section.items.map(item => (
+              <SidebarNavItem
+                key={item.labelKey}
+                href={item.href}
+                icon={item.icon}
+                label={labelMap[item.labelKey] || item.labelKey}
+                onClick={() => setIsOpen(false)}
+              />
+            ))}
+          </div>
+        ))}
 
-        <div className='mt-auto border-t p-3'>
-          <Separator className='my-3' />
+        <div style={{ flex: 1 }} />
+
+        <div
+          style={{
+            borderTop: '1px solid var(--cc-line-2)',
+            paddingTop: 10,
+            marginTop: 8,
+          }}
+        >
           <UserProfileButton
             name={user?.username || 'Admin'}
             role={user?.role || 'admin'}

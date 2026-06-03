@@ -34,13 +34,19 @@ export function SidebarNavItem({
     <Link
       href={href}
       onClick={onClick}
-      className={cn('nav-item', isActive && 'active')}
+      className={cn(
+        'nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-[13.5px] font-medium transition-all duration-200 cursor-pointer',
+        isActive
+          ? 'bg-purple-600 text-white shadow-sm'
+          : 'text-slate-700 hover:bg-slate-100/60 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/60 dark:hover:text-slate-100',
+        isActive && 'active'
+      )}
     >
-      <Icon width={16} height={16} />
-      <span style={{ flex: 1 }}>{label}</span>
+      <Icon className="size-4 shrink-0" />
+      <span className="flex-1">{label}</span>
       {badge ? (
         <span
-          className='cc-pill'
+          className='cc-pill text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold'
           style={
             isActive
               ? { background: 'rgba(255,255,255,.2)', color: '#fff' }
@@ -52,16 +58,12 @@ export function SidebarNavItem({
       ) : null}
       {badgeCount && badgeCount > 0 ? (
         <span
-          className='cc-pill'
-          style={{
-            background: 'var(--cc-red)',
-            color: '#fff',
-            padding: '2px 7px',
-          }}
+          className='cc-pill text-[10px] font-bold text-white bg-red-500 px-1.5 py-0.5 rounded-full shrink-0'
         >
           {badgeCount > 99 ? '99+' : badgeCount}
         </span>
       ) : null}
     </Link>
   );
+
 }

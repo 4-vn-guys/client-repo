@@ -255,7 +255,9 @@
       "viewProfile": "View Profile",
       "editProfile": "Edit Profile",
       "settings": "Settings",
-      "logout": "Log out"
+      "logout": "Log out",
+      "switchToOwner": "Switch to Owner View",
+      "switchToAdmin": "Switch to Admin View"
     }
   },
   "OwnerSidebar": {

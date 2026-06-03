@@ -7,7 +7,8 @@ export type UserProfileAction =
   | 'view-profile'
   | 'edit-profile'
   | 'settings'
-  | 'logout';
+  | 'logout'
+  | 'switch-dashboard';
 
 export interface UserProfileMenuItem {
   id: UserProfileAction;

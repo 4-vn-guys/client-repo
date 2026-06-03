@@ -1,6 +1,7 @@
 'use client';
 
-import { Settings, LogOut, Eye, Edit } from 'lucide-react';
+import { Settings, LogOut, Eye, Edit, LayoutDashboard, UserCog } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,8 +35,13 @@ export function UserProfileButton({
   avatar,
   className,
 }: UserProfileButtonProps) {
-  const { handleAction } = useUserProfile();
+  const { handleAction, user } = useUserProfile();
   const tUserProfile = useTranslations('Components.UserProfile');
+  const pathname = usePathname();
+
+  const userRole = user?.role || role;
+  const isAdmin = userRole === 'admin';
+  const isAdminView = pathname?.startsWith('/admin');
 
   const initials = name
     .split(' ')
@@ -87,6 +93,33 @@ export function UserProfileButton({
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        {isAdmin && (
+          <>
+            <DropdownMenuGroup>
+              <DropdownMenuItem
+                onClick={() => handleAction('switch-dashboard')}
+                className={cn(
+                  'cursor-pointer font-medium transition-all duration-200',
+                  'text-indigo-600 dark:text-indigo-400',
+                  'focus:text-indigo-600 focus:bg-indigo-50 dark:focus:bg-indigo-950/30'
+                )}
+              >
+                {isAdminView ? (
+                  <>
+                    <LayoutDashboard className='mr-2 size-4 text-indigo-600 dark:text-indigo-400' />
+                    <span>{tUserProfile('switchToOwner')}</span>
+                  </>
+                ) : (
+                  <>
+                    <UserCog className='mr-2 size-4 text-indigo-600 dark:text-indigo-400' />
+                    <span>{tUserProfile('switchToAdmin')}</span>
+                  </>
+                )}
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+          </>
+        )}
         <DropdownMenuGroup>
           <DropdownMenuItem
             onClick={() => handleAction('view-profile')}
