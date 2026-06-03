@@ -194,3 +194,140 @@ export async function fetchConcurrencyData(): Promise<{
   if (!res.data.success) throw new Error(res.data.message || 'Failed to fetch concurrency data');
   return res.data.data;
 }
+
+export type TableRowsData = {
+  columns: string[];
+  rows: Record<string, unknown>[];
+};
+
+export async function fetchPlatformTables(): Promise<string[]> {
+  const res = await axiosInstance.get<ApiResponse<string[]>>('/admin/platform/tables');
+  if (!res.data.success) throw new Error(res.data.message || 'Failed to fetch platform tables');
+  return res.data.data;
+}
+
+export async function fetchPlatformTableRows(tableName: string, search?: string): Promise<TableRowsData> {
+  const res = await axiosInstance.get<ApiResponse<TableRowsData>>(`/admin/platform/tables/${tableName}`, {
+    params: search ? { search } : undefined,
+  });
+  if (!res.data.success) throw new Error(res.data.message || `Failed to fetch rows for table ${tableName}`);
+  return res.data.data;
+}
+
+// ── Mutations ──
+
+export type OnboardTenantInput = {
+  name: string;
+  email: string;
+  plan?: string;
+};
+
+export async function onboardTenant(input: OnboardTenantInput): Promise<{ id: string; name: string; email: string; plan: string; createdAt: string }> {
+  const res = await axiosInstance.post<ApiResponse<{ id: string; name: string; email: string; plan: string; createdAt: string }>>(
+    '/admin/platform/tenants',
+    input,
+  );
+  if (!res.data.success) throw new Error(res.data.message || 'Failed to onboard tenant');
+  return res.data.data;
+}
+
+export type UpdateModuleInput = {
+  id: string;
+  price?: string;
+  installedCount?: number;
+  disabled?: boolean;
+};
+
+export async function updateModule({ id, ...patch }: UpdateModuleInput): Promise<PlatformModule | null> {
+  const res = await axiosInstance.patch<ApiResponse<PlatformModule | null>>(`/admin/platform/modules/${id}`, patch);
+  if (!res.data.success) throw new Error(res.data.message || 'Failed to update module');
+  return res.data.data;
+}
+
+export type UpdateRbacCellInput = {
+  group: string;
+  label: string;
+  roleIndex: number;
+  value: 1 | 0 | 'partial' | 'self';
+};
+
+export async function updateRbacCell(input: UpdateRbacCellInput): Promise<void> {
+  const res = await axiosInstance.patch<ApiResponse<null>>('/admin/platform/rbac/cell', input);
+  if (!res.data.success) throw new Error(res.data.message || 'Failed to update RBAC cell');
+}
+
+export type AddCustomRoleInput = {
+  name: string;
+  inheritFrom?: string;
+  description?: string;
+};
+
+export async function addCustomRole(input: AddCustomRoleInput): Promise<RbacMatrix> {
+  const res = await axiosInstance.post<ApiResponse<RbacMatrix>>('/admin/platform/rbac/roles', input);
+  if (!res.data.success) throw new Error(res.data.message || 'Failed to add role');
+  return res.data.data;
+}
+
+export type CreateCreditInput = {
+  tenant: string;
+  amount: string;
+  reason?: string;
+};
+
+export async function createCredit(input: CreateCreditInput): Promise<{ id: string; tenant: string; amount: string; reason?: string; createdAt: string }> {
+  const res = await axiosInstance.post<ApiResponse<{ id: string; tenant: string; amount: string; reason?: string; createdAt: string }>>(
+    '/admin/platform/billing/credits',
+    input,
+  );
+  if (!res.data.success) throw new Error(res.data.message || 'Failed to create credit');
+  return res.data.data;
+}
+
+export async function updateDunningRules(rules: DunningRule[]): Promise<DunningRule[]> {
+  const res = await axiosInstance.patch<ApiResponse<DunningRule[]>>('/admin/platform/billing/dunning', { rules });
+  if (!res.data.success) throw new Error(res.data.message || 'Failed to update dunning rules');
+  return res.data.data;
+}
+
+export async function downloadBillingCsv(): Promise<Blob> {
+  const res = await axiosInstance.get('/admin/platform/billing/export', { responseType: 'blob' });
+  return res.data as Blob;
+}
+
+export async function updateGlobalPolicy(policy: GlobalPolicy[]): Promise<GlobalPolicy[]> {
+  const res = await axiosInstance.patch<ApiResponse<GlobalPolicy[]>>('/admin/platform/concurrency/policy', { policy });
+  if (!res.data.success) throw new Error(res.data.message || 'Failed to update policy');
+  return res.data.data;
+}
+
+export type TenantOverrideInput = {
+  name: string;
+  mode: 'strict' | 'lenient';
+  reservationTtlSeconds?: number;
+};
+
+export async function setTenantOverride({ name, ...rest }: TenantOverrideInput): Promise<void> {
+  const res = await axiosInstance.patch<ApiResponse<null>>(`/admin/platform/concurrency/tenants/${encodeURIComponent(name)}`, rest);
+  if (!res.data.success) throw new Error(res.data.message || 'Failed to set tenant override');
+}
+
+export type SimulationInput = {
+  bookingsPerSecond?: number;
+  durationSeconds?: number;
+};
+
+export type SimulationResult = {
+  summary: string;
+  locks: number;
+  contention: string;
+  doubleBookings: number;
+  p99Ms: number;
+  successRate: string;
+};
+
+export async function runConcurrencySimulation(input: SimulationInput): Promise<SimulationResult> {
+  const res = await axiosInstance.post<ApiResponse<SimulationResult>>('/admin/platform/concurrency/simulate', input);
+  if (!res.data.success) throw new Error(res.data.message || 'Simulation failed');
+  return res.data.data;
+}
+

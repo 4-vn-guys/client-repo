@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/shared/store';
 import type { UserProfileAction } from './types';
 
@@ -11,6 +11,7 @@ import type { UserProfileAction } from './types';
  */
 export function useUserProfile() {
   const router = useRouter();
+  const pathname = usePathname();
   const { clearAuth, user } = useAuthStore();
 
   const handleAction = useCallback(
@@ -38,9 +39,17 @@ export function useUserProfile() {
           clearAuth();
           router.push('/login');
           break;
+
+        case 'switch-dashboard':
+          if (pathname?.startsWith('/admin')) {
+            router.push('/owner/branches');
+          } else {
+            router.push('/admin/overview');
+          }
+          break;
       }
     },
-    [router, clearAuth]
+    [router, pathname, clearAuth]
   );
 
   return {

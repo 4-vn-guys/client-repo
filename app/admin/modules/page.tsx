@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
 import {
   Boxes,
   ExternalLink,
@@ -16,11 +17,22 @@ import {
 
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
+import { Card } from '@/shared/ui/card';
 import {
-  Card,
-  CardContent,
-} from '@/shared/ui/card';
-import { fetchModules, type PlatformModule } from '@/entities/admin/api/platform-api';
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/shared/ui/dialog';
+import { Input } from '@/shared/ui/input';
+import { Label } from '@/shared/ui/label';
+import {
+  fetchModules,
+  updateModule,
+  type PlatformModule,
+} from '@/entities/admin/api/platform-api';
 
 const ICON_MAP: Record<string, React.ReactNode> = {
   bolt: <Zap className='size-5' />,
@@ -37,6 +49,7 @@ const CATEGORIES = ['All', 'Revenue', 'Engagement', 'Operations', 'Growth', 'Ent
 
 export default function AdminModulesPage() {
   const [activeCategory, setActiveCategory] = useState('All');
+  const [selected, setSelected] = useState<PlatformModule | null>(null);
 
   const { data: modules = [], isLoading } = useQuery({
     queryKey: ['admin-platform', 'modules'],
@@ -83,15 +96,28 @@ export default function AdminModulesPage() {
       ) : (
         <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
           {filtered.map(m => (
-            <ModuleCard key={m.id} module={m} />
+            <ModuleCard key={m.id} module={m} onConfigure={() => setSelected(m)} />
           ))}
         </div>
       )}
+
+      <ModuleConfigDialog
+        module={selected}
+        onOpenChange={open => {
+          if (!open) setSelected(null);
+        }}
+      />
     </div>
   );
 }
 
-function ModuleCard({ module: m }: { module: PlatformModule }) {
+function ModuleCard({
+  module: m,
+  onConfigure,
+}: {
+  module: PlatformModule;
+  onConfigure: () => void;
+}) {
   return (
     <Card
       className={`relative gap-3 p-5 transition-shadow hover:shadow-md ${
@@ -124,10 +150,146 @@ function ModuleCard({ module: m }: { module: PlatformModule }) {
       </p>
       <div className='mt-auto flex items-center justify-between pt-1'>
         <span className='text-lg font-bold'>{m.price}</span>
-        <Button size='sm' icon={<ExternalLink className='size-3' />} iconPlacement='right'>
+        <Button
+          size='sm'
+          icon={<ExternalLink className='size-3' />}
+          iconPlacement='right'
+          onClick={onConfigure}
+        >
           Configure
         </Button>
       </div>
     </Card>
+  );
+}
+
+function ModuleConfigDialog({
+  module: m,
+  onOpenChange,
+}: {
+  module: PlatformModule | null;
+  onOpenChange: (open: boolean) => void;
+}) {
+  if (!m) return null;
+  return (
+    <Dialog open={!!m} onOpenChange={onOpenChange}>
+      <ModuleConfigDialogContent key={m.id} module={m} onOpenChange={onOpenChange} />
+    </Dialog>
+  );
+}
+
+function ModuleConfigDialogContent({
+  module: m,
+  onOpenChange,
+}: {
+  module: PlatformModule;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const qc = useQueryClient();
+  const [price, setPrice] = useState(m.price);
+
+  const mutation = useMutation({
+    mutationFn: updateModule,
+    onSuccess: () => {
+      toast.success('Module updated');
+      qc.invalidateQueries({ queryKey: ['admin-platform', 'modules'] });
+      onOpenChange(false);
+    },
+    onError: (e: Error) => toast.error(e.message || 'Update failed'),
+  });
+
+  const disableMutation = useMutation({
+    mutationFn: updateModule,
+    onSuccess: () => {
+      toast.success('Module hidden from marketplace');
+      qc.invalidateQueries({ queryKey: ['admin-platform', 'modules'] });
+      onOpenChange(false);
+    },
+    onError: (e: Error) => toast.error(e.message || 'Update failed'),
+  });
+
+  return (
+    <DialogContent className='sm:max-w-md'>
+        <DialogHeader>
+          <DialogTitle className='flex items-center gap-2'>
+            <span
+              className='flex size-8 items-center justify-center rounded-lg text-white'
+              style={{ backgroundColor: m.color }}
+            >
+              {ICON_MAP[m.iconName] ?? <Boxes className='size-4' />}
+            </span>
+            {m.name}
+          </DialogTitle>
+          <DialogDescription>{m.description}</DialogDescription>
+        </DialogHeader>
+
+        <div className='space-y-4'>
+          <div className='bg-muted/50 grid grid-cols-2 gap-3 rounded-md p-3 text-xs'>
+            <div>
+              <p className='text-muted-foreground'>Category</p>
+              <p className='font-bold'>{m.category}</p>
+            </div>
+            <div>
+              <p className='text-muted-foreground'>Installed tenants</p>
+              <p className='font-bold'>{m.installedCount}</p>
+            </div>
+          </div>
+
+          <form
+            id='module-config-form'
+            onSubmit={e => {
+              e.preventDefault();
+              if (mutation.isPending) return;
+              mutation.mutate({ id: m.id, price });
+            }}
+            className='space-y-2'
+          >
+            <Label htmlFor='module-price'>Price</Label>
+            <Input
+              id='module-price'
+              value={price}
+              onChange={e => setPrice(e.target.value)}
+              placeholder='$49/mo'
+              required
+            />
+            <p className='text-muted-foreground text-[11px]'>
+              Free-form pricing label · shown on the marketplace card.
+            </p>
+          </form>
+        </div>
+
+        <DialogFooter className='sm:justify-between'>
+          <Button
+            type='button'
+            variant='outline'
+            colorPattern='red'
+            disabled={mutation.isPending || disableMutation.isPending}
+            isLoading={disableMutation.isPending}
+            onClick={() =>
+              disableMutation.mutate({ id: m.id, disabled: true })
+            }
+          >
+            Hide from marketplace
+          </Button>
+          <div className='flex gap-2'>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={() => onOpenChange(false)}
+              disabled={mutation.isPending || disableMutation.isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              type='submit'
+              form='module-config-form'
+              isLoading={mutation.isPending}
+              disabled={disableMutation.isPending}
+            >
+              Save
+            </Button>
+          </div>
+      </DialogFooter>
+    </DialogContent>
   );
 }

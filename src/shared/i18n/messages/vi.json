@@ -255,7 +255,9 @@
       "viewProfile": "Xem hồ sơ",
       "editProfile": "Chỉnh sửa hồ sơ",
       "settings": "Cài đặt",
-      "logout": "Đăng xuất"
+      "logout": "Đăng xuất",
+      "switchToOwner": "Chuyển sang Giao diện Chủ sân",
+      "switchToAdmin": "Chuyển sang Giao diện Admin"
     }
   },
   "OwnerSidebar": {

@@ -2,6 +2,7 @@ import {
   BarChart3,
   Boxes,
   CreditCard,
+  Database,
   FileText,
   LayoutDashboard,
   Shield,
@@ -29,6 +30,8 @@ export const adminNavItems = [
       { labelKey: 'audit logs', href: '/admin/audit', icon: FileText },
       { labelKey: 'billing', href: '/admin/billing', icon: CreditCard },
       { labelKey: 'concurrency', href: '/admin/concurrency', icon: Zap },
+      { labelKey: 'data sheets', href: '/admin/sheets', icon: Database },
     ],
   },
 ];
+

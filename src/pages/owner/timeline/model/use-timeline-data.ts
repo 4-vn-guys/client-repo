@@ -54,7 +54,7 @@ function slotKey(slot: SelectedSlot): string {
 
 export function useTimelineData(venueId: string) {
   const user = useAuthStore(s => s.user);
-  const isOwnerRole = user?.role === 'owner';
+  const isOwnerRole = user?.role === 'owner' || user?.role === 'admin';
   const now = new Date();
   const [selectedDate, setSelectedDate] = useState(
     new Date(now.getFullYear(), now.getMonth(), now.getDate())
