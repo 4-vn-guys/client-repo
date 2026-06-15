@@ -47,6 +47,10 @@ const ICON_MAP: Record<string, React.ReactNode> = {
 
 const CATEGORIES = ['All', 'Revenue', 'Engagement', 'Operations', 'Growth', 'Enterprise'];
 
+function formatVnd(amount: number): string {
+  return `${new Intl.NumberFormat('vi-VN').format(amount)}₫`;
+}
+
 export default function AdminModulesPage() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [selected, setSelected] = useState<PlatformModule | null>(null);
@@ -134,6 +138,11 @@ function ModuleCard({
           enterprise
         </Badge>
       )}
+      {!m.active && (
+        <Badge variant='outline' className='absolute bottom-3 right-3 text-gray-500'>
+          hidden
+        </Badge>
+      )}
       <div
         className='flex size-11 items-center justify-center rounded-xl text-white'
         style={{ backgroundColor: m.color }}
@@ -149,7 +158,10 @@ function ModuleCard({
         <strong className='text-primary'>{m.installedCount}</strong> tenants
       </p>
       <div className='mt-auto flex items-center justify-between pt-1'>
-        <span className='text-lg font-bold'>{m.price}</span>
+        <span className='text-lg font-bold tabular-nums'>
+          {formatVnd(m.priceMonthlyVnd)}
+          <span className='text-muted-foreground text-xs font-normal'>/mo</span>
+        </span>
         <Button
           size='sm'
           icon={<ExternalLink className='size-3' />}
@@ -186,22 +198,14 @@ function ModuleConfigDialogContent({
   onOpenChange: (open: boolean) => void;
 }) {
   const qc = useQueryClient();
-  const [price, setPrice] = useState(m.price);
+  const [price, setPrice] = useState(String(m.priceMonthlyVnd));
+  const [active, setActive] = useState(m.active);
+  const [isBestSeller, setIsBestSeller] = useState(m.isBestSeller);
 
   const mutation = useMutation({
     mutationFn: updateModule,
     onSuccess: () => {
       toast.success('Module updated');
-      qc.invalidateQueries({ queryKey: ['admin-platform', 'modules'] });
-      onOpenChange(false);
-    },
-    onError: (e: Error) => toast.error(e.message || 'Update failed'),
-  });
-
-  const disableMutation = useMutation({
-    mutationFn: updateModule,
-    onSuccess: () => {
-      toast.success('Module hidden from marketplace');
       qc.invalidateQueries({ queryKey: ['admin-platform', 'modules'] });
       onOpenChange(false);
     },
@@ -240,55 +244,85 @@ function ModuleConfigDialogContent({
             onSubmit={e => {
               e.preventDefault();
               if (mutation.isPending) return;
-              mutation.mutate({ id: m.id, price });
+              const parsed = Number(price);
+              if (!Number.isFinite(parsed) || parsed < 0) {
+                toast.error('Enter a valid monthly price in VND');
+                return;
+              }
+              mutation.mutate({
+                id: m.id,
+                priceMonthlyVnd: Math.round(parsed),
+                active,
+                isBestSeller,
+              });
             }}
-            className='space-y-2'
+            className='space-y-4'
           >
-            <Label htmlFor='module-price'>Price</Label>
-            <Input
-              id='module-price'
-              value={price}
-              onChange={e => setPrice(e.target.value)}
-              placeholder='$49/mo'
-              required
-            />
-            <p className='text-muted-foreground text-[11px]'>
-              Free-form pricing label · shown on the marketplace card.
-            </p>
+            <div className='space-y-2'>
+              <Label htmlFor='module-price'>Monthly price (VND)</Label>
+              <Input
+                id='module-price'
+                type='number'
+                min={0}
+                step={1000}
+                value={price}
+                onChange={e => setPrice(e.target.value)}
+                placeholder='490000'
+                required
+              />
+              <p className='text-muted-foreground text-[11px]'>
+                Shown to owners as {formatVnd(Number(price) || 0)}/mo on the marketplace.
+              </p>
+            </div>
+
+            <label className='flex cursor-pointer items-center gap-2 text-sm'>
+              <input
+                type='checkbox'
+                className='size-4 rounded border'
+                checked={active}
+                onChange={e => setActive(e.target.checked)}
+              />
+              <span>
+                Active{' '}
+                <span className='text-muted-foreground text-xs'>
+                  · visible in the owner marketplace
+                </span>
+              </span>
+            </label>
+
+            <label className='flex cursor-pointer items-center gap-2 text-sm'>
+              <input
+                type='checkbox'
+                className='size-4 rounded border'
+                checked={isBestSeller}
+                onChange={e => setIsBestSeller(e.target.checked)}
+              />
+              <span>
+                Best-seller{' '}
+                <span className='text-muted-foreground text-xs'>
+                  · highlights the card with a badge
+                </span>
+              </span>
+            </label>
           </form>
         </div>
 
-        <DialogFooter className='sm:justify-between'>
+        <DialogFooter>
           <Button
             type='button'
             variant='outline'
-            colorPattern='red'
-            disabled={mutation.isPending || disableMutation.isPending}
-            isLoading={disableMutation.isPending}
-            onClick={() =>
-              disableMutation.mutate({ id: m.id, disabled: true })
-            }
+            onClick={() => onOpenChange(false)}
+            disabled={mutation.isPending}
           >
-            Hide from marketplace
+            Cancel
           </Button>
-          <div className='flex gap-2'>
-            <Button
-              type='button'
-              variant='outline'
-              onClick={() => onOpenChange(false)}
-              disabled={mutation.isPending || disableMutation.isPending}
-            >
-              Cancel
-            </Button>
-            <Button
-              type='submit'
-              form='module-config-form'
-              isLoading={mutation.isPending}
-              disabled={disableMutation.isPending}
-            >
-              Save
-            </Button>
-          </div>
+          <Button
+            type='submit'
+            form='module-config-form'
+            isLoading={mutation.isPending}
+          >
+            Save
+          </Button>
       </DialogFooter>
     </DialogContent>
   );

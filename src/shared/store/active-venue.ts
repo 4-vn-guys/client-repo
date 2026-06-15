@@ -31,12 +31,15 @@ export function useActiveVenue() {
   const activeVenueId = useActiveVenueStore(s => s.activeVenueId);
   const setActiveVenueId = useActiveVenueStore(s => s.setActiveVenueId);
 
-  const isOwner = !!user && user.role === 'owner';
+  // GET /branches/owner also serves branch staff (role 'user'): it returns the
+  // branches they hold an active membership in, tagged with accessVia: 'staff'.
+  const canFetchBranches =
+    !!user && (user.role === 'owner' || user.role === 'user');
 
   const branchesQuery = useQuery({
     queryKey: ['owner-branches'],
     queryFn: fetchBranches,
-    enabled: isOwner,
+    enabled: canFetchBranches,
     staleTime: 5 * 60 * 1000,
   });
 
@@ -57,12 +60,12 @@ export function useActiveVenue() {
   }, [pathname, activeVenueId, setActiveVenueId]);
 
   useEffect(() => {
-    if (!isOwner || !branches.length) return;
+    if (!canFetchBranches || !branches.length) return;
     const ids = new Set(branches.map(branch => branch.id));
     if (!activeVenueId || !ids.has(activeVenueId)) {
       setActiveVenueId(branches[0].id);
     }
-  }, [isOwner, branches, activeVenueId, setActiveVenueId]);
+  }, [canFetchBranches, branches, activeVenueId, setActiveVenueId]);
 
   const activeVenue = useMemo(
     () => branches.find(branch => branch.id === activeVenueId) ?? null,

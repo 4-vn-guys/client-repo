@@ -33,11 +33,12 @@ export type PlatformModule = {
   id: string;
   name: string;
   description: string;
-  price: string;
+  priceMonthlyVnd: number;
   category: string;
   installedCount: number;
   isBestSeller: boolean;
   isEnterprise: boolean;
+  active: boolean;
   iconName: string;
   color: string;
 };
@@ -278,9 +279,9 @@ export async function onboardTenant(input: OnboardTenantInput): Promise<{ id: st
 
 export type UpdateModuleInput = {
   id: string;
-  price?: string;
-  installedCount?: number;
-  disabled?: boolean;
+  priceMonthlyVnd?: number;
+  active?: boolean;
+  isBestSeller?: boolean;
 };
 
 export async function updateModule({ id, ...patch }: UpdateModuleInput): Promise<PlatformModule | null> {
@@ -310,6 +311,61 @@ export type AddCustomRoleInput = {
 export async function addCustomRole(input: AddCustomRoleInput): Promise<RbacMatrix> {
   const res = await axiosInstance.post<ApiResponse<RbacMatrix>>('/admin/platform/rbac/roles', input);
   if (!res.data.success) throw new Error(res.data.message || 'Failed to add role');
+  return res.data.data;
+}
+
+export type ModuleOrderStatus =
+  | 'pending_payment'
+  | 'awaiting_confirmation'
+  | 'active'
+  | 'rejected'
+  | 'cancelled';
+
+export type AdminModuleOrder = {
+  id: string;
+  moduleId: string;
+  moduleName: string;
+  priceVndSnapshot: number;
+  channel: string;
+  transferRef: string;
+  status: ModuleOrderStatus;
+  reason?: string;
+  createdAt: string;
+  activatedAt?: string;
+  owner: {
+    id: string;
+    username: string | null;
+    email: string | null;
+  };
+};
+
+export async function fetchModuleOrders(status?: ModuleOrderStatus): Promise<AdminModuleOrder[]> {
+  const res = await axiosInstance.get<ApiResponse<AdminModuleOrder[]>>('/admin/platform/module-orders', {
+    params: status ? { status } : undefined,
+  });
+  if (!res.data.success) throw new Error(res.data.message || 'Failed to fetch module orders');
+  return res.data.data;
+}
+
+export async function confirmModuleOrder(orderId: string): Promise<AdminModuleOrder> {
+  const res = await axiosInstance.post<ApiResponse<AdminModuleOrder>>(
+    `/admin/platform/module-orders/${orderId}/confirm`,
+  );
+  if (!res.data.success) throw new Error(res.data.message || 'Failed to confirm order');
+  return res.data.data;
+}
+
+export type RejectModuleOrderInput = {
+  orderId: string;
+  reason: string;
+};
+
+export async function rejectModuleOrder({ orderId, reason }: RejectModuleOrderInput): Promise<AdminModuleOrder> {
+  const res = await axiosInstance.post<ApiResponse<AdminModuleOrder>>(
+    `/admin/platform/module-orders/${orderId}/reject`,
+    { reason },
+  );
+  if (!res.data.success) throw new Error(res.data.message || 'Failed to reject order');
   return res.data.data;
 }
 

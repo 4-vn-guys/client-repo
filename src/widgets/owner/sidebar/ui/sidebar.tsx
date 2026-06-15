@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 
 import { ownerNavItems, ownerBottomNavItems } from '../config';
+import type { OwnerNavItem } from '../config';
 import { SidebarNavItem } from './sidebar-nav-item';
 import { UserProfileButton } from '@/features/user-profile';
 import { cn } from '@/shared/lib/utils';
@@ -12,6 +13,7 @@ import { useAuthStore } from '@/shared/store';
 import { useTranslations } from 'next-intl';
 import { useNotifications } from '@/features/notifications';
 import { useFeatureAccess } from '@/features/authorization/model/use-feature-access';
+import { useStaffAccess } from '@/features/authorization/model/use-staff-access';
 import { VenueSwitcher, useActiveVenue } from '@/widgets/owner/venue-switcher';
 
 export function OwnerSidebar() {
@@ -20,7 +22,20 @@ export function OwnerSidebar() {
   const tSidebar = useTranslations('OwnerSidebar');
   const { unreadCount } = useNotifications();
   const { hasFeature } = useFeatureAccess();
+  const { permissionSet } = useStaffAccess();
   const { activeVenueId } = useActiveVenue();
+
+  // Branch staff (account role 'user') get a permission-filtered menu;
+  // owners/admins keep the full menu with module (featureKey) gates.
+  const isStaffViewer = user?.role === 'user';
+  const canSee = (item: OwnerNavItem): boolean => {
+    if (!isStaffViewer) return hasFeature(item.featureKey);
+    if (item.ownerOnly) return false;
+    if (item.staffPermission && !permissionSet.has(item.staffPermission)) {
+      return false;
+    }
+    return true;
+  };
 
   const resolveHref = (labelKey: string, defaultHref: string): string => {
     if (labelKey === 'schedule') {
@@ -76,12 +91,13 @@ export function OwnerSidebar() {
 
         <VenueSwitcher />
 
-        {ownerNavItems.map(section => (
-          <div key={section.sectionKey}>
-            <div className='nav-label'>{tSidebar(section.sectionKey)}</div>
-            {section.items
-              .filter(item => hasFeature(item.featureKey))
-              .map(item => (
+        {ownerNavItems.map(section => {
+          const visibleItems = section.items.filter(canSee);
+          if (visibleItems.length === 0) return null;
+          return (
+            <div key={section.sectionKey}>
+              <div className='nav-label'>{tSidebar(section.sectionKey)}</div>
+              {visibleItems.map(item => (
                 <SidebarNavItem
                   key={item.labelKey}
                   href={resolveHref(item.labelKey, item.href)}
@@ -92,8 +108,9 @@ export function OwnerSidebar() {
                   onClick={() => setIsOpen(false)}
                 />
               ))}
-          </div>
-        ))}
+            </div>
+          );
+        })}
 
         <div style={{ flex: 1 }} />
 
@@ -104,7 +121,7 @@ export function OwnerSidebar() {
             marginTop: 8,
           }}
         >
-          {ownerBottomNavItems.map(item => (
+          {ownerBottomNavItems.filter(canSee).map(item => (
             <SidebarNavItem
               key={item.href}
               {...item}

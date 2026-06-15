@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { AxiosError } from 'axios';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '@/shared/store';
+import { fetchMyStaffMemberships } from '@/entities/branch-staff/api';
 import { authApi } from '../apis';
 
 /**
@@ -24,9 +25,27 @@ export const useAuth = () => {
     setLoading,
   } = useAuthStore();
 
-  const getPostLoginPath = (role?: string) => {
+  const resolvePostLoginPath = async (role?: string) => {
     if (role === 'admin') return '/admin';
     if (role === 'owner') return '/owner/branches';
+    if (role === 'user') {
+      // Staff with the 'dashboard:view' permission land on the dashboard.
+      // Don't block the login UX: cap the membership check at 1s and fall
+      // back to the default destination.
+      try {
+        const memberships = await Promise.race([
+          fetchMyStaffMemberships(),
+          new Promise<null>(resolve => setTimeout(() => resolve(null), 1000)),
+        ]);
+        if (
+          memberships?.some(m => m.permissions.includes('dashboard:view'))
+        ) {
+          return '/owner/branches';
+        }
+      } catch {
+        // Membership check failed — keep the existing destination.
+      }
+    }
     return '/find-court';
   };
 
@@ -89,7 +108,7 @@ export const useAuth = () => {
           );
 
           toast.success('Login successful!');
-          router.push(getPostLoginPath(role));
+          router.push(await resolvePostLoginPath(role));
           return { success: true };
         }
       } else {
@@ -182,7 +201,7 @@ export const useAuth = () => {
       );
 
       toast.success('2FA verified. Login successful!');
-      router.push(getPostLoginPath(role));
+      router.push(await resolvePostLoginPath(role));
       return { success: true };
     } catch (error) {
       const message =
@@ -258,7 +277,7 @@ export const useAuth = () => {
           );
 
           toast.success('Login successful!');
-          router.push(getPostLoginPath(role));
+          router.push(await resolvePostLoginPath(role));
           return { success: true };
         }
       }
