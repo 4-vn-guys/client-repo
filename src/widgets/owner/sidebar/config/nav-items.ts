@@ -5,6 +5,7 @@ import {
   Calendar,
   MapPin,
   Package,
+  Puzzle,
   QrCode,
   Settings,
   Sparkles,
@@ -23,6 +24,10 @@ export type OwnerNavItem = {
   badgeKey?: string;
   featureKey?: string;
   isActive?: (pathname: string) => boolean;
+  /** Hidden from branch staff viewers (account role 'user'). */
+  ownerOnly?: boolean;
+  /** Staff only see this item when their membership grants the permission. */
+  staffPermission?: string;
 };
 
 export type OwnerNavSection = {
@@ -34,12 +39,18 @@ export const ownerNavItems: OwnerNavSection[] = [
   {
     sectionKey: 'management',
     items: [
-      { labelKey: 'branches', href: '/owner/branches', icon: MapPin },
+      {
+        labelKey: 'branches',
+        href: '/owner/branches',
+        icon: MapPin,
+        staffPermission: 'bookings:read',
+      },
       {
         labelKey: 'schedule',
         href: '/owner/branches?picker=schedule',
         icon: Calendar,
         isActive: (pathname: string) => ownerTimelinePathPattern.test(pathname),
+        staffPermission: 'bookings:read',
       },
       {
         labelKey: 'yield',
@@ -47,12 +58,14 @@ export const ownerNavItems: OwnerNavSection[] = [
         icon: Zap,
         badgeKey: 'badgeAi',
         featureKey: 'yield',
+        ownerOnly: true,
       },
       {
         labelKey: 'tournaments',
         href: '/owner/tournaments',
         icon: Trophy,
         featureKey: 'tournament',
+        ownerOnly: true,
       },
       {
         // "Team & coaches" — branch staff manager. Backed by
@@ -60,19 +73,28 @@ export const ownerNavItems: OwnerNavSection[] = [
         labelKey: 'members',
         href: '/owner/members',
         icon: Users,
+        ownerOnly: true,
       },
       {
         labelKey: 'proShop',
         href: '/owner/pro-shop',
         icon: Package,
         featureKey: 'pro_shop',
+        ownerOnly: true,
         isActive: (pathname: string) =>
           pathname === '/owner/pro-shop' ||
           ownerProShopPathPattern.test(pathname),
       },
-      { labelKey: 'checkin', href: '/owner/checkin', icon: QrCode },
-      { labelKey: 'reports', href: '/owner/reports', icon: BarChart3 },
-      { labelKey: 'branding', href: '/owner/branding', icon: Sparkles },
+      {
+        labelKey: 'checkin',
+        href: '/owner/checkin',
+        icon: QrCode,
+        staffPermission: 'checkins:read',
+      },
+      { labelKey: 'reports', href: '/owner/reports', icon: BarChart3, ownerOnly: true },
+      { labelKey: 'branding', href: '/owner/branding', icon: Sparkles, ownerOnly: true },
+      // Module marketplace — always visible so owners can unlock gated modules.
+      { labelKey: 'modules', href: '/owner/modules', icon: Puzzle, ownerOnly: true },
     ],
   },
 ];

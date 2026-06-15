@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import { Download, ExternalLink, Filter, Pencil, Plus, Trash2 } from 'lucide-react';
+import { Check, Download, ExternalLink, Filter, Pencil, Plus, Trash2, X } from 'lucide-react';
 
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
@@ -32,13 +32,21 @@ import {
 } from '@/shared/ui/select';
 import { StatCard } from '@/shared/ui/stat-card';
 import {
+  confirmModuleOrder,
   createCredit,
   downloadBillingCsv,
   fetchBillingData,
+  fetchModuleOrders,
+  rejectModuleOrder,
   updateDunningRules,
+  type AdminModuleOrder,
   type DunningRule,
   type InvoiceItem,
 } from '@/entities/admin/api/platform-api';
+
+function formatVnd(amount: number): string {
+  return `${new Intl.NumberFormat('vi-VN').format(amount)}₫`;
+}
 
 const PLAN_FILTERS = ['All', 'Starter', 'Pro', 'Enterprise', 'Credit'] as const;
 type PlanFilter = (typeof PLAN_FILTERS)[number];
@@ -143,6 +151,9 @@ export default function AdminBillingPage() {
         <StatCard label='Past-due' value={stats?.pastDue ?? '—'} delta='3 tenants' deltaDir='down' />
         <StatCard label='Churn risk' value={stats?.churnRisk ?? '—'} delta='steady' />
       </div>
+
+      {/* Module orders awaiting confirmation */}
+      <ModuleOrdersCard />
 
       <div className='grid gap-6 lg:grid-cols-[1.3fr_1fr]'>
         {/* Invoices table */}
@@ -293,6 +304,196 @@ export default function AdminBillingPage() {
         }}
       />
     </div>
+  );
+}
+
+function ModuleOrdersCard() {
+  const qc = useQueryClient();
+  const [rejectTarget, setRejectTarget] = useState<AdminModuleOrder | null>(null);
+
+  const { data: orders = [], isLoading } = useQuery({
+    queryKey: ['admin-platform', 'module-orders', 'awaiting_confirmation'],
+    queryFn: () => fetchModuleOrders('awaiting_confirmation'),
+    refetchInterval: 15_000,
+  });
+
+  const confirmMutation = useMutation({
+    mutationFn: confirmModuleOrder,
+    onSuccess: order => {
+      toast.success(`Order confirmed · ${order.moduleName} activated`);
+      qc.invalidateQueries({ queryKey: ['admin-platform', 'module-orders'] });
+      qc.invalidateQueries({ queryKey: ['admin-platform', 'modules'] });
+      qc.invalidateQueries({ queryKey: ['admin-platform', 'billing'] });
+    },
+    onError: (e: Error) => toast.error(e.message || 'Failed to confirm order'),
+  });
+
+  return (
+    <Card className='gap-0 py-0'>
+      <CardHeader className='flex-row items-center justify-between border-b px-4 py-3'>
+        <CardTitle className='text-sm'>Module orders</CardTitle>
+        <Badge variant={orders.length > 0 ? 'secondary' : 'outline'}>
+          {orders.length} awaiting confirmation
+        </Badge>
+      </CardHeader>
+      <CardContent className='overflow-x-auto p-0'>
+        {isLoading ? (
+          <div className='text-muted-foreground p-8 text-center text-sm'>Loading…</div>
+        ) : orders.length === 0 ? (
+          <div className='text-muted-foreground p-8 text-center text-sm'>
+            No module orders awaiting confirmation.
+          </div>
+        ) : (
+          <table className='w-full text-sm'>
+            <thead>
+              <tr className='text-muted-foreground border-b text-left text-xs'>
+                <th className='px-4 py-2.5 font-semibold'>Owner</th>
+                <th className='px-3 py-2.5 font-semibold'>Module</th>
+                <th className='px-3 py-2.5 font-semibold'>Price</th>
+                <th className='px-3 py-2.5 font-semibold'>Transfer ref</th>
+                <th className='px-3 py-2.5 font-semibold'>Date</th>
+                <th className='px-3 py-2.5 font-semibold'>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map(o => (
+                <tr key={o.id} className='hover:bg-muted/50 border-b last:border-b-0'>
+                  <td className='px-4 py-3'>
+                    <span className='font-semibold'>{o.owner.email ?? o.owner.username ?? o.owner.id}</span>
+                  </td>
+                  <td className='px-3 py-3'>{o.moduleName}</td>
+                  <td className='px-3 py-3 font-bold tabular-nums'>
+                    {formatVnd(o.priceVndSnapshot)}
+                  </td>
+                  <td className='px-3 py-3 font-mono text-xs'>{o.transferRef}</td>
+                  <td className='text-muted-foreground px-3 py-3 tabular-nums'>
+                    {new Date(o.createdAt).toLocaleDateString('vi-VN')}
+                  </td>
+                  <td className='px-3 py-3'>
+                    <div className='flex gap-2'>
+                      <Button
+                        size='sm'
+                        icon={<Check className='size-3.5' />}
+                        isLoading={
+                          confirmMutation.isPending &&
+                          confirmMutation.variables === o.id
+                        }
+                        disabled={confirmMutation.isPending}
+                        onClick={() => confirmMutation.mutate(o.id)}
+                      >
+                        Confirm
+                      </Button>
+                      <Button
+                        size='sm'
+                        variant='outline'
+                        colorPattern='red'
+                        icon={<X className='size-3.5' />}
+                        disabled={confirmMutation.isPending}
+                        onClick={() => setRejectTarget(o)}
+                      >
+                        Reject
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </CardContent>
+      <RejectOrderDialog
+        order={rejectTarget}
+        onOpenChange={open => {
+          if (!open) setRejectTarget(null);
+        }}
+      />
+    </Card>
+  );
+}
+
+function RejectOrderDialog({
+  order,
+  onOpenChange,
+}: {
+  order: AdminModuleOrder | null;
+  onOpenChange: (v: boolean) => void;
+}) {
+  if (!order) return null;
+  return (
+    <Dialog open={!!order} onOpenChange={onOpenChange}>
+      <RejectOrderDialogContent key={order.id} order={order} onOpenChange={onOpenChange} />
+    </Dialog>
+  );
+}
+
+function RejectOrderDialogContent({
+  order,
+  onOpenChange,
+}: {
+  order: AdminModuleOrder;
+  onOpenChange: (v: boolean) => void;
+}) {
+  const qc = useQueryClient();
+  const [reason, setReason] = useState('');
+
+  const mutation = useMutation({
+    mutationFn: rejectModuleOrder,
+    onSuccess: () => {
+      toast.success('Order rejected');
+      qc.invalidateQueries({ queryKey: ['admin-platform', 'module-orders'] });
+      onOpenChange(false);
+    },
+    onError: (e: Error) => toast.error(e.message || 'Failed to reject order'),
+  });
+
+  return (
+    <DialogContent className='sm:max-w-sm'>
+      <DialogHeader>
+        <DialogTitle>Reject module order</DialogTitle>
+        <DialogDescription>
+          {order.moduleName} · {order.owner.email ?? order.owner.username}. The
+          owner will see this reason on their order history.
+        </DialogDescription>
+      </DialogHeader>
+      <form
+        onSubmit={e => {
+          e.preventDefault();
+          if (mutation.isPending) return;
+          const trimmed = reason.trim();
+          if (!trimmed) {
+            toast.error('A reason is required');
+            return;
+          }
+          mutation.mutate({ orderId: order.id, reason: trimmed });
+        }}
+        className='space-y-4'
+      >
+        <div className='space-y-1.5'>
+          <Label htmlFor='reject-reason'>Reason</Label>
+          <Input
+            id='reject-reason'
+            required
+            autoFocus
+            value={reason}
+            onChange={e => setReason(e.target.value)}
+            placeholder='Transfer not found / amount mismatch'
+          />
+        </div>
+        <DialogFooter>
+          <Button
+            type='button'
+            variant='outline'
+            onClick={() => onOpenChange(false)}
+            disabled={mutation.isPending}
+          >
+            Cancel
+          </Button>
+          <Button type='submit' colorPattern='red' isLoading={mutation.isPending}>
+            Reject order
+          </Button>
+        </DialogFooter>
+      </form>
+    </DialogContent>
   );
 }
 

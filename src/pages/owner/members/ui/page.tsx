@@ -26,21 +26,27 @@ import {
   SelectValue,
 } from '@/shared/ui/select';
 import {
-  ALL_BRANCH_STAFF_PERMISSIONS,
-  PERMISSION_LABEL,
-  ROLE_LABEL,
+  FALLBACK_STAFF_PERMISSION_OPTIONS,
+  SYSTEM_STAFF_ROLE_OPTIONS,
   deactivateBranchStaff,
   fetchBranchStaff,
+  fetchStaffPermissions,
+  fetchStaffRoles,
   lookupStaffInvitee,
   upsertBranchStaff,
   type BranchStaffMember,
   type BranchStaffPermission,
   type BranchStaffRole,
+  type BranchStaffStatus,
+  type StaffPermissionOption,
+  type StaffRoleOption,
+  type SystemStaffRole,
 } from '@/entities/branch-staff/api';
+import { useAuthStore } from '@/shared/store';
 import { useActiveVenue } from '@/widgets/owner/venue-switcher';
 
 const ROLE_VARIANT: Record<
-  BranchStaffRole,
+  SystemStaffRole,
   'default' | 'secondary' | 'outline'
 > = {
   manager: 'default',
@@ -48,16 +54,128 @@ const ROLE_VARIANT: Record<
   coach: 'outline',
 };
 
+function roleVariant(role: BranchStaffRole): 'default' | 'secondary' | 'outline' {
+  return ROLE_VARIANT[role as SystemStaffRole] ?? 'outline';
+}
+
+const STATUS_BADGE: Record<BranchStaffStatus, { label: string; className: string }> = {
+  invited: {
+    label: 'Pending',
+    className: 'border-amber-300 bg-amber-50 text-amber-700',
+  },
+  active: {
+    label: 'Active',
+    className: 'border-green-300 bg-green-50 text-green-700',
+  },
+  declined: {
+    label: 'Declined',
+    className: 'border-red-300 bg-red-50 text-red-700',
+  },
+};
+
+// System roles + custom roles from the admin RBAC catalog. Falls back to the
+// hardcoded system roles when the endpoint is unavailable.
+function useStaffRoleOptions(): StaffRoleOption[] {
+  const query = useQuery({
+    queryKey: ['staff-roles'],
+    queryFn: fetchStaffRoles,
+    staleTime: 60_000,
+    retry: 1,
+  });
+  return query.data && query.data.length > 0
+    ? query.data
+    : SYSTEM_STAFF_ROLE_OPTIONS;
+}
+
+function roleLabel(role: BranchStaffRole, options: StaffRoleOption[]): string {
+  return options.find(o => o.id === role)?.name ?? role;
+}
+
+// Assignable permission keys + catalog labels from the admin RBAC matrix.
+// Falls back to the hardcoded list when the endpoint is unavailable.
+function useStaffPermissionOptions(): StaffPermissionOption[] {
+  const query = useQuery({
+    queryKey: ['staff-permissions'],
+    queryFn: fetchStaffPermissions,
+    staleTime: 5 * 60_000,
+    retry: 1,
+  });
+  return query.data && query.data.length > 0
+    ? query.data
+    : FALLBACK_STAFF_PERMISSION_OPTIONS;
+}
+
+function PermissionCheckboxes({
+  options,
+  selected,
+  onToggle,
+}: {
+  options: StaffPermissionOption[];
+  selected: Set<BranchStaffPermission>;
+  onToggle: (p: BranchStaffPermission) => void;
+}) {
+  return (
+    <div className='space-y-1.5'>
+      <Label>Permissions</Label>
+      <div className='grid grid-cols-2 gap-2'>
+        {options.map(({ key, label }) => (
+          <label
+            key={key}
+            className='flex cursor-pointer items-center gap-2 rounded-md border p-2 text-xs'
+          >
+            <input
+              type='checkbox'
+              className='size-4 rounded border'
+              checked={selected.has(key)}
+              onChange={() => onToggle(key)}
+            />
+            <div className='min-w-0'>
+              <div className='font-medium'>{label}</div>
+              <div className='text-muted-foreground font-mono text-[10px]'>
+                {key}
+              </div>
+            </div>
+          </label>
+        ))}
+      </div>
+      <p className='text-muted-foreground text-[11px]'>
+        Leave unchecked to follow the role&apos;s defaults from the platform
+        permission matrix. Checking any box overrides the defaults for this
+        member.
+      </p>
+    </div>
+  );
+}
+
 export default function MembersPage() {
+  const user = useAuthStore(s => s.user);
+  const isStaffViewer = user?.role === 'user';
   const { activeVenueId, activeVenue, isLoading: venueLoading } = useActiveVenue();
   const [inviteOpen, setInviteOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<BranchStaffMember | null>(null);
+  const roleOptions = useStaffRoleOptions();
 
   const listQuery = useQuery({
     queryKey: ['owner-staff', activeVenueId],
     queryFn: () => fetchBranchStaff(activeVenueId as string),
-    enabled: !!activeVenueId,
+    enabled: !!activeVenueId && !isStaffViewer,
   });
+
+  // Staff can reach this page via direct URL; staff management stays owner-only.
+  if (isStaffViewer) {
+    return (
+      <div className='p-6'>
+        <Card>
+          <CardContent className='py-12 text-center'>
+            <Users className='text-muted-foreground mx-auto mb-3 size-8' />
+            <p className='text-muted-foreground text-sm'>
+              Only the branch owner can manage staff.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (venueLoading) {
     return <div className='text-muted-foreground p-8 text-sm'>Loading venue…</div>;
@@ -74,7 +192,11 @@ export default function MembersPage() {
     if (!grouped.has(m.staffRole)) grouped.set(m.staffRole, []);
     grouped.get(m.staffRole)!.push(m);
   }
-  const orderedRoles: BranchStaffRole[] = ['manager', 'staff', 'coach'];
+  const systemOrder: BranchStaffRole[] = ['manager', 'staff', 'coach'];
+  const orderedRoles: BranchStaffRole[] = [
+    ...systemOrder,
+    ...Array.from(grouped.keys()).filter(r => !systemOrder.includes(r)),
+  ];
 
   return (
     <div className='space-y-6 p-6'>
@@ -118,7 +240,7 @@ export default function MembersPage() {
               <Card key={roleKey} className='gap-0 py-0'>
                 <CardHeader className='border-b'>
                   <CardTitle className='text-sm'>
-                    {ROLE_LABEL[roleKey]} ({grouped.get(roleKey)!.length})
+                    {roleLabel(roleKey, roleOptions)} ({grouped.get(roleKey)!.length})
                   </CardTitle>
                 </CardHeader>
                 <CardContent className='p-0'>
@@ -127,6 +249,7 @@ export default function MembersPage() {
                       <StaffRow
                         key={m.id}
                         member={m}
+                        roleOptions={roleOptions}
                         onEdit={() => setEditTarget(m)}
                       />
                     ))}
@@ -155,9 +278,11 @@ export default function MembersPage() {
 
 function StaffRow({
   member,
+  roleOptions,
   onEdit,
 }: {
   member: BranchStaffMember;
+  roleOptions: StaffRoleOption[];
   onEdit: () => void;
 }) {
   const name =
@@ -174,11 +299,23 @@ function StaffRow({
       <div className='min-w-0 flex-1'>
         <div className='flex flex-wrap items-center gap-2'>
           <span className='truncate font-semibold'>{name}</span>
-          <Badge variant={ROLE_VARIANT[member.staffRole]} className='capitalize'>
-            {ROLE_LABEL[member.staffRole]}
+          <Badge variant={roleVariant(member.staffRole)} className='capitalize'>
+            {roleLabel(member.staffRole, roleOptions)}
           </Badge>
-          {!member.isActive && <Badge variant='outline'>inactive</Badge>}
+          {member.status && (
+            <Badge variant='outline' className={STATUS_BADGE[member.status].className}>
+              {STATUS_BADGE[member.status].label}
+            </Badge>
+          )}
+          {!member.isActive && member.status !== 'declined' && (
+            <Badge variant='outline'>inactive</Badge>
+          )}
         </div>
+        {member.status === 'declined' && (
+          <p className='mt-0.5 text-xs text-red-600'>
+            Declined the invitation — re-run the invite to send a new one.
+          </p>
+        )}
         <div className='text-muted-foreground mt-0.5 truncate text-xs'>
           {member.user?.email ?? '—'}
           {member.user?.phoneNumber ? ` · ${member.user.phoneNumber}` : ''}
@@ -221,31 +358,61 @@ function InviteDialogContent({
   onOpenChange: (v: boolean) => void;
 }) {
   const qc = useQueryClient();
+  const roleOptions = useStaffRoleOptions();
+  const permissionOptions = useStaffPermissionOptions();
+  const { branches } = useActiveVenue();
   const [email, setEmail] = useState('');
   const [staffRole, setStaffRole] = useState<BranchStaffRole>('staff');
+  // All unchecked by default = permissions: [] = follow the role's defaults
+  // from the platform permission matrix. Never auto-fill role defaults here.
+  const [permissions, setPermissions] = useState<Set<BranchStaffPermission>>(
+    () => new Set(),
+  );
+  const [selectedBranchIds, setSelectedBranchIds] = useState<Set<string>>(
+    () => new Set([branchId]),
+  );
+  const [isInviting, setIsInviting] = useState(false);
+
+  // Only branches the visitor actually owns — staff-access branches (if any)
+  // can't be invited into.
+  const ownedBranches = branches.filter(b => b.accessVia !== 'staff');
 
   const lookupMutation = useMutation({
     mutationFn: lookupStaffInvitee,
   });
 
-  const upsertMutation = useMutation({
-    mutationFn: upsertBranchStaff,
-    onSuccess: () => {
-      toast.success('Member added');
-      qc.invalidateQueries({ queryKey: ['owner-staff', branchId] });
-      onOpenChange(false);
-    },
-    onError: (e: Error) => toast.error(e.message || 'Failed to add member'),
-  });
+  function toggleBranch(id: string) {
+    setSelectedBranchIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function togglePermission(p: BranchStaffPermission) {
+    setPermissions(prev => {
+      const next = new Set(prev);
+      if (next.has(p)) next.delete(p);
+      else next.add(p);
+      return next;
+    });
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (lookupMutation.isPending || upsertMutation.isPending) return;
+    if (lookupMutation.isPending || isInviting) return;
     const trimmed = email.trim();
     if (!trimmed) {
       toast.error('Email is required');
       return;
     }
+    const targets = ownedBranches.filter(b => selectedBranchIds.has(b.id));
+    if (targets.length === 0) {
+      toast.error('Select at least one branch');
+      return;
+    }
+    setIsInviting(true);
     try {
       const found = await lookupMutation.mutateAsync({
         branchId,
@@ -255,15 +422,40 @@ function InviteDialogContent({
         toast.error('No user with that email');
         return;
       }
-      await upsertMutation.mutateAsync({
-        branchId,
-        userId: found.id,
-        staffRole,
-        isActive: true,
+      const results = await Promise.allSettled(
+        targets.map(b =>
+          upsertBranchStaff({
+            branchId: b.id,
+            userId: found.id,
+            staffRole,
+            // [] = follow the role's matrix defaults; non-empty = override.
+            permissions: Array.from(permissions),
+            isActive: true,
+          }),
+        ),
+      );
+      let succeeded = 0;
+      results.forEach((r, i) => {
+        if (r.status === 'fulfilled') {
+          succeeded += 1;
+        } else {
+          const message =
+            r.reason instanceof Error ? r.reason.message : 'Invite failed';
+          toast.error(`${targets[i].name}: ${message}`);
+        }
       });
+      if (succeeded > 0) {
+        toast.success(
+          `Invited to ${succeeded} ${succeeded === 1 ? 'branch' : 'branches'} — they've been emailed the details.`,
+        );
+        qc.invalidateQueries({ queryKey: ['owner-staff', branchId] });
+        onOpenChange(false);
+      }
     } catch (err) {
-      // mutations surface their own toasts; nothing extra to do
+      // lookup surfaces its own toast; nothing extra to do
       console.error(err);
+    } finally {
+      setIsInviting(false);
     }
   }
 
@@ -273,7 +465,7 @@ function InviteDialogContent({
         <DialogTitle>Invite team member</DialogTitle>
         <DialogDescription>
           The user must already have a CourtConnect account. We look them up by
-          email then assign their role at this venue.
+          email then assign their role at the chosen branches.
         </DialogDescription>
       </DialogHeader>
       <form onSubmit={handleSubmit} className='space-y-4'>
@@ -299,13 +491,45 @@ function InviteDialogContent({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value='manager'>{ROLE_LABEL.manager}</SelectItem>
-              <SelectItem value='staff'>{ROLE_LABEL.staff}</SelectItem>
-              <SelectItem value='coach'>{ROLE_LABEL.coach}</SelectItem>
+              {roleOptions.map(r => (
+                <SelectItem key={r.id} value={r.id}>
+                  {r.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
+        </div>
+        <PermissionCheckboxes
+          options={permissionOptions}
+          selected={permissions}
+          onToggle={togglePermission}
+        />
+        <div className='space-y-1.5'>
+          <Label>Branches</Label>
+          <div className='max-h-40 space-y-1 overflow-y-auto rounded-md border p-2'>
+            {ownedBranches.map(b => (
+              <label
+                key={b.id}
+                className='hover:bg-muted/40 flex cursor-pointer items-center gap-2 rounded-md p-1.5 text-sm'
+              >
+                <input
+                  type='checkbox'
+                  className='size-4 rounded border'
+                  checked={selectedBranchIds.has(b.id)}
+                  onChange={() => toggleBranch(b.id)}
+                />
+                <span className='min-w-0 truncate'>{b.name}</span>
+              </label>
+            ))}
+            {ownedBranches.length === 0 && (
+              <p className='text-muted-foreground p-1.5 text-xs'>
+                No branches available.
+              </p>
+            )}
+          </div>
           <p className='text-muted-foreground text-[11px]'>
-            Each role gets a default permission set. Adjust later from the row.
+            Staff get the selected role in each chosen branch. Re-run the invite
+            with a different selection to give a different role per branch.
           </p>
         </div>
         <DialogFooter>
@@ -313,13 +537,13 @@ function InviteDialogContent({
             type='button'
             variant='outline'
             onClick={() => onOpenChange(false)}
-            disabled={lookupMutation.isPending || upsertMutation.isPending}
+            disabled={lookupMutation.isPending || isInviting}
           >
             Cancel
           </Button>
           <Button
             type='submit'
-            isLoading={lookupMutation.isPending || upsertMutation.isPending}
+            isLoading={lookupMutation.isPending || isInviting}
           >
             Add
           </Button>
@@ -361,10 +585,14 @@ function EditDialogContent({
   onOpenChange: (v: boolean) => void;
 }) {
   const qc = useQueryClient();
-  const [role, setRole] = useState<BranchStaffRole>(member.staffRole);
+  const roleOptions = useStaffRoleOptions();
+  const permissionOptions = useStaffPermissionOptions();
+  // Empty stored permissions = the member follows the role's matrix defaults,
+  // so nothing is pre-checked; a non-empty array is an explicit override.
   const [permissions, setPermissions] = useState<Set<BranchStaffPermission>>(
     () => new Set(member.permissions),
   );
+  const [role, setRole] = useState<BranchStaffRole>(member.staffRole);
   const [isActive, setIsActive] = useState<boolean>(member.isActive);
 
   const saveMutation = useMutation({
@@ -417,39 +645,24 @@ function EditDialogContent({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value='manager'>{ROLE_LABEL.manager}</SelectItem>
-              <SelectItem value='staff'>{ROLE_LABEL.staff}</SelectItem>
-              <SelectItem value='coach'>{ROLE_LABEL.coach}</SelectItem>
+              {roleOptions.map(r => (
+                <SelectItem key={r.id} value={r.id}>
+                  {r.name}
+                </SelectItem>
+              ))}
+              {!roleOptions.some(r => r.id === member.staffRole) && (
+                <SelectItem value={member.staffRole}>
+                  {member.staffRole}
+                </SelectItem>
+              )}
             </SelectContent>
           </Select>
         </div>
-        <div className='space-y-1.5'>
-          <Label>Permissions</Label>
-          <div className='grid grid-cols-2 gap-2'>
-            {ALL_BRANCH_STAFF_PERMISSIONS.map(p => {
-              const on = permissions.has(p);
-              return (
-                <label
-                  key={p}
-                  className='flex cursor-pointer items-center gap-2 rounded-md border p-2 text-xs'
-                >
-                  <input
-                    type='checkbox'
-                    className='size-4 rounded border'
-                    checked={on}
-                    onChange={() => togglePermission(p)}
-                  />
-                  <div className='min-w-0'>
-                    <div className='font-medium'>{PERMISSION_LABEL[p]}</div>
-                    <div className='text-muted-foreground font-mono text-[10px]'>
-                      {p}
-                    </div>
-                  </div>
-                </label>
-              );
-            })}
-          </div>
-        </div>
+        <PermissionCheckboxes
+          options={permissionOptions}
+          selected={permissions}
+          onToggle={togglePermission}
+        />
         <label className='flex items-center gap-2 text-sm'>
           <input
             type='checkbox'

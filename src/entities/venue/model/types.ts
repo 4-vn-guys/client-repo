@@ -18,6 +18,8 @@ export interface Branch {
   depositValue?: number;
   /** Null/undefined = use server default minutes for deposit transfer window */
   depositHoldMinutes?: number | null;
+  /** Set on GET /branches/owner: how the current user can access this branch. */
+  accessVia?: 'owner' | 'staff';
 }
 
 export interface BranchCourt {

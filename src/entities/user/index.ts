@@ -5,4 +5,5 @@ export {
   type RegisterFormSchema,
   type ForgotPasswordEmailSchema,
   type ForgotPasswordResetSchema,
+  type ResetPasswordSchema,
 } from './model/validation';

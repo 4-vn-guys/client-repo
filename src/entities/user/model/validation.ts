@@ -18,6 +18,10 @@ export type ForgotPasswordResetSchema = z.infer<
   ReturnType<typeof useAuthSchemas>['forgotPasswordResetSchema']
 >;
 
+export type ResetPasswordSchema = z.infer<
+  ReturnType<typeof useAuthSchemas>['resetPasswordSchema']
+>;
+
 const passwordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
 const phoneRegex = /^(0|\+84)[0-9]{9}$/;
@@ -146,11 +150,26 @@ function useAuthSchemas() {
     [loginSchema, tForgotPasswordSchema, registerSchema]
   );
 
+  const resetPasswordSchema = useMemo(
+    () =>
+      z
+        .object({
+          newPassword: loginSchema.shape.password,
+          confirmPassword: registerSchema.shape.confirmPassword,
+        })
+        .refine(data => data.newPassword === data.confirmPassword, {
+          message: tForgotPasswordSchema('passwordMismatch'),
+          path: ['confirmPassword'],
+        }),
+    [loginSchema, registerSchema, tForgotPasswordSchema]
+  );
+
   return {
     loginSchema,
     registerSchema,
     forgotPasswordEmailSchema,
     forgotPasswordResetSchema,
+    resetPasswordSchema,
   };
 }
 
