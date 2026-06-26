@@ -51,6 +51,7 @@ export default function ReportsPage() {
 
   useEffect(() => {
     if (!branchId && branches.length > 0) {
+      /* eslint-disable-next-line react-hooks/set-state-in-effect */
       setBranchId(branches[0].id);
     }
   }, [branches, branchId]);
@@ -69,6 +70,7 @@ export default function ReportsPage() {
 
   useEffect(() => {
     if (!selectedBranch) return;
+    /* eslint-disable-next-line react-hooks/set-state-in-effect */
     setDepositEnabled(Boolean(selectedBranch.depositEnabled));
     setDepositType(
       (selectedBranch.depositType as 'percent' | 'fixed') || 'percent'

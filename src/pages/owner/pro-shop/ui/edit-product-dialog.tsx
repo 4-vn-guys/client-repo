@@ -52,6 +52,7 @@ export function EditProductDialog({
 
   useEffect(() => {
     if (!open || !product) return;
+    /* eslint-disable-next-line react-hooks/set-state-in-effect */
     setName(product.name);
     setSku(product.sku ?? '');
     setCategory(product.category);

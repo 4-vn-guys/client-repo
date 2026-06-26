@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 
@@ -9,9 +10,12 @@ import { Button } from '@/shared/ui/button';
 import { useJoinMatch } from '../model/use-join-match';
 import { useOpenMatches } from '../model/use-open-matches';
 import { MatchCard } from './match-card';
+import { useAuth } from '@/features/auth/hooks/use-auth';
 
 export function MatchList() {
   const t = useTranslations('EventsPage');
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const query = useOpenMatches();
   const joinMutation = useJoinMatch();
 
@@ -30,6 +34,10 @@ export function MatchList() {
   }
 
   function handleJoin(match: Match) {
+    if (!isAuthenticated) {
+      router.push('/login?returnTo=/events');
+      return;
+    }
     joinMutation.mutate(match.id, {
       onSuccess: () => toast.success(t('joinSuccess')),
       onError: (e: Error) => toast.error(e.message || t('loadError')),

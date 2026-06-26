@@ -128,3 +128,14 @@ export async function fetchTournamentRegistrations(
   }
   return res.data.data;
 }
+
+export async function fetchMyTournaments(): Promise<Tournament[]> {
+  const res = await axiosInstance.get<ApiResponse<Tournament[]>>(
+    '/tournaments/me'
+  );
+  if (!res.data.success) {
+    throw new Error(res.data.message || 'Failed to load your tournaments');
+  }
+  return res.data.data;
+}
+

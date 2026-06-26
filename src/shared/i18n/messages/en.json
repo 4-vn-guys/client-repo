@@ -837,6 +837,7 @@
     "teamNameInvalid": "Team name must be 2–120 characters.",
     "submitRegister": "Register",
     "registerSuccess": "Registration submitted!",
+    "registered": "Registered",
     "matchesOpenTitle": "Open matches",
     "matchesEmpty": "No open matches yet. Be the first to host one!",
     "myMatchesTitle": "My matches",
@@ -848,6 +849,12 @@
     "join": "Join",
     "leave": "Leave",
     "joinSuccess": "You're in — see you on court!",
-    "leaveSuccess": "You left the match."
+    "leaveSuccess": "You left the match.",
+    "tabsMySchedule": "My schedule",
+    "myTournamentsTitle": "My tournaments",
+    "myTournamentsEmpty": "You haven't registered for any tournaments yet.",
+    "leaveMatchConfirmTitle": "Leave match",
+    "leaveMatchConfirmDescription": "Are you sure you want to leave this pickup match? You will lose your spot.",
+    "leaveMatchConfirmCta": "Leave match"
   }
 }

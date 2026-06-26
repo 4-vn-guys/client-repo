@@ -26,6 +26,14 @@ export const useAuth = () => {
   } = useAuthStore();
 
   const resolvePostLoginPath = async (role?: string) => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const returnTo = searchParams.get('returnTo');
+      if (returnTo && returnTo.startsWith('/') && !returnTo.startsWith('//')) {
+        return returnTo;
+      }
+    }
+
     if (role === 'admin') return '/admin';
     if (role === 'owner') return '/owner/branches';
     if (role === 'user') {
