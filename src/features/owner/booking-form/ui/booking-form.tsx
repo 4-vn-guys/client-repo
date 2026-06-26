@@ -77,7 +77,7 @@ export function BookingForm({
     isMultiSlotMode
   );
 
-  const editBaselineCourtRental = useMemo(() => {
+  const editBaselineCourtRental = (() => {
     if (!isEditMode || initialData?.totalPrice === undefined) return null;
     const rawGoods = initialData?.goods ?? [];
     const goodsPortion = rawGoods.reduce(
@@ -85,7 +85,7 @@ export function BookingForm({
       0
     );
     return Math.max(0, initialData.totalPrice - goodsPortion);
-  }, [isEditMode, initialData?.totalPrice, initialData?.goods]);
+  })();
 
   const initialGoodsRows: GoodLineForm[] = useMemo(() => {
     const g = initialData?.goods;
@@ -97,7 +97,7 @@ export function BookingForm({
       quantity: line.quantity,
       unitPrice: line.unitPrice,
     }));
-  }, [initialData?.bookingId, initialData?.goods]);
+  }, [initialData?.goods]);
 
   const form = useForm({
     defaultValues: {

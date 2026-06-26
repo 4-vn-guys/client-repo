@@ -16,4 +16,6 @@ export const eventsQueryKeys = {
       filters?.level ?? null,
     ] as const,
   myMatches: () => ['events', 'matches', 'me'] as const,
+  myTournaments: () => ['events', 'tournaments', 'me'] as const,
 };
+

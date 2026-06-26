@@ -1,34 +1,22 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
-import { MatchList, MyMatchesList, TournamentList } from '@/features/events';
+import { MatchList, MyMatchesList, TournamentList, MyTournamentsList } from '@/features/events';
 import { useAuth } from '@/features/auth/hooks/use-auth';
-import { Button } from '@/shared/ui/button';
 
-type EventsTab = 'tournaments' | 'matches';
+type EventsTab = 'tournaments' | 'matches' | 'schedule';
 
 export function EventsPage() {
   const t = useTranslations('EventsPage');
   const { isAuthenticated } = useAuth();
   const [tab, setTab] = useState<EventsTab>('tournaments');
 
-  if (!isAuthenticated) {
-    return (
-      <div className='mx-auto max-w-2xl px-4 py-16 text-center sm:px-6 lg:px-8'>
-        <p className='text-muted-foreground text-sm'>{t('loginRequired')}</p>
-        <Link href='/login' className='mt-4 inline-block'>
-          <Button>{t('loginCta')}</Button>
-        </Link>
-      </div>
-    );
-  }
-
   const tabs: { key: EventsTab; label: string }[] = [
-    { key: 'tournaments', label: t('tabsTournaments') },
-    { key: 'matches', label: t('tabsMatches') },
+    { key: 'tournaments' as const, label: t('tabsTournaments') },
+    { key: 'matches' as const, label: t('tabsMatches') },
+    ...(isAuthenticated ? [{ key: 'schedule' as const, label: t('tabsMySchedule') }] : []),
   ];
 
   return (
@@ -55,15 +43,26 @@ export function EventsPage() {
         ))}
       </div>
 
-      {tab === 'tournaments' ? (
+      {tab === 'tournaments' && (
         <TournamentList />
-      ) : (
+      )}
+
+      {tab === 'matches' && (
+        <section>
+          <h2 className='mb-4 text-lg font-semibold'>
+            {t('matchesOpenTitle')}
+          </h2>
+          <MatchList />
+        </section>
+      )}
+
+      {tab === 'schedule' && isAuthenticated && (
         <div className='space-y-10'>
           <section>
             <h2 className='mb-4 text-lg font-semibold'>
-              {t('matchesOpenTitle')}
+              {t('myTournamentsTitle')}
             </h2>
-            <MatchList />
+            <MyTournamentsList />
           </section>
           <section>
             <h2 className='mb-4 text-lg font-semibold'>

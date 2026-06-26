@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { CalendarClock, MapPin, Trophy } from 'lucide-react';
 
@@ -11,6 +12,7 @@ import { Card, CardContent } from '@/shared/ui/card';
 
 import { useOpenTournaments } from '../model/use-open-tournaments';
 import { RegisterTournamentDialog } from './register-tournament-dialog';
+import { useAuth } from '@/features/auth/hooks/use-auth';
 
 function formatDate(value: string | null): string | null {
   if (!value) return null;
@@ -20,6 +22,8 @@ function formatDate(value: string | null): string | null {
 
 export function TournamentList() {
   const t = useTranslations('EventsPage');
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const query = useOpenTournaments();
   const [selected, setSelected] = useState<Tournament | null>(null);
 
@@ -106,7 +110,13 @@ export function TournamentList() {
                 <div className='mt-auto pt-2'>
                   <Button
                     className='w-full'
-                    onClick={() => setSelected(tournament)}
+                    onClick={() => {
+                      if (!isAuthenticated) {
+                        router.push('/login?returnTo=/events');
+                        return;
+                      }
+                      setSelected(tournament);
+                    }}
                   >
                     {t('register')}
                   </Button>

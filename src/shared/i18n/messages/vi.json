@@ -837,6 +837,7 @@
     "teamNameInvalid": "Tên đội phải từ 2–120 ký tự.",
     "submitRegister": "Đăng ký",
     "registerSuccess": "Đã gửi đăng ký!",
+    "registered": "Đã đăng ký",
     "matchesOpenTitle": "Trận đang mở",
     "matchesEmpty": "Chưa có trận nào đang mở. Hãy là người tạo trận đầu tiên!",
     "myMatchesTitle": "Trận của tôi",
@@ -848,6 +849,12 @@
     "join": "Tham gia",
     "leave": "Rời trận",
     "joinSuccess": "Đã tham gia — hẹn gặp trên sân!",
-    "leaveSuccess": "Bạn đã rời trận."
+    "leaveSuccess": "Bạn đã rời trận.",
+    "tabsMySchedule": "Lịch của tôi",
+    "myTournamentsTitle": "Giải đấu của tôi",
+    "myTournamentsEmpty": "Bạn chưa đăng ký giải đấu nào.",
+    "leaveMatchConfirmTitle": "Rời trận đấu",
+    "leaveMatchConfirmDescription": "Bạn có chắc chắn muốn rời trận đấu giao lưu này không? Bạn sẽ mất vị trí của mình.",
+    "leaveMatchConfirmCta": "Rời trận"
   }
 }

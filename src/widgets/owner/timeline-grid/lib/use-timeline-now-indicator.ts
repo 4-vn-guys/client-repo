@@ -14,6 +14,7 @@ export function useLiveNow(tickMs: number = TICK_MS) {
   const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
+    /* eslint-disable-next-line react-hooks/set-state-in-effect */
     setNow(new Date());
     const id = window.setInterval(() => setNow(new Date()), tickMs);
     return () => window.clearInterval(id);
