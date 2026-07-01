@@ -26,6 +26,7 @@ export type Tournament = {
   updatedAt?: string;
   // Present on the public `/tournaments/open` listing (branch is eager-loaded).
   branch?: TournamentBranchSummary | null;
+  registrations?: TournamentRegistration[];
 };
 
 export type TournamentRegistration = {
@@ -36,6 +37,7 @@ export type TournamentRegistration = {
   status?: string;
   createdAt?: string;
   userId?: string;
+  captainUserId?: string;
 };
 
 export async function fetchBranchTournaments(
