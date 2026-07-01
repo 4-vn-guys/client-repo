@@ -855,6 +855,13 @@
     "myTournamentsEmpty": "You haven't registered for any tournaments yet.",
     "leaveMatchConfirmTitle": "Leave match",
     "leaveMatchConfirmDescription": "Are you sure you want to leave this pickup match? You will lose your spot.",
-    "leaveMatchConfirmCta": "Leave match"
+    "leaveMatchConfirmCta": "Leave match",
+    "filterBranch": "Branch",
+    "filterLevel": "Level",
+    "allBranches": "All branches",
+    "allLevels": "All levels",
+    "retry": "Retry",
+    "emptyTitle": "No active events or matches found",
+    "emptyDescription": "Check back later or create a booking!"
   }
 }

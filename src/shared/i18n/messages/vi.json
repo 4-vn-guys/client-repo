@@ -855,6 +855,13 @@
     "myTournamentsEmpty": "Bạn chưa đăng ký giải đấu nào.",
     "leaveMatchConfirmTitle": "Rời trận đấu",
     "leaveMatchConfirmDescription": "Bạn có chắc chắn muốn rời trận đấu giao lưu này không? Bạn sẽ mất vị trí của mình.",
-    "leaveMatchConfirmCta": "Rời trận"
+    "leaveMatchConfirmCta": "Rời trận",
+    "filterBranch": "Chi nhánh",
+    "filterLevel": "Trình độ",
+    "allBranches": "Tất cả chi nhánh",
+    "allLevels": "Tất cả trình độ",
+    "retry": "Thử lại",
+    "emptyTitle": "Không tìm thấy sự kiện hoặc trận đấu nào",
+    "emptyDescription": "Vui lòng quay lại sau hoặc tạo lịch đặt sân mới!"
   }
 }

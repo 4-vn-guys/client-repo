@@ -13,7 +13,7 @@ export function useRegisterTournament() {
     mutationFn: registerForTournament,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['events', 'tournaments', 'open'],
+        queryKey: ['events', 'tournaments'],
       });
     },
   });
