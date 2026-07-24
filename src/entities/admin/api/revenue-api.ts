@@ -9,6 +9,7 @@ type ApiResponse<T> = {
 export type RevenueTotals = { gmv: number; platformFee: number; net: number };
 
 export type RevenueSummary = {
+  currency: 'VND';
   filters: { from: string; to: string; ownerId?: string; branchId?: string };
   bookings: RevenueTotals;
   proShop: RevenueTotals;
@@ -16,6 +17,7 @@ export type RevenueSummary = {
 };
 
 export type RevenueDaily = {
+  currency: 'VND';
   filters: { from: string; to: string; ownerId?: string; branchId?: string };
   days: Array<{
     day: string;

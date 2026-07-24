@@ -59,21 +59,27 @@ export const authApi = {
    * Update user profile
    */
   updateProfile: async (data: {
-    name?: string;
-    username?: string;
-    phone?: string;
+    userName?: string;
+    phoneNumber?: string;
+    avatarUrl?: string | null;
+    city?: string | null;
   }) => {
-    const response = await axiosInstance.put('/auth/profile', data);
+    const response = await axiosInstance.patch('/auth/me', data);
     return response.data;
   },
 
   /**
    * Change password
    */
-  changePassword: async (oldPassword: string, newPassword: string) => {
-    const response = await axiosInstance.post('/auth/change-password', {
+  changePassword: async (
+    oldPassword: string,
+    newPassword: string,
+    refreshToken: string
+  ) => {
+    const response = await axiosInstance.put('/auth/change-password', {
       oldPassword,
       newPassword,
+      refreshToken,
     });
     return response.data;
   },

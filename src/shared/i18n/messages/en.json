@@ -589,7 +589,21 @@
     "creatingBooking": "Creating Booking...",
     "updateBooking": "Update Booking",
     "createBooking": "Create Booking",
-    "depositCommitment": "This venue collects {deposit} as a deposit when you book; about {balance} remains due later (estimated total {total})."
+    "depositCommitment": "This venue collects {deposit} as a deposit when you book; about {balance} remains due later (estimated total {total}).",
+    "depositVerification": "Deposit verification",
+    "depositVerificationHint": "Review the transfer receipt or bank transaction before confirming.",
+    "depositAmount": "Required deposit",
+    "depositDeadline": "Payment deadline",
+    "notAvailable": "Not available",
+    "viewReceipt": "View receipt: {name}",
+    "receiptNotSubmitted": "The player has not submitted a receipt yet.",
+    "confirmDeposit": "Confirm deposit",
+    "rejectDeposit": "Reject and cancel",
+    "rejectDepositConfirmation": "Reject this deposit and cancel the booking?",
+    "depositConfirmed": "Deposit confirmed",
+    "depositRejected": "Deposit rejected and booking cancelled",
+    "depositConfirmFailed": "Could not confirm the deposit",
+    "depositRejectFailed": "Could not reject the deposit"
   },
   "OwnerReportsPage": {
     "subtitle": "Track deposits and balance payments, and configure how much players pay upfront.",

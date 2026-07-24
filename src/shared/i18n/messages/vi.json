@@ -589,7 +589,21 @@
     "creatingBooking": "Đang tạo đặt sân...",
     "updateBooking": "Cập nhật đặt sân",
     "createBooking": "Tạo đặt sân",
-    "depositCommitment": "Chi nhánh này thu {deposit} làm cọc khi đặt; khoảng {balance} còn lại sẽ thanh toán sau (tổng ước tính {total})."
+    "depositCommitment": "Chi nhánh này thu {deposit} làm cọc khi đặt; khoảng {balance} còn lại sẽ thanh toán sau (tổng ước tính {total}).",
+    "depositVerification": "Xác minh tiền cọc",
+    "depositVerificationHint": "Kiểm tra biên lai chuyển khoản hoặc giao dịch ngân hàng trước khi xác nhận.",
+    "depositAmount": "Tiền cọc cần thanh toán",
+    "depositDeadline": "Hạn thanh toán",
+    "notAvailable": "Không có thông tin",
+    "viewReceipt": "Xem biên lai: {name}",
+    "receiptNotSubmitted": "Người chơi chưa gửi biên lai.",
+    "confirmDeposit": "Xác nhận tiền cọc",
+    "rejectDeposit": "Từ chối và hủy",
+    "rejectDepositConfirmation": "Từ chối tiền cọc và hủy đặt sân này?",
+    "depositConfirmed": "Đã xác nhận tiền cọc",
+    "depositRejected": "Đã từ chối tiền cọc và hủy đặt sân",
+    "depositConfirmFailed": "Không thể xác nhận tiền cọc",
+    "depositRejectFailed": "Không thể từ chối tiền cọc"
   },
   "OwnerReportsPage": {
     "subtitle": "Theo dõi cọc và số tiền còn lại, cấu hình mức cọc khi người chơi đặt sân.",

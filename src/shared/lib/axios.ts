@@ -4,7 +4,8 @@ import { useAuthStore } from '@/shared/store';
 /**
  * Base API URL - Update this to match your backend server (include `/api/v1` if your API uses it)
  */
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
 
 /** No auth interceptors — used only to refresh tokens without recursion */
 const refreshClient = axios.create({

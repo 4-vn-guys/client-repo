@@ -75,6 +75,11 @@ export function useTimelineData(venueId: string) {
         status?: 'pending' | 'confirmed' | 'cancelled' | 'maintenance';
         statusPayment?: 'paid' | 'unpaid';
         totalPrice?: number;
+        depositAmount?: number;
+        balanceAmount?: number;
+        lifecycleStatus?: Booking['lifecycleStatus'];
+        depositDueAt?: string | null;
+        payments?: Booking['payments'];
         goods?: BookingGoodLine[];
         /** Pre-selected details from grid multi-select (courtId + slotIndex per slot) */
         details?: Array<{ courtId: string; slotIndex: number }>;
@@ -215,6 +220,11 @@ export function useTimelineData(venueId: string) {
         | 'maintenance',
       statusPayment: booking.statusPayment as 'paid' | 'unpaid',
       totalPrice: booking.totalPrice,
+      depositAmount: booking.depositAmount,
+      balanceAmount: booking.balanceAmount,
+      lifecycleStatus: booking.lifecycleStatus,
+      depositDueAt: booking.depositDueAt,
+      payments: booking.payments,
       goods: booking.goods ?? undefined,
     });
     setBookingDialogOpen(true);

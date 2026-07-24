@@ -15,6 +15,8 @@ import type {
 } from '@/entities/booking';
 import type { DepositPolicyInput } from '@/shared/lib/utils/deposit-policy';
 import { useTranslations } from 'next-intl';
+import type { Booking } from '@/entities/booking';
+import { DepositVerificationPanel } from './deposit-verification-panel';
 
 interface BookingDialogProps {
   open: boolean;
@@ -36,6 +38,11 @@ interface BookingDialogProps {
     status?: 'pending' | 'confirmed' | 'cancelled' | 'maintenance';
     statusPayment?: 'paid' | 'unpaid';
     totalPrice?: number;
+    depositAmount?: number;
+    balanceAmount?: number;
+    lifecycleStatus?: Booking['lifecycleStatus'];
+    depositDueAt?: string | null;
+    payments?: Booking['payments'];
     goods?: BookingGoodLine[];
     /** Pre-selected slots from grid multi-select */
     details?: Array<{ courtId: string; slotIndex: number }>;
@@ -79,6 +86,18 @@ export function BookingDialog({
             </DialogTitle>
           </DialogHeader>
         </div>
+
+        {isOwnerRole && initialData?.bookingId && (
+          <DepositVerificationPanel
+            bookingId={initialData.bookingId}
+            branchId={branchId}
+            depositAmount={initialData.depositAmount}
+            depositDueAt={initialData.depositDueAt}
+            lifecycleStatus={initialData.lifecycleStatus}
+            payments={initialData.payments}
+            onResolved={() => onOpenChange(false)}
+          />
+        )}
 
         <div className='min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 pb-6'>
           <BookingForm

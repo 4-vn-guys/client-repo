@@ -11,6 +11,16 @@ export interface Payment {
   transactionDate: string;
   invoiceCode: string;
   purpose?: 'full' | 'deposit' | 'balance';
+  expiresAt?: string | null;
+  verificationChannel?: 'owner_manual' | 'receipt_upload' | 'bank_webhook' | null;
+  receiptFileId?: string | null;
+  paidAmount?: number | null;
+  receiptFile?: {
+    id: string;
+    url: string;
+    fileName: string;
+    fileType: string;
+  } | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -41,6 +51,13 @@ export interface Booking {
   totalPrice: number;
   depositAmount?: number;
   balanceAmount?: number;
+  lifecycleStatus?:
+    | 'awaiting_deposit'
+    | 'confirmed'
+    | 'cancelled'
+    | null;
+  depositDueAt?: string | null;
+  depositConfirmedAt?: string | null;
   note: string | null;
   /** Add-on line items (rackets, consumables, etc.) when returned from API */
   goods?: { name: string; quantity: number; unitPrice: number }[] | null;

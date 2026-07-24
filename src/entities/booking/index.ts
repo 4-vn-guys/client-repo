@@ -6,6 +6,8 @@ export {
   fetchBookings,
   fetchBookingById,
   cancelBooking,
+  confirmBookingDeposit,
+  rejectBookingDeposit,
 } from './api';
 
 // Types

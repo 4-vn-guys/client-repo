@@ -7,7 +7,7 @@ import {
   API_STATUS_MAP,
   API_STATUS_PAYMENT_MAP,
 } from '@/shared/config';
-import type { Booking } from '../model/types';
+import type { Booking, Payment } from '../model/types';
 import type { CreateBookingDto, UpdateBookingDto } from '../model/dto';
 import type { BookingFilters, PaginatedResponse } from '../model/filters';
 
@@ -29,6 +29,12 @@ interface BookingDetailApi {
     note: string | null;
     user?: { username: string };
     goods?: { name: string; quantity: number; unitPrice: number }[] | null;
+    lifecycleStatus?: Booking['lifecycleStatus'];
+    depositAmount?: number;
+    balanceAmount?: number;
+    depositDueAt?: string | null;
+    depositConfirmedAt?: string | null;
+    payments?: Payment[];
   };
 }
 
@@ -99,6 +105,12 @@ export const fetchBookingsByBranchId = async (
               totalPrice: detail.booking.totalPrice ?? detail.price ?? 0,
               note: detail.booking.note,
               goods: detail.booking.goods ?? null,
+              lifecycleStatus: detail.booking.lifecycleStatus ?? null,
+              depositAmount: detail.booking.depositAmount ?? 0,
+              balanceAmount: detail.booking.balanceAmount ?? 0,
+              depositDueAt: detail.booking.depositDueAt ?? null,
+              depositConfirmedAt: detail.booking.depositConfirmedAt ?? null,
+              payments: detail.booking.payments ?? [],
               branchId: court.branchId,
               createdAt: '',
               updatedAt: '',
@@ -233,4 +245,22 @@ export const cancelBooking = async (id: string, reason?: string) => {
     console.error('Error cancelling booking:', error);
     throw error;
   }
+};
+
+export const confirmBookingDeposit = async (
+  id: string,
+  receivedAmount?: number
+): Promise<Booking> => {
+  const response = await axiosInstance.post<{ data: Booking }>(
+    `/bookings/${id}/deposit/confirm`,
+    receivedAmount == null ? {} : { receivedAmount }
+  );
+  return response.data.data;
+};
+
+export const rejectBookingDeposit = async (id: string): Promise<Booking> => {
+  const response = await axiosInstance.post<{ data: Booking }>(
+    `/bookings/${id}/deposit/reject`
+  );
+  return response.data.data;
 };

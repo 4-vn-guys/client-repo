@@ -160,7 +160,6 @@ export default function SettingsPage() {
   const [draftSettings, setDraftSettings] = useState<UpdateUserSettingsDto>({});
   const [saved, setSaved] = useState(false);
   const [isAutoSaving, setIsAutoSaving] = useState(false);
-  const [isAutoSaveQueued, setIsAutoSaveQueued] = useState(false);
   const [recoveryEmailError, setRecoveryEmailError] = useState('');
   const [isTwoFactorDialogOpen, setIsTwoFactorDialogOpen] = useState(false);
   const [twoFactorSetupQr, setTwoFactorSetupQr] = useState<string | null>(null);
@@ -380,61 +379,54 @@ export default function SettingsPage() {
     return savedSettings[key] !== effectiveSettings[key];
   };
 
-  useEffect(() => {
-    return () => {
-      if (autoSaveTimerRef.current) {
-        window.clearTimeout(autoSaveTimerRef.current);
-      }
-    };
-  }, []);
+  const autoSavePatch = useMemo(
+    () => buildSettingsPatch(false),
+    [buildSettingsPatch]
+  );
+  const isAutoSaveQueued =
+    !!settings &&
+    !isSaving &&
+    !isAutoSaving &&
+    !hasInvalidRecoveryEmail &&
+    Object.keys(autoSavePatch).length > 0;
 
   useEffect(() => {
-    if (!settings || isSaving || hasInvalidRecoveryEmail) {
-      setIsAutoSaveQueued(false);
-      return;
-    }
-
-    const autoPatch = buildSettingsPatch(false);
-    if (Object.keys(autoPatch).length === 0) {
-      setIsAutoSaveQueued(false);
-      return;
-    }
-
     if (autoSaveTimerRef.current) {
       window.clearTimeout(autoSaveTimerRef.current);
+      autoSaveTimerRef.current = null;
     }
 
-    setIsAutoSaveQueued(true);
-    autoSaveTimerRef.current = window.setTimeout(async () => {
-      setIsAutoSaveQueued(false);
+    if (!settings || isSaving || hasInvalidRecoveryEmail) {
+      return;
+    }
+
+    if (Object.keys(autoSavePatch).length === 0) {
+      return;
+    }
+
+    const timer = window.setTimeout(async () => {
       setIsAutoSaving(true);
       try {
-        await updateSettings(autoPatch);
+        await updateSettings(autoSavePatch);
         handleSavedCue();
       } finally {
         setIsAutoSaving(false);
       }
     }, 900);
+    autoSaveTimerRef.current = timer;
+
+    return () => {
+      window.clearTimeout(timer);
+      if (autoSaveTimerRef.current === timer) {
+        autoSaveTimerRef.current = null;
+      }
+    };
   }, [
     settings,
     isSaving,
     hasInvalidRecoveryEmail,
-    effectiveSettings.theme,
-    effectiveSettings.layoutDensity,
-    effectiveSettings.compactMode,
-    effectiveSettings.languageCode,
-    effectiveSettings.notifEmail,
-    effectiveSettings.notifPush,
-    effectiveSettings.twoFactorEnabled,
-    savedSettings.theme,
-    savedSettings.layoutDensity,
-    savedSettings.compactMode,
-    savedSettings.languageCode,
-    savedSettings.notifEmail,
-    savedSettings.notifPush,
-    savedSettings.twoFactorEnabled,
+    autoSavePatch,
     updateSettings,
-    buildSettingsPatch,
   ]);
 
   return (
